@@ -1,0 +1,2691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CleverPlanners – Settings</title>
+  <style>
+    :root{
+      --ink:#1e293b; --muted:#6b7280; --cream:#fbf6ed; --panel:#f4ecdc; --brand:#111827; --accent1:#ff7ab6; --accent2:#89f7d3; --ring:#e5dcc7; --radius:20px; --shadow:0 10px 30px rgba(16,24,40,.08);
+      --ok:#16a34a; --warn:#f59e0b; --soft:#faf7f1;
+      --bg:#fbf6ed;--text:#1e293b;--card:#fff;
+      --ok-bg:#d1fae5;--ok-text:#065f46;--maybe-bg:#fef3c7;--maybe-text:#92400e;
+      --grad-1:#7cf1d6;--grad-2:#b8a8ff;--grad-3:#ff7ab6;
+    }
+    *{box-sizing:border-box}
+    html:focus-within{scroll-behavior:smooth}
+    @media (prefers-reduced-motion: reduce){ html:focus-within{scroll-behavior:auto} }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;margin:0;background:var(--cream);color:var(--ink)}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    :focus-visible{outline:2px solid var(--ring); outline-offset:2px; border-radius:10px}
+
+    /* Header */
+    .settings-header{
+      position:sticky;
+      top:0;
+      z-index:60;
+      background:#fff;
+      border-bottom:1px solid #f0eadb;
+      padding:28px 0;
+      box-shadow:0 2px 8px rgba(0,0,0,.03);
+    }
+    .settings-header-inner{
+      max-width:1400px;
+      margin:0 auto;
+      padding:0 22px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+    }
+    .logo{
+      position:fixed;
+      top:0;
+      left:0;
+      font-weight:800;
+      font-size:1.5rem;
+      letter-spacing:-0.02em;
+      color:var(--brand);
+      text-decoration:none;
+      transition:opacity 0.2s;
+      padding:20px 24px;
+      z-index:100;
+      background:#fff;
+      margin:0;
+    }
+    .logo:hover{opacity:0.9}
+    .settings-title{
+      font-size:clamp(1.5rem,4vw,2rem);
+      font-weight:800;
+      color:var(--ink);
+      margin:0;
+      letter-spacing:-0.02em;
+      text-align:center;
+    }
+    
+    /* Profile Icon */
+    .profile-container{
+      position:fixed;
+      top:20px;
+      right:24px;
+      z-index:100;
+    }
+    .profile-icon{
+      width:40px;
+      height:40px;
+      border-radius:50%;
+      background:linear-gradient(135deg, var(--grad-2) 0%, var(--grad-3) 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-weight:700;
+      font-size:1.1rem;
+      cursor:pointer;
+      border:2px solid #fff;
+      box-shadow:0 2px 8px rgba(0,0,0,.1);
+      transition:all 0.2s ease;
+    }
+    .profile-icon:hover{
+      transform:scale(1.05);
+      box-shadow:0 4px 12px rgba(0,0,0,.15);
+    }
+    .profile-dropdown{
+      position:absolute;
+      top:calc(100% + 8px);
+      right:0;
+      background:var(--card);
+      border:1px solid var(--ring);
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      min-width:160px;
+      padding:8px;
+      display:none;
+      z-index:101;
+    }
+    .profile-dropdown.open{
+      display:block;
+      animation:fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn{
+      from{opacity:0;transform:translateY(-4px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+    .profile-dropdown-item{
+      display:block;
+      width:100%;
+      padding:10px 14px;
+      border:none;
+      background:transparent;
+      color:var(--ink);
+      font-weight:600;
+      font-size:0.9rem;
+      text-align:left;
+      cursor:pointer;
+      border-radius:8px;
+      transition:all 0.2s ease;
+      text-decoration:none;
+    }
+    .profile-dropdown-item:hover{
+      background:var(--soft);
+      color:var(--ink);
+    }
+
+    /* Main Layout */
+    .settings-container{
+      max-width:1400px;
+      margin:0 auto;
+      padding:32px 22px;
+      display:grid;
+      grid-template-columns:240px 1fr;
+      gap:32px;
+    }
+
+    /* Sidebar */
+    .settings-sidebar{
+      position:sticky;
+      top:100px;
+      align-self:start;
+      background:var(--card);
+      border:1px solid var(--ring);
+      border-radius:var(--radius);
+      padding:20px 0;
+      box-shadow:var(--shadow);
+      height:fit-content;
+    }
+    .sidebar-title{
+      font-size:1.1rem;
+      font-weight:700;
+      color:var(--ink);
+      padding:0 20px 16px;
+      margin:0 0 8px 0;
+      border-bottom:1px solid var(--ring);
+    }
+    .sidebar-nav{
+      list-style:none;
+      margin:0;
+      padding:0;
+    }
+    .sidebar-nav-item{
+      margin:0;
+    }
+    .sidebar-nav-link{
+      display:block;
+      padding:12px 20px;
+      color:var(--muted);
+      font-weight:600;
+      font-size:0.95rem;
+      text-decoration:none;
+      transition:all 0.2s ease;
+      border-left:3px solid transparent;
+    }
+    .sidebar-nav-link:hover{
+      background:var(--soft);
+      color:var(--ink);
+    }
+    .sidebar-nav-link.active{
+      color:var(--brand);
+      background:var(--soft);
+      border-left-color:var(--brand);
+    }
+    
+    /* Back to Dashboard Button */
+    .back-to-dashboard-btn{
+      display:block;
+      margin:20px 20px 0;
+      padding:12px 20px;
+      background:var(--brand);
+      color:#fff;
+      border-radius:12px;
+      font-weight:600;
+      font-size:0.95rem;
+      text-align:center;
+      text-decoration:none;
+      transition:all 0.2s ease;
+      box-shadow:0 2px 8px rgba(17,24,39,0.15);
+      border:none;
+      cursor:pointer;
+    }
+    .back-to-dashboard-btn:hover{
+      background:#0a0f1a;
+      box-shadow:0 4px 16px rgba(17,24,39,0.25);
+      transform:translateY(-2px);
+    }
+    .back-to-dashboard-btn:active{
+      transform:translateY(0);
+    }
+    
+    /* Clickable Title */
+    .settings-title-link{
+      color:inherit;
+      text-decoration:none;
+      transition:opacity 0.2s ease;
+      cursor:pointer;
+      display:inline-block;
+    }
+    .settings-title-link:hover{
+      opacity:0.7;
+    }
+
+    /* Content Area */
+    .settings-content{
+      min-height:600px;
+    }
+    .settings-section{
+      scroll-margin-top:100px;
+      margin-bottom:40px;
+    }
+    .settings-card{
+      background:var(--card);
+      border:1px solid var(--ring);
+      border-radius:var(--radius);
+      padding:28px;
+      box-shadow:var(--shadow);
+    }
+    .settings-card-title{
+      font-size:1.5rem;
+      font-weight:700;
+      color:var(--ink);
+      margin:0 0 24px 0;
+      letter-spacing:-0.01em;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .settings-card-title .edit-icon{
+      width:20px;
+      height:20px;
+      opacity:0.6;
+      cursor:pointer;
+      transition:opacity 0.2s ease;
+    }
+    .settings-card-title .edit-icon:hover{
+      opacity:1;
+    }
+
+    /* Form Fields */
+    .form-group{
+      margin-bottom:20px;
+    }
+    .form-label{
+      display:block;
+      font-weight:600;
+      font-size:0.9rem;
+      color:var(--ink);
+      margin-bottom:8px;
+      text-transform:uppercase;
+      letter-spacing:0.05em;
+    }
+    .form-field{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px 16px;
+      background:var(--soft);
+      border:1px solid var(--ring);
+      border-radius:12px;
+      min-height:48px;
+    }
+    .form-field-value{
+      flex:1;
+      color:var(--ink);
+      font-size:0.95rem;
+    }
+    .form-field-value.empty{
+      color:var(--muted);
+      font-style:italic;
+    }
+    .form-field-action{
+      color:var(--brand);
+      font-weight:600;
+      font-size:0.9rem;
+      cursor:pointer;
+      text-decoration:none;
+      transition:opacity 0.2s ease;
+    }
+    .form-field-action:hover{
+      opacity:0.8;
+    }
+    .form-input{
+      flex:1;
+      border:none;
+      background:transparent;
+      color:var(--ink);
+      font-size:0.95rem;
+      padding:0;
+      outline:none;
+    }
+    .form-input::placeholder{
+      color:var(--muted);
+    }
+
+    /* Password Fields */
+    .password-field{
+      position:relative;
+    }
+    .password-toggle{
+      position:absolute;
+      right:12px;
+      top:50%;
+      transform:translateY(-50%);
+      background:none;
+      border:none;
+      color:var(--muted);
+      cursor:pointer;
+      font-size:0.9rem;
+      padding:4px 8px;
+    }
+    .password-toggle:hover{
+      color:var(--ink);
+    }
+
+    /* Toggle Switches */
+    .toggle-group{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+    .toggle-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:16px;
+      background:var(--soft);
+      border:1px solid var(--ring);
+      border-radius:12px;
+    }
+    .toggle-label{
+      font-weight:600;
+      color:var(--ink);
+      font-size:0.95rem;
+    }
+    .toggle-switch{
+      position:relative;
+      width:48px;
+      height:24px;
+      background:var(--ring);
+      border-radius:999px;
+      cursor:pointer;
+      transition:background 0.2s ease;
+    }
+    .toggle-switch.active{
+      background:var(--brand);
+    }
+    .toggle-switch::after{
+      content:'';
+      position:absolute;
+      top:2px;
+      left:2px;
+      width:20px;
+      height:20px;
+      background:#fff;
+      border-radius:50%;
+      transition:transform 0.2s ease;
+      box-shadow:0 2px 4px rgba(0,0,0,.2);
+    }
+    .toggle-switch.active::after{
+      transform:translateX(24px);
+    }
+
+    /* Buttons */
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:12px;
+      padding:12px 20px;
+      border:1px solid var(--ring);
+      background:#fff;
+      cursor:pointer;
+      font-weight:600;
+      font-size:0.9rem;
+      transition:all 0.2s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 4px 12px rgba(0,0,0,0.1);
+      border-color:#d4cbb2;
+      background:var(--soft);
+    }
+    .btn-primary{
+      background:var(--brand);
+      color:#fff;
+      border-color:transparent;
+      box-shadow:0 2px 8px rgba(17,24,39,0.15);
+    }
+    .btn-primary:hover{
+      background:#0a0f1a;
+      box-shadow:0 4px 16px rgba(17,24,39,0.25);
+      transform:translateY(-2px);
+      border-color:transparent;
+    }
+    .section-save-button{
+      margin-top:24px;
+      padding-top:24px;
+      border-top:1px solid var(--ring);
+      display:none;
+      opacity:0;
+      transition:opacity 0.3s ease;
+    }
+    .section-save-button.show{
+      display:flex;
+      justify-content:flex-end;
+      gap:12px;
+      opacity:1;
+    }
+    .btn-cancel{
+      background:transparent;
+      color:var(--muted);
+      border:1px solid var(--ring);
+    }
+    .btn-cancel:hover{
+      background:var(--soft);
+      color:var(--ink);
+    }
+    .btn-danger{
+      background:transparent;
+      color:#dc2626;
+      border-color:#dc2626;
+    }
+    .btn-danger:hover{
+      background:#dc2626;
+      color:#fff;
+    }
+
+    /* Info Banner */
+    .info-banner{
+      background:var(--ok-bg);
+      border:1px solid var(--ok);
+      border-radius:12px;
+      padding:12px 16px;
+      margin-bottom:20px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .info-banner-icon{
+      width:20px;
+      height:20px;
+      border-radius:50%;
+      background:var(--ok);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      font-size:0.8rem;
+      flex-shrink:0;
+    }
+    .info-banner-text{
+      flex:1;
+      font-size:0.9rem;
+      color:var(--ok-text);
+    }
+    .info-banner-link{
+      color:var(--ok);
+      font-weight:600;
+      text-decoration:underline;
+      cursor:pointer;
+    }
+
+    /* Payment Methods */
+    .payment-methods{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .payment-method{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:16px;
+      background:var(--soft);
+      border:1px solid var(--ring);
+      border-radius:12px;
+    }
+    .payment-method-info{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .payment-method-icon{
+      width:40px;
+      height:40px;
+      border-radius:8px;
+      background:var(--card);
+      border:1px solid var(--ring);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      color:var(--ink);
+    }
+    .payment-method-details{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .payment-method-name{
+      font-weight:600;
+      color:var(--ink);
+      font-size:0.95rem;
+    }
+    .payment-method-number{
+      font-size:0.85rem;
+      color:var(--muted);
+    }
+    .payment-status{
+      padding:6px 12px;
+      border-radius:6px;
+      font-size:0.8rem;
+      font-weight:600;
+    }
+    .payment-status.pending{
+      background:var(--maybe-bg);
+      color:var(--maybe-text);
+    }
+    .payment-status.paid{
+      background:var(--ok-bg);
+      color:var(--ok-text);
+    }
+
+    /* Privacy Link */
+    .privacy-link{
+      margin-top:16px;
+      display:inline-block;
+      color:var(--brand);
+      font-weight:600;
+      font-size:0.9rem;
+      text-decoration:underline;
+      cursor:pointer;
+    }
+    .privacy-link:hover{
+      opacity:0.8;
+    }
+
+    /* Delete Account */
+    .delete-account{
+      margin-top:32px;
+      padding-top:32px;
+      border-top:1px solid var(--ring);
+    }
+    .delete-account-title{
+      font-size:1.1rem;
+      font-weight:700;
+      color:var(--ink);
+      margin:0 0 8px 0;
+    }
+    .delete-account-text{
+      font-size:0.9rem;
+      color:var(--muted);
+      margin:0 0 16px 0;
+    }
+
+    /* Autocomplete Dropdown */
+    .autocomplete-wrapper{
+      position:relative;
+      width:100%;
+      flex:1;
+    }
+    .autocomplete-dropdown{
+      position:absolute;
+      top:calc(100% + 4px);
+      left:0;
+      right:0;
+      background:var(--card);
+      border:1px solid var(--ring);
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      max-height:300px;
+      overflow-y:auto;
+      z-index:1000;
+      display:none;
+    }
+    .autocomplete-dropdown.show{
+      display:block;
+    }
+    .autocomplete-item{
+      padding:12px 16px;
+      cursor:pointer;
+      transition:background 0.2s ease;
+      border-bottom:1px solid var(--soft);
+    }
+    .autocomplete-item:last-child{
+      border-bottom:none;
+    }
+    .autocomplete-item:hover,
+    .autocomplete-item.selected{
+      background:var(--soft);
+    }
+    .autocomplete-item.highlight{
+      background:var(--ring);
+    }
+    .autocomplete-item.autocomplete-no-match{
+      cursor:default;
+      color:var(--muted);
+      font-style:italic;
+      pointer-events:none;
+    }
+    .autocomplete-item.autocomplete-no-match:hover{
+      background:transparent;
+    }
+
+    /* Responsive */
+    @media (max-width:900px){
+      .settings-header{
+        padding:16px 0;
+      }
+      .settings-header-inner{
+        padding:0 16px;
+      }
+      .logo{
+        position:relative;
+        font-size:1.3rem;
+      }
+      .settings-content{
+        padding:20px 16px;
+      }
+      .settings-grid{
+        grid-template-columns:1fr;
+        gap:20px;
+      }
+      .settings-card{
+        padding:20px;
+      }
+      .btn{
+        padding:12px 20px;
+        font-size:0.9rem;
+        width:100%;
+      }
+    }
+    @media (max-width:900px){
+      .settings-container{
+        grid-template-columns:1fr;
+        gap:24px;
+      }
+      .settings-sidebar{
+        position:static;
+        top:auto;
+      }
+      .sidebar-nav{
+        display:flex;
+        overflow-x:auto;
+        gap:8px;
+        padding:0 12px;
+      }
+      .sidebar-nav-item{
+        flex-shrink:0;
+      }
+      .sidebar-nav-link{
+        white-space:nowrap;
+        border-left:none;
+        border-bottom:3px solid transparent;
+        padding:12px 16px;
+      }
+      .sidebar-nav-link.active{
+        border-left:none;
+        border-bottom-color:var(--brand);
+      }
+      .back-to-dashboard-btn{
+        margin:20px 12px 0;
+        padding:10px 16px;
+        font-size:0.9rem;
+      }
+    }
+    @media (max-width:480px){
+      .settings-header{padding:20px 0}
+      .settings-header-inner{padding:0 16px}
+      .logo{
+        font-size:1.2rem;
+        padding:14px 18px;
+      }
+      .settings-title{font-size:1.3rem}
+      .profile-container{
+        top:14px;
+        right:12px;
+      }
+      .profile-icon{
+        width:32px;
+        height:32px;
+        font-size:0.9rem;
+      }
+      .settings-container{
+        padding:24px 16px;
+      }
+      .settings-card{
+        padding:20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="settings-header">
+    <div class="settings-header-inner">
+      <a href="dashboard.html" class="logo">CleverPlanners</a>
+      <h1 class="settings-title" id="settingsTitle">
+        <a href="dashboard.html" class="settings-title-link" id="settingsTitleLink">Event – Dashboard</a>
+      </h1>
+    </div>
+    <div class="profile-container">
+      <div class="profile-icon" id="profileIcon" aria-label="User profile" role="button" tabindex="0">A</div>
+      <div class="profile-dropdown" id="profileDropdown">
+        <a href="settings.html" class="profile-dropdown-item">Settings</a>
+        <button class="profile-dropdown-item" id="logoutBtn">Log Out</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="settings-container">
+    <!-- Sidebar Navigation -->
+    <nav class="settings-sidebar">
+      <h2 class="sidebar-title">Settings</h2>
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-item">
+          <a href="#event-details" class="sidebar-nav-link active" data-section="event-details">Event Details</a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="#account-details" class="sidebar-nav-link" data-section="account-details">Account Details</a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="#security" class="sidebar-nav-link" data-section="security">Security / Password</a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="#notifications" class="sidebar-nav-link" data-section="notifications">Notifications & Alerts</a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="#payments" class="sidebar-nav-link" data-section="payments">Payments & Bookings</a>
+        </li>
+      </ul>
+      <a href="dashboard.html" class="back-to-dashboard-btn" id="backToDashboardBtn">← Back to Dashboard</a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="settings-content">
+      <!-- Event Details -->
+      <section id="event-details" class="settings-section">
+        <div class="settings-card">
+          <h2 class="settings-card-title">
+            Event Details
+            <svg class="edit-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14.5 2.5L17.5 5.5L10 13H7V10L14.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2.5 17.5H17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </h2>
+          
+          <div class="form-group">
+            <label class="form-label">Event Type</label>
+            <div class="form-field">
+              <span class="form-field-value" id="eventTypeValue">Wedding</span>
+              <a href="#" class="form-field-action">Edit</a>
+          </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Budget</label>
+            <div class="form-field">
+              <span class="form-field-value empty" id="budgetValue">Add</span>
+              <a href="#" class="form-field-action">Add</a>
+          </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Event Date</label>
+            <div class="form-field">
+              <span class="form-field-value" id="eventDateValue">November 21, 2025</span>
+              <a href="#" class="form-field-action">Edit</a>
+        </div>
+          </div>
+
+        <div class="form-group">
+            <label class="form-label">Event Location</label>
+            <div class="form-field">
+              <span class="form-field-value" id="eventLocationValue">Brooklyn, NY</span>
+              <a href="#" class="form-field-action">Edit</a>
+        </div>
+          </div>
+          
+          <div class="section-save-button" id="eventDetailsSave">
+            <button class="btn btn-cancel" id="eventDetailsCancel">Cancel</button>
+            <button class="btn btn-primary" id="eventDetailsSaveBtn">Save</button>
+          </div>
+        </div>
+    </section>
+
+      <!-- Account Details -->
+      <section id="account-details" class="settings-section">
+        <div class="settings-card">
+          <h2 class="settings-card-title">
+            Account Details
+            <svg class="edit-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14.5 2.5L17.5 5.5L10 13H7V10L14.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2.5 17.5H17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </h2>
+
+          <div class="info-banner" id="emailBanner" style="display:none;">
+            <div class="info-banner-icon">i</div>
+            <div class="info-banner-text">
+              Confirm your email using the link we sent you or <a href="#" class="info-banner-link">get a new link</a>.
+            </div>
+          </div>
+
+        <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <div class="form-field">
+              <span class="form-field-value" id="emailValue">user@example.com</span>
+              <a href="#" class="form-field-action">Edit</a>
+        </div>
+          </div>
+
+        <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <div class="form-field">
+              <span class="form-field-value empty" id="phoneValue">Add</span>
+              <a href="#" class="form-field-action">Add</a>
+        </div>
+          </div>
+
+        <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="form-field">
+              <span class="form-field-value">**************</span>
+              <a href="#security" class="form-field-action">Change</a>
+        </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Address</label>
+            <div class="form-field">
+              <span class="form-field-value empty" id="addressValue">Add</span>
+              <a href="#" class="form-field-action">Add</a>
+            </div>
+          </div>
+
+          <div class="section-save-button" id="accountDetailsSave">
+            <button class="btn btn-cancel" id="accountDetailsCancel">Cancel</button>
+            <button class="btn btn-primary" id="accountDetailsSaveBtn">Save</button>
+          </div>
+          
+          <div class="delete-account">
+            <h3 class="delete-account-title">Delete Account</h3>
+            <p class="delete-account-text">Deleting your account permanently removes all personal data. This action cannot be undone.</p>
+            <button class="btn btn-danger" id="deleteAccountBtn">Delete Account</button>
+          </div>
+        </div>
+    </section>
+
+      <!-- Security / Password -->
+      <section id="security" class="settings-section">
+        <div class="settings-card">
+          <h2 class="settings-card-title">Security / Password</h2>
+
+        <div class="form-group">
+            <label class="form-label">New Password</label>
+            <div class="form-field password-field">
+              <input type="password" class="form-input" id="newPassword" placeholder="Enter your new password" />
+              <button type="button" class="password-toggle" id="toggleNewPassword">Show</button>
+        </div>
+          </div>
+
+        <div class="form-group">
+            <label class="form-label">Confirm Password</label>
+            <div class="form-field password-field">
+              <input type="password" class="form-input" id="confirmPassword" placeholder="Re-enter your new password" />
+              <button type="button" class="password-toggle" id="toggleConfirmPassword">Show</button>
+        </div>
+          </div>
+
+          <div class="section-save-button" id="securitySave">
+            <button class="btn btn-cancel" id="securityCancel">Cancel</button>
+            <button class="btn btn-primary" id="securitySaveBtn">Save</button>
+          </div>
+          
+          <button class="btn btn-primary" id="changePasswordBtn">Change Password</button>
+
+          <a href="#" class="privacy-link">Read our Privacy Terms</a>
+        </div>
+    </section>
+
+      <!-- Notifications & Alerts -->
+      <section id="notifications" class="settings-section">
+        <div class="settings-card">
+          <h2 class="settings-card-title">Notifications & Alerts</h2>
+
+          <div class="toggle-group">
+            <div class="toggle-item">
+              <label class="toggle-label">Email Notifications</label>
+              <div class="toggle-switch active" data-toggle="emailNotifications"></div>
+            </div>
+            <div class="toggle-item">
+              <label class="toggle-label">Vendor Messages</label>
+              <div class="toggle-switch active" data-toggle="vendorMessages"></div>
+            </div>
+            <div class="toggle-item">
+              <label class="toggle-label">Booking Updates</label>
+              <div class="toggle-switch active" data-toggle="bookingUpdates"></div>
+            </div>
+            <div class="toggle-item">
+              <label class="toggle-label">Payment Reminders</label>
+              <div class="toggle-switch active" data-toggle="paymentReminders"></div>
+            </div>
+          </div>
+        </div>
+    </section>
+
+      <!-- Payments & Bookings -->
+      <section id="payments" class="settings-section">
+        <div class="settings-card">
+          <h2 class="settings-card-title">Payments & Bookings</h2>
+
+          <div class="form-group">
+            <label class="form-label">Saved Payment Methods</label>
+            <div class="payment-methods" id="savedPaymentsList">
+              <!-- Payment methods will be loaded dynamically -->
+            </div>
+            <button class="btn" style="margin-top:12px;" id="addPaymentBtn">Add Payment Method</button>
+          </div>
+
+          <div class="form-group" style="margin-top:32px;">
+            <label class="form-label">Booking Requests</label>
+            <div class="payment-methods">
+              <div class="payment-method">
+                <div class="payment-method-info">
+                  <div class="payment-method-details">
+                    <div class="payment-method-name">Elite Photographer Services</div>
+                    <div class="payment-method-number">Requested on Nov 15, 2024</div>
+                  </div>
+                </div>
+                <span class="payment-status pending">Pending</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top:32px;">
+            <label class="form-label">Payment Status</label>
+            <div class="payment-methods">
+              <div class="payment-method">
+                <div class="payment-method-info">
+                  <div class="payment-method-details">
+                    <div class="payment-method-name">Venue Deposit</div>
+                    <div class="payment-method-number">Due: December 1, 2024</div>
+                  </div>
+                </div>
+                <span class="payment-status pending">Pending</span>
+              </div>
+              <div class="payment-method">
+                <div class="payment-method-info">
+                  <div class="payment-method-details">
+                    <div class="payment-method-name">Photographer Payment</div>
+                    <div class="payment-method-number">Paid on November 20, 2024</div>
+                  </div>
+                </div>
+                <span class="payment-status paid">Paid</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top:32px;">
+            <label class="form-label">Upcoming Payments</label>
+            <div class="payment-methods">
+              <div class="payment-method">
+                <div class="payment-method-info">
+                  <div class="payment-method-details">
+                    <div class="payment-method-name">Catering Final Payment</div>
+                    <div class="payment-method-number">Due: December 15, 2024</div>
+                  </div>
+                </div>
+                <span class="payment-status pending">Upcoming</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+
+    // ============================================
+    // SETTINGS DATA MODEL & STORAGE
+    // ============================================
+    
+    // Simple password hashing (for demo - not production-grade)
+    function hashPassword(password) {
+      // Simple hash for demo purposes
+      let hash = 0;
+      for (let i = 0; i < password.length; i++) {
+        const char = password.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+      }
+      return hash.toString(36);
+    }
+
+    // Settings Manager - handles all CRUD operations
+    const SettingsManager = {
+      // Get all settings
+      getAll() {
+        try {
+          const settings = localStorage.getItem('cleverplanners_user_settings');
+          if (settings) {
+            return JSON.parse(settings);
+          }
+          return this.getDefaultSettings();
+        } catch (e) {
+          console.error('Error loading settings:', e);
+          return this.getDefaultSettings();
+        }
+      },
+
+      // Get default settings structure
+      getDefaultSettings() {
+        return {
+          // Event Details
+          eventDetails: {
+            eventType: '',
+            budget: null,
+            eventDate: '',
+            eventLocation: ''
+          },
+          // Account Details
+          account: {
+            email: '',
+            phoneNumber: '',
+            address: ''
+          },
+          // Security
+          security: {
+            passwordHash: null
+          },
+          // Notifications
+          notifications: {
+            emailNotifications: true,
+            vendorMessages: true,
+            bookingUpdates: true,
+            paymentReminders: true
+          },
+          // Payments & Bookings
+          payments: {
+            savedPayments: [],
+            bookingStatus: [],
+            upcomingPayments: []
+          }
+        };
+      },
+
+      // Save all settings
+      save(settings) {
+        try {
+          localStorage.setItem('cleverplanners_user_settings', JSON.stringify(settings));
+          return true;
+        } catch (e) {
+          console.error('Error saving settings:', e);
+          return false;
+        }
+      },
+
+      // Update event details
+      updateEventDetails(updates) {
+        const settings = this.getAll();
+        settings.eventDetails = { ...settings.eventDetails, ...updates };
+        return this.save(settings);
+      },
+
+      // Update account details
+      updateAccount(updates) {
+        const settings = this.getAll();
+        settings.account = { ...settings.account, ...updates };
+        return this.save(settings);
+      },
+
+      // Update password
+      updatePassword(newPassword) {
+        const settings = this.getAll();
+        settings.security.passwordHash = hashPassword(newPassword);
+        return this.save(settings);
+      },
+
+      // Update notifications
+      updateNotifications(updates) {
+        const settings = this.getAll();
+        settings.notifications = { ...settings.notifications, ...updates };
+        return this.save(settings);
+      },
+
+      // Update payments
+      updatePayments(updates) {
+        const settings = this.getAll();
+        settings.payments = { ...settings.payments, ...updates };
+        return this.save(settings);
+      },
+
+      // Add payment method
+      addPaymentMethod(paymentMethod) {
+        const settings = this.getAll();
+        if (!settings.payments.savedPayments) {
+          settings.payments.savedPayments = [];
+        }
+        settings.payments.savedPayments.push({
+          id: Date.now().toString(),
+          ...paymentMethod,
+          addedAt: new Date().toISOString()
+        });
+        return this.save(settings);
+      },
+
+      // Remove payment method
+      removePaymentMethod(paymentId) {
+        const settings = this.getAll();
+        if (settings.payments.savedPayments) {
+          settings.payments.savedPayments = settings.payments.savedPayments.filter(
+            p => p.id !== paymentId
+          );
+        }
+        return this.save(settings);
+      },
+
+      // Delete account - removes all user data
+      deleteAccount() {
+        try {
+          // Remove all user-related data
+          localStorage.removeItem('cleverplanners_user_settings');
+          localStorage.removeItem('userPlan');
+          localStorage.removeItem('userLoggedIn');
+          localStorage.removeItem('userEmail');
+          localStorage.removeItem('userName');
+          localStorage.removeItem('vendor-messages');
+          localStorage.removeItem('vendor-bookings');
+          localStorage.removeItem('checklist-completed');
+          // Clear sessionStorage
+          sessionStorage.removeItem('cleverplanners_results_data');
+          return true;
+        } catch (e) {
+          console.error('Error deleting account:', e);
+          return false;
+        }
+      }
+    };
+
+    // ============================================
+    // UI LOADING & RENDERING
+    // ============================================
+
+    // Load and display all settings
+    function loadSettings() {
+      const settings = SettingsManager.getAll();
+      
+      // Load event details
+      const eventDetails = settings.eventDetails || {};
+      if (eventDetails.eventType) {
+        $('#eventTypeValue').textContent = eventDetails.eventType;
+        $('#eventTypeValue').classList.remove('empty');
+      } else {
+        $('#eventTypeValue').textContent = 'Add';
+        $('#eventTypeValue').classList.add('empty');
+      }
+      
+      if (eventDetails.budget) {
+        $('#budgetValue').textContent = formatCurrency(eventDetails.budget);
+        $('#budgetValue').classList.remove('empty');
+      } else {
+        $('#budgetValue').textContent = 'Add';
+        $('#budgetValue').classList.add('empty');
+      }
+      
+      if (eventDetails.eventDate) {
+        $('#eventDateValue').textContent = formatDate(eventDetails.eventDate);
+        $('#eventDateValue').classList.remove('empty');
+      } else {
+        $('#eventDateValue').textContent = 'Add';
+        $('#eventDateValue').classList.add('empty');
+      }
+      
+      if (eventDetails.eventLocation) {
+        $('#eventLocationValue').textContent = eventDetails.eventLocation;
+        $('#eventLocationValue').classList.remove('empty');
+      } else {
+        $('#eventLocationValue').textContent = 'Add';
+        $('#eventLocationValue').classList.add('empty');
+      }
+
+      // Load account details
+      const account = settings.account || {};
+      // Check localStorage for user email (from login)
+      const storedEmail = localStorage.getItem('userEmail');
+      const email = account.email || storedEmail || '';
+      
+      if (email) {
+        $('#emailValue').textContent = email;
+        $('#emailValue').classList.remove('empty');
+        // Sync to settings if not already there
+        if (!account.email && storedEmail) {
+          SettingsManager.updateAccount({ email: storedEmail });
+        }
+      } else {
+        $('#emailValue').textContent = 'Add';
+        $('#emailValue').classList.add('empty');
+      }
+      
+      if (account.phoneNumber) {
+        $('#phoneValue').textContent = account.phoneNumber;
+        $('#phoneValue').classList.remove('empty');
+      } else {
+        $('#phoneValue').textContent = 'Add';
+        $('#phoneValue').classList.add('empty');
+      }
+      
+      if (account.address) {
+        $('#addressValue').textContent = account.address;
+        $('#addressValue').classList.remove('empty');
+      } else {
+        $('#addressValue').textContent = 'Add';
+        $('#addressValue').classList.add('empty');
+      }
+
+      // Load notifications
+      const notifications = settings.notifications || {};
+      $$('.toggle-switch').forEach(toggle => {
+        const toggleType = toggle.dataset.toggle;
+        if (notifications[toggleType] !== undefined) {
+          if (notifications[toggleType]) {
+            toggle.classList.add('active');
+          } else {
+            toggle.classList.remove('active');
+          }
+        }
+      });
+
+      // Load payments
+      loadPayments(settings.payments || {});
+    }
+
+    // Load payments data
+    function loadPayments(payments) {
+      // Render saved payment methods
+      const savedPaymentsList = $('#savedPaymentsList');
+      if (savedPaymentsList && payments.savedPayments) {
+        if (payments.savedPayments.length === 0) {
+          savedPaymentsList.innerHTML = '<p style="color:var(--muted);font-size:0.9rem;padding:16px;">No payment methods saved yet.</p>';
+        } else {
+          savedPaymentsList.innerHTML = payments.savedPayments.map(payment => `
+            <div class="payment-method" data-payment-id="${payment.id}">
+              <div class="payment-method-info">
+                <div class="payment-method-icon">💳</div>
+                <div class="payment-method-details">
+                  <div class="payment-method-name">${payment.type || 'Card'} •••• ${payment.last4 || '0000'}</div>
+                  <div class="payment-method-number">Expires ${payment.expiry || 'N/A'}</div>
+                </div>
+              </div>
+              <a href="#" class="form-field-action remove-payment" data-payment-id="${payment.id}">Remove</a>
+            </div>
+          `).join('');
+          
+          // Add remove handlers
+          $$('.remove-payment').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+      e.preventDefault();
+              const paymentId = btn.dataset.paymentId;
+              if (confirm('Remove this payment method?')) {
+                if (SettingsManager.removePaymentMethod(paymentId)) {
+                  loadPayments(SettingsManager.getAll().payments);
+                }
+              }
+            });
+          });
+        }
+      }
+    }
+
+    // Add payment method
+    function showAddPaymentModal() {
+      const cardNumber = prompt('Enter card number (last 4 digits will be saved):');
+      if (!cardNumber) return;
+      
+      const last4 = cardNumber.slice(-4);
+      const cardType = cardNumber.startsWith('4') ? 'Visa' : 
+                      cardNumber.startsWith('5') ? 'Mastercard' : 
+                      cardNumber.startsWith('3') ? 'Amex' : 'Card';
+      
+      const expiry = prompt('Enter expiry date (MM/YY):');
+      if (!expiry) return;
+      
+      const paymentMethod = {
+        type: cardType,
+        last4: last4,
+        expiry: expiry
+      };
+      
+      if (SettingsManager.addPaymentMethod(paymentMethod)) {
+        loadPayments(SettingsManager.getAll().payments);
+        alert('Payment method added successfully!');
+      } else {
+        alert('Error adding payment method. Please try again.');
+      }
+    }
+
+    // Format currency
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('en-US', { 
+        style: 'currency', 
+        currency: 'USD', 
+        maximumFractionDigits: 0 
+      }).format(amount || 0);
+    }
+
+    // Format date
+    function formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+    }
+
+    // Load event type and initialize settings from sessionStorage
+    function loadEventData() {
+      try {
+        const saved = sessionStorage.getItem('cleverplanners_results_data');
+        if (saved) {
+          const data = JSON.parse(saved);
+          const eventType = data.eventType || 'Event';
+          const titleText = `${eventType} – Dashboard`;
+          $('#settingsTitle').textContent = titleText;
+          const titleLink = $('#settingsTitleLink');
+          if (titleLink) {
+            titleLink.textContent = titleText;
+          }
+          
+          // Initialize event type in settings if not already set
+          const settings = SettingsManager.getAll();
+          if (!settings.eventDetails.eventType && eventType !== 'Event') {
+            SettingsManager.updateEventDetails({ eventType: eventType });
+          }
+        }
+        
+        // Also check settings for event type
+        const settings = SettingsManager.getAll();
+        if (settings.eventDetails.eventType) {
+          const titleText = `${settings.eventDetails.eventType} – Dashboard`;
+          $('#settingsTitle').textContent = titleText;
+          const titleLink = $('#settingsTitleLink');
+          if (titleLink) {
+            titleLink.textContent = titleText;
+          }
+        }
+      } catch (e) {
+        console.error('Error loading event data:', e);
+      }
+    }
+    
+    // Navigate to dashboard with event type parameter
+    function navigateToDashboard() {
+      try {
+        // Get event type from settings or sessionStorage
+        const settings = SettingsManager.getAll();
+        let eventType = settings.eventDetails?.eventType || 'Event';
+        
+        // Fallback to sessionStorage if not in settings
+        if (eventType === 'Event') {
+          const saved = sessionStorage.getItem('cleverplanners_results_data');
+          if (saved) {
+            const data = JSON.parse(saved);
+            eventType = data.eventType || 'Event';
+          }
+        }
+        
+        // Build dashboard URL with event type parameter
+        const encodedEventType = encodeURIComponent(eventType);
+        const dashboardUrl = `dashboard.html?eventType=${encodedEventType}`;
+        
+        // Navigate to dashboard
+        window.location.href = dashboardUrl;
+      } catch (e) {
+        console.error('Error navigating to dashboard:', e);
+        // Fallback to dashboard without parameter
+        window.location.href = 'dashboard.html';
+      }
+    }
+
+    // Sidebar navigation
+    $$('.sidebar-nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+      e.preventDefault();
+        const targetId = link.getAttribute('href');
+        const targetSection = $(targetId);
+        
+        if (targetSection) {
+          // Update active state
+          $$('.sidebar-nav-link').forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+          
+          // Scroll to section
+          targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // Scroll spy for sidebar
+    const sections = $$('.settings-section');
+    const navLinks = $$('.sidebar-nav-link');
+    
+    function updateActiveNav() {
+      const scrollPos = window.scrollY + 150;
+      
+      sections.forEach((section, index) => {
+        const top = section.offsetTop;
+        const bottom = top + section.offsetHeight;
+        const id = section.getAttribute('id');
+        
+        if (scrollPos >= top && scrollPos < bottom) {
+          navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${id}`) {
+              link.classList.add('active');
+            }
+          });
+        }
+      });
+    }
+    
+    window.addEventListener('scroll', updateActiveNav);
+    updateActiveNav();
+
+    // Profile dropdown
+    const profileIcon = $('#profileIcon');
+    const profileDropdown = $('#profileDropdown');
+    
+    if (profileIcon && profileDropdown) {
+      profileIcon.addEventListener('click', (e) => {
+        e.stopPropagation();
+        profileDropdown.classList.toggle('open');
+      });
+      
+      document.addEventListener('click', (e) => {
+        if (!profileIcon.contains(e.target) && !profileDropdown.contains(e.target)) {
+          profileDropdown.classList.remove('open');
+        }
+      });
+      
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && profileDropdown.classList.contains('open')) {
+          profileDropdown.classList.remove('open');
+        }
+      });
+      
+      // Settings link - close dropdown and scroll to top
+      const settingsLink = profileDropdown.querySelector('a[href="settings.html"]');
+      if (settingsLink) {
+        settingsLink.addEventListener('click', (e) => {
+      e.preventDefault();
+          profileDropdown.classList.remove('open');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
+    }
+
+    // Password toggles
+    $('#toggleNewPassword')?.addEventListener('click', function() {
+      const input = $('#newPassword');
+      if (input.type === 'password') {
+        input.type = 'text';
+        this.textContent = 'Hide';
+      } else {
+        input.type = 'password';
+        this.textContent = 'Show';
+      }
+    });
+
+    $('#toggleConfirmPassword')?.addEventListener('click', function() {
+      const input = $('#confirmPassword');
+      if (input.type === 'password') {
+        input.type = 'text';
+        this.textContent = 'Hide';
+      } else {
+        input.type = 'password';
+        this.textContent = 'Show';
+      }
+    });
+
+    // ============================================
+    // AUTOFILL DATA (from plan.html)
+    // ============================================
+    
+    // Event Types from plan.html Step 2
+    const EVENT_TYPES_LIST = [
+      // Child
+      'Bris', 'Vach Nacht', 'Kiddush', 'Baby Naming', 'Pidyon Haben', 'Upsherin', 'Child Birthday',
+      // Teenager
+      'Bar Mitzvah', 'Bat Mitzvah', 'Sweet 16', 'Graduation Party', 'Teenager Birthday',
+      // Adult
+      'Proposal', 'Engagement (Vort / Tenoyim)', 'Wedding', 'Sheva Brachos', 'Anniversary', 'Adult Birthday',
+      // Holiday Events
+      'Purim Party', 'Chanukah Party', 'Shabbos Nachamu',
+      // Other
+      'Hachnasas Sefer Torah', 'Shul Dinner / Fundraiser', 'Gala / Charity Event', 'School Dinner / Banquet', 'Corporate Event', 'Custom Event'
+    ];
+
+    // Locations from plan.html Step 4
+    const LOCATIONS_LIST = [
+      // New York
+      'Boro Park', 'Flatbush', 'Manhattan', 'Williamsburg', 'Monsey', 'New Square', 'Monroe', 'Catskills', 'Queens', 'Kew Gardens Hills', 'Far Rockaway', 'Forest Hills', 'Hillcrest', 'Staten Island', 'Long Island', 'Lawrence', 'Cedarhurst', 'Woodmere', 'Hewlett', 'Inwood', 'Great Neck', 'West Hempstead',
+      // New Jersey
+      'Passaic', 'Clifton', 'Elizabeth', 'Edison', 'Highland Park', 'Teaneck', 'Lakewood', 'Jackson', 'Toms River', 'Jersey Shore',
+      // Florida
+      'Miami', 'Orlando', 'Boca Raton', 'Hollywood', 'North Miami Beach',
+      // California
+      'Los Angeles',
+      // Out of Town (USA)
+      'Baltimore', 'Chicago', 'Cleveland', 'Linden', 'Arizona', 'Detroit', 'Waterbury', 'New Orleans', 'Atlanta', 'Philadelphia', 'Cincinnati', 'Scranton', 'Minneapolis', 'Boston', 'St. Louis',
+      // United Kingdom
+      'Golders Green', 'Stamford Hill', 'Hendon', 'Gateshead', 'Manchester', 'Canvey Island', 'Edgware',
+      // Canada
+      'Montreal', 'Toronto',
+      // South Africa
+      'Johannesburg',
+      // Belgium
+      'Antwerp',
+      // Switzerland
+      'Zurich',
+      // Australia
+      'Sydney', 'Melbourne'
+    ];
+
+    // Fuzzy search function
+    function fuzzySearch(query, list) {
+      if (!query || query.length === 0) return [];
+      const lowerQuery = query.toLowerCase();
+      return list.filter(item => 
+        item.toLowerCase().includes(lowerQuery)
+      );
+    }
+
+    // Create autocomplete dropdown
+    function createAutocompleteDropdown(input, suggestions, onSelect, options = {}) {
+      const { 
+        allowCustom = false, // For Event Type: show "Custom Event" when no matches
+        showNoMatches = false, // For Event Location: show "No matches found" when no matches
+        customText = 'Custom Event',
+        noMatchesText = 'No matches found — please choose an available location.'
+      } = options;
+      
+      const wrapper = document.createElement('div');
+      wrapper.className = 'autocomplete-wrapper';
+      wrapper.style.position = 'relative';
+      wrapper.style.width = '100%';
+      wrapper.style.flex = '1';
+      
+      const dropdown = document.createElement('div');
+      dropdown.className = 'autocomplete-dropdown';
+      
+      // Get the form-field container
+      const formField = input.closest('.form-field');
+      if (!formField) {
+        console.error('Could not find form-field container');
+        return { wrapper: null, dropdown };
+      }
+      
+      // Store original parent and next sibling
+      const parent = input.parentNode;
+      const nextSibling = input.nextSibling;
+      
+      // Wrap input in wrapper
+      parent.insertBefore(wrapper, input);
+      wrapper.appendChild(input);
+      wrapper.appendChild(dropdown);
+      
+      // Track if user selected from dropdown (not just typed)
+      input.dataset.selectedFromDropdown = 'false';
+      
+      let selectedIndex = -1;
+      
+      // Update dropdown based on input
+      function updateDropdown() {
+        const query = input.value.trim();
+        if (query.length === 0) {
+          dropdown.classList.remove('show');
+          input.dataset.selectedFromDropdown = 'false';
+        return;
+      }
+      
+        const matches = fuzzySearch(query, suggestions);
+        selectedIndex = -1;
+        
+        // Reset selection flag when typing
+        input.dataset.selectedFromDropdown = 'false';
+        
+        if (matches.length === 0) {
+          // No matches found
+          if (allowCustom) {
+            // Event Type: Show "Custom Event" option
+            dropdown.innerHTML = `<div class="autocomplete-item" data-index="0" data-value="${customText}">${customText}</div>`;
+            dropdown.classList.add('show');
+          } else if (showNoMatches) {
+            // Event Location: Show "No matches found" message (not selectable)
+            dropdown.innerHTML = `<div class="autocomplete-item autocomplete-no-match" data-index="-1">${noMatchesText}</div>`;
+            dropdown.classList.add('show');
+          } else {
+            dropdown.classList.remove('show');
+          }
+          return;
+        }
+        
+        dropdown.innerHTML = matches.map((item, index) => 
+          `<div class="autocomplete-item" data-index="${index}" data-value="${item}">${item}</div>`
+        ).join('');
+        
+        dropdown.classList.add('show');
+        
+        // Add click handlers
+        dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+          item.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Only allow selection if it's not the "no match" message
+            if (item.dataset.index === '-1') {
+              return;
+            }
+            
+            const selectedValue = item.dataset.value;
+            input.value = selectedValue;
+            input.dataset.selectedFromDropdown = 'true'; // Mark as selected from dropdown
+            dropdown.classList.remove('show');
+            input.focus(); // Keep focus for save handler
+            if (onSelect) {
+              onSelect(selectedValue);
+            } else {
+              // Trigger input event to allow save
+              input.dispatchEvent(new Event('input'));
+            }
+          });
+        });
+      }
+      
+      // Keyboard navigation
+      input.addEventListener('input', updateDropdown);
+      input.addEventListener('keydown', (e) => {
+        const items = dropdown.querySelectorAll('.autocomplete-item');
+        if (items.length === 0) return;
+        
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+          items.forEach((item, i) => {
+            item.classList.toggle('selected', i === selectedIndex);
+          });
+          items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          selectedIndex = Math.max(selectedIndex - 1, -1);
+          items.forEach((item, i) => {
+            item.classList.toggle('selected', i === selectedIndex);
+          });
+        } else if (e.key === 'Enter' && selectedIndex >= 0) {
+          e.preventDefault();
+          const selectedItem = items[selectedIndex];
+          // Only allow selection if it's not the "no match" message
+          if (selectedItem.dataset.index !== '-1') {
+            selectedItem.click();
+          }
+        } else if (e.key === 'Escape') {
+          dropdown.classList.remove('show');
+        }
+      });
+      
+      // Close dropdown when clicking outside (handled in save function)
+      
+      return { wrapper, dropdown, input };
+    }
+
+    // ============================================
+    // SAVE BUTTON MANAGEMENT
+    // ============================================
+    
+    // Track editing state for each section
+    const editingState = {
+      eventDetails: { active: false, originalValues: {}, currentValues: {}, saveButton: null },
+      accountDetails: { active: false, originalValues: {}, currentValues: {}, saveButton: null },
+      security: { active: false, originalValues: {}, currentValues: {}, saveButton: null }
+    };
+    
+    // Show Save button for a section
+    function showSaveButton(section) {
+      const state = editingState[section];
+      if (state && state.saveButton) {
+        state.saveButton.classList.add('show');
+      }
+    }
+    
+    // Hide Save button for a section
+    function hideSaveButton(section) {
+      const state = editingState[section];
+      if (state && state.saveButton) {
+        state.saveButton.classList.remove('show');
+      }
+    }
+    
+    // Check if value changed and update Save button visibility
+    function checkValueChanged(section, fieldId, newValue) {
+      const state = editingState[section];
+      if (!state || !state.active) return;
+      
+      state.currentValues[fieldId] = newValue;
+      const originalValue = state.originalValues[fieldId] || '';
+      const hasChanged = String(newValue || '').trim() !== String(originalValue || '').trim();
+      
+      // Check if any field in section has changed
+      let anyChanged = false;
+      Object.keys(state.currentValues).forEach(key => {
+        const orig = String(state.originalValues[key] || '').trim();
+        const curr = String(state.currentValues[key] || '').trim();
+        if (orig !== curr) {
+          anyChanged = true;
+        }
+      });
+      
+      if (anyChanged) {
+        showSaveButton(section);
+      } else {
+        hideSaveButton(section);
+      }
+    }
+    
+    // Initialize Save button handlers
+    function initSaveButtons() {
+      // Event Details
+      editingState.eventDetails.saveButton = $('#eventDetailsSave');
+      $('#eventDetailsSaveBtn')?.addEventListener('click', () => {
+        saveSection('eventDetails');
+      });
+      $('#eventDetailsCancel')?.addEventListener('click', () => {
+        cancelSection('eventDetails');
+      });
+      
+      // Account Details
+      editingState.accountDetails.saveButton = $('#accountDetailsSave');
+      $('#accountDetailsSaveBtn')?.addEventListener('click', () => {
+        saveSection('accountDetails');
+      });
+      $('#accountDetailsCancel')?.addEventListener('click', () => {
+        cancelSection('accountDetails');
+      });
+      
+      // Security
+      editingState.security.saveButton = $('#securitySave');
+      $('#securitySaveBtn')?.addEventListener('click', () => {
+        saveSection('security');
+      });
+      $('#securityCancel')?.addEventListener('click', () => {
+        cancelSection('security');
+      });
+    }
+    
+    // Show error message
+    function showFieldError(fieldId, message) {
+      const field = $(fieldId);
+      if (!field) return;
+      
+      const fieldContainer = field.closest('.form-field');
+      if (!fieldContainer) return;
+      
+      // Remove existing error
+      const existingError = fieldContainer.querySelector('.field-error-message');
+      if (existingError) {
+        existingError.remove();
+      }
+      
+      // Create error message
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'field-error-message';
+      errorDiv.textContent = message;
+      errorDiv.style.color = '#dc2626';
+      errorDiv.style.fontSize = '0.875rem';
+      errorDiv.style.marginTop = '8px';
+      errorDiv.style.display = 'flex';
+      errorDiv.style.alignItems = 'center';
+      errorDiv.style.gap = '6px';
+      
+      // Add error icon
+      errorDiv.innerHTML = `<span style="font-size:1.2em">⚠️</span> <span>${message}</span>`;
+      
+      fieldContainer.appendChild(errorDiv);
+      
+      // Scroll to error
+      setTimeout(() => {
+        errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+    
+    // Remove error message
+    function removeFieldError(fieldId) {
+      const field = $(fieldId);
+      if (!field) return;
+      const fieldContainer = field.closest('.form-field');
+      if (!fieldContainer) return;
+      const error = fieldContainer.querySelector('.field-error-message');
+      if (error) {
+        error.remove();
+      }
+    }
+    
+    // Save section changes
+    function saveSection(section) {
+      const state = editingState[section];
+      if (!state || !state.active) return;
+      
+      // Validate Event Type and Event Location before saving
+      if (section === 'eventDetails') {
+        // Validate Event Type
+        if (state.currentValues.hasOwnProperty('eventType')) {
+          const eventTypeInput = state.eventTypeInput;
+          if (eventTypeInput) {
+            const selectedFromDropdown = eventTypeInput.dataset.selectedFromDropdown === 'true';
+            const currentValue = (state.currentValues['eventType'] || '').trim();
+            
+            if (currentValue && !selectedFromDropdown) {
+              showFieldError('eventTypeValue', 'Please select an event type from the dropdown before saving.');
+              return; // Don't save
+            }
+            
+            // Check if value is in the list or is "Custom Event"
+            if (currentValue && !EVENT_TYPES_LIST.includes(currentValue) && currentValue !== 'Custom Event') {
+              showFieldError('eventTypeValue', 'Please select an event type from the dropdown before saving.');
+              return; // Don't save
+            }
+            
+            removeFieldError('eventTypeValue');
+          }
+        }
+        
+        // Validate Event Location
+        if (state.currentValues.hasOwnProperty('eventLocation')) {
+          const eventLocationInput = state.eventLocationInput;
+          if (eventLocationInput) {
+            const selectedFromDropdown = eventLocationInput.dataset.selectedFromDropdown === 'true';
+            const currentValue = (state.currentValues['eventLocation'] || '').trim();
+            
+            if (currentValue && !selectedFromDropdown) {
+              showFieldError('eventLocationValue', 'Event Location must be selected from the list.');
+              return; // Don't save
+            }
+            
+            // Check if value is in the locations list
+            if (currentValue && !LOCATIONS_LIST.includes(currentValue)) {
+              showFieldError('eventLocationValue', 'Event Location must be selected from the list.');
+              return; // Don't save
+            }
+            
+            removeFieldError('eventLocationValue');
+          }
+        }
+      }
+      
+      let eventTypeChanged = false;
+      let newEventType = '';
+      
+      // Save each changed field
+      Object.keys(state.currentValues).forEach(fieldId => {
+        const newValue = state.currentValues[fieldId];
+        const originalValue = state.originalValues[fieldId];
+        
+        if (String(newValue || '').trim() !== String(originalValue || '').trim()) {
+          // Save based on section and field
+          if (section === 'eventDetails') {
+            if (fieldId === 'eventType') {
+              newEventType = newValue || '';
+              SettingsManager.updateEventDetails({ eventType: newEventType });
+              eventTypeChanged = true;
+            } else if (fieldId === 'budget') {
+              SettingsManager.updateEventDetails({ budget: newValue });
+            } else if (fieldId === 'eventDate') {
+              SettingsManager.updateEventDetails({ eventDate: newValue || '' });
+            } else if (fieldId === 'eventLocation') {
+              SettingsManager.updateEventDetails({ eventLocation: newValue || '' });
+            }
+          } else if (section === 'accountDetails') {
+            if (fieldId === 'email') {
+              SettingsManager.updateAccount({ email: newValue || '' });
+            } else if (fieldId === 'phoneNumber') {
+              SettingsManager.updateAccount({ phoneNumber: newValue || '' });
+            } else if (fieldId === 'address') {
+              SettingsManager.updateAccount({ address: newValue || '' });
+            }
+          } else if (section === 'security') {
+            if (fieldId === 'newPassword') {
+              SettingsManager.updatePassword(newValue);
+            }
+          }
+        }
+      });
+      
+      // Update dashboard title if event type changed
+      if (eventTypeChanged && newEventType) {
+        const titleText = `${newEventType} – Dashboard`;
+        $('#settingsTitle').textContent = titleText;
+        const titleLink = $('#settingsTitleLink');
+        if (titleLink) {
+          titleLink.textContent = titleText;
+        }
+        // Also update sessionStorage for consistency
+        try {
+          const saved = sessionStorage.getItem('cleverplanners_results_data');
+          if (saved) {
+            const data = JSON.parse(saved);
+            data.eventType = newEventType;
+            sessionStorage.setItem('cleverplanners_results_data', JSON.stringify(data));
+          }
+        } catch (e) {
+          console.error('Error updating sessionStorage:', e);
+        }
+      }
+      
+      // Close any open input fields and restore display
+      if (section === 'eventDetails') {
+        // Restore all event detail fields
+        const eventTypeField = $('#eventTypeValue');
+        const eventLocationField = $('#eventLocationValue');
+        const budgetField = $('#budgetValue');
+        const eventDateField = $('#eventDateValue');
+        
+        // Remove any input elements that might still be in the DOM
+        const formFields = document.querySelectorAll('#event-details .form-field');
+        formFields.forEach(ff => {
+          const inputs = ff.querySelectorAll('input.form-input');
+          inputs.forEach(inp => {
+            const field = ff.querySelector('.form-field-value');
+            if (field) {
+              field.style.display = '';
+              inp.remove();
+            }
+          });
+          // Remove autocomplete wrappers
+          const wrappers = ff.querySelectorAll('.autocomplete-wrapper');
+          wrappers.forEach(w => w.remove());
+        });
+      } else if (section === 'accountDetails') {
+        // Restore all account detail fields
+        const formFields = document.querySelectorAll('#account-details .form-field');
+        formFields.forEach(ff => {
+          const inputs = ff.querySelectorAll('input.form-input');
+          inputs.forEach(inp => {
+            const field = ff.querySelector('.form-field-value');
+            if (field) {
+              field.style.display = '';
+              inp.remove();
+            }
+          });
+        });
+      }
+      
+      // Reload settings to update UI
+      loadSettings();
+      
+      // Reset editing state
+      state.active = false;
+      state.originalValues = {};
+      state.currentValues = {};
+      hideSaveButton(section);
+    }
+    
+    // Cancel section changes
+    function cancelSection(section) {
+      const state = editingState[section];
+      if (!state || !state.active) return;
+      
+      // Close any open input fields and restore display
+      if (section === 'eventDetails') {
+        const formFields = document.querySelectorAll('#event-details .form-field');
+        formFields.forEach(ff => {
+          const inputs = ff.querySelectorAll('input.form-input');
+          inputs.forEach(inp => {
+            const field = ff.querySelector('.form-field-value');
+            if (field) {
+              field.style.display = '';
+              inp.remove();
+            }
+          });
+          // Remove autocomplete wrappers
+          const wrappers = ff.querySelectorAll('.autocomplete-wrapper');
+          wrappers.forEach(w => w.remove());
+        });
+      } else if (section === 'accountDetails') {
+        const formFields = document.querySelectorAll('#account-details .form-field');
+        formFields.forEach(ff => {
+          const inputs = ff.querySelectorAll('input.form-input');
+          inputs.forEach(inp => {
+            const field = ff.querySelector('.form-field-value');
+            if (field) {
+              field.style.display = '';
+              inp.remove();
+            }
+          });
+        });
+      }
+      
+      // Reload settings to restore original values
+      loadSettings();
+      
+      // Reset editing state
+      state.active = false;
+      state.originalValues = {};
+      state.currentValues = {};
+      hideSaveButton(section);
+    }
+
+    // ============================================
+    // EDIT FUNCTIONALITY
+    // ============================================
+
+    // Make fields editable (with Save button support)
+    function makeFieldEditable(fieldId, updateCallback) {
+      const field = $(fieldId);
+      const actionLink = field?.closest('.form-field')?.querySelector('.form-field-action');
+      
+      if (!field || !actionLink) return;
+
+      actionLink.addEventListener('click', (e) => {
+      e.preventDefault();
+        const currentValue = field.textContent.trim();
+        const isEmpty = field.classList.contains('empty') || currentValue === 'Add';
+        
+        // Call updateCallback to initialize editing state (if provided)
+        if (updateCallback) {
+          const originalValue = isEmpty ? '' : currentValue;
+          // This will set up the editing state
+        }
+        
+        // Create input
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'form-input';
+        input.value = isEmpty ? '' : currentValue;
+        input.placeholder = 'Enter value';
+        
+        // Replace field with input
+        const fieldContainer = field.parentElement;
+        field.style.display = 'none';
+        fieldContainer.insertBefore(input, field);
+        input.focus();
+        input.select();
+        
+        // Track changes (don't save immediately)
+        input.addEventListener('input', () => {
+          if (updateCallback) {
+            updateCallback(input.value);
+          }
+        });
+        
+        // Close on Escape
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            // Determine section from fieldId
+            let section = 'accountDetails';
+            if (fieldId.includes('email') || fieldId.includes('phone') || fieldId.includes('address')) {
+              section = 'accountDetails';
+            }
+            cancelSection(section);
+            input.remove();
+            field.style.display = '';
+          }
+        });
+        
+        // Close input on blur (don't save yet)
+        input.addEventListener('blur', () => {
+          input.remove();
+          field.style.display = '';
+        });
+      });
+    }
+
+    // Initialize editable fields
+    function initEditableFields() {
+      // Event Details - Event Type with Autocomplete
+      const eventTypeAction = $('#eventTypeValue')?.closest('.form-field')?.querySelector('.form-field-action');
+      if (eventTypeAction) {
+        eventTypeAction.addEventListener('click', (e) => {
+          e.preventDefault();
+          const field = $('#eventTypeValue');
+          const currentValue = field.textContent.trim();
+          const isEmpty = field.classList.contains('empty') || currentValue === 'Add';
+          const originalValue = isEmpty ? '' : currentValue;
+          
+          // Initialize editing state
+          if (!editingState.eventDetails.active) {
+            editingState.eventDetails.active = true;
+            editingState.eventDetails.originalValues = {};
+            editingState.eventDetails.currentValues = {};
+          }
+          editingState.eventDetails.originalValues['eventType'] = originalValue;
+          editingState.eventDetails.currentValues['eventType'] = originalValue;
+          
+          // Create input with autocomplete
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'form-input';
+          input.style.width = '100%';
+          input.style.flex = '1';
+          input.placeholder = 'Type event type...';
+          input.value = isEmpty ? '' : currentValue;
+          
+          // Replace field with input
+          const fieldContainer = field.parentElement;
+          const actionLink = fieldContainer.querySelector('.form-field-action');
+          field.style.display = 'none';
+          fieldContainer.insertBefore(input, field);
+          
+          // Ensure input is visible and focusable
+          input.style.display = 'block';
+          input.style.visibility = 'visible';
+          input.style.opacity = '1';
+          
+      setTimeout(() => {
+            input.focus();
+            input.select();
+          }, 10);
+          
+          // Create autocomplete with "Custom Event" option
+          const { wrapper, input: eventTypeInput } = createAutocompleteDropdown(input, EVENT_TYPES_LIST, (selectedValue) => {
+            // Value selected from dropdown
+            input.value = selectedValue;
+            input.dataset.selectedFromDropdown = 'true';
+            checkValueChanged('eventDetails', 'eventType', selectedValue);
+            removeFieldError('eventTypeValue');
+          }, {
+            allowCustom: true,
+            customText: 'Custom Event'
+          });
+          
+          // Store reference to input for validation
+          editingState.eventDetails.eventTypeInput = eventTypeInput || input;
+          
+          // Track changes
+          input.addEventListener('input', () => {
+            checkValueChanged('eventDetails', 'eventType', input.value);
+            // Clear error when user starts typing
+            if (input.value.trim()) {
+              removeFieldError('eventTypeValue');
+            }
+          });
+          
+          // Close on Escape (cancel)
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+              cancelSection('eventDetails');
+              wrapper.remove();
+              input.remove();
+              field.style.display = '';
+            }
+          });
+          
+          // Close input on blur (but don't save yet - wait for Save button)
+          let dropdownClicked = false;
+          wrapper.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('autocomplete-item')) {
+              dropdownClicked = true;
+            }
+          });
+          
+          input.addEventListener('blur', (e) => {
+            // Delay to allow dropdown click
+            setTimeout(() => {
+              if (!dropdownClicked && document.activeElement !== input) {
+                // Just close input, don't save
+                wrapper.remove();
+                input.remove();
+                field.style.display = '';
+              }
+              dropdownClicked = false;
+            }, 200);
+          });
+        });
+      }
+      
+      // Special handling for budget field - parse currency
+      const budgetAction = $('#budgetValue')?.closest('.form-field')?.querySelector('.form-field-action');
+      if (budgetAction) {
+        budgetAction.addEventListener('click', (e) => {
+          e.preventDefault();
+          const field = $('#budgetValue');
+          const currentValue = field.textContent.trim();
+          const isEmpty = field.classList.contains('empty') || currentValue === 'Add';
+          let originalValue = null;
+          if (!isEmpty && currentValue !== 'Add') {
+            originalValue = parseFloat(currentValue.replace(/[^0-9.]/g, ''));
+            if (isNaN(originalValue)) originalValue = null;
+          }
+          
+          // Initialize editing state
+          if (!editingState.eventDetails.active) {
+            editingState.eventDetails.active = true;
+            editingState.eventDetails.originalValues = {};
+            editingState.eventDetails.currentValues = {};
+          }
+          editingState.eventDetails.originalValues['budget'] = originalValue;
+          editingState.eventDetails.currentValues['budget'] = originalValue;
+          
+          // Create number input
+          const input = document.createElement('input');
+          input.type = 'number';
+          input.className = 'form-input';
+          input.placeholder = 'Enter budget amount';
+          if (originalValue !== null) {
+            input.value = originalValue;
+          }
+          
+          // Replace field with input
+          const fieldContainer = field.parentElement;
+          field.style.display = 'none';
+          fieldContainer.insertBefore(input, field);
+          input.focus();
+          input.select();
+          
+          // Track changes
+          input.addEventListener('input', () => {
+            const numValue = input.value ? parseFloat(input.value) : null;
+            checkValueChanged('eventDetails', 'budget', numValue);
+          });
+          
+          // Close on Escape
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+              cancelSection('eventDetails');
+              input.remove();
+              field.style.display = '';
+            }
+          });
+          
+          // Close input on blur (don't save yet)
+          input.addEventListener('blur', () => {
+            input.remove();
+            field.style.display = '';
+          });
+        });
+      }
+      
+      // Special handling for date field - use date input
+      const eventDateAction = $('#eventDateValue')?.closest('.form-field')?.querySelector('.form-field-action');
+      if (eventDateAction) {
+        eventDateAction.addEventListener('click', (e) => {
+          e.preventDefault();
+          const field = $('#eventDateValue');
+          const currentValue = field.textContent.trim();
+          const isEmpty = field.classList.contains('empty') || currentValue === 'Add';
+          let originalValue = '';
+          if (!isEmpty && currentValue !== 'Add') {
+            const date = new Date(currentValue);
+            if (!isNaN(date.getTime())) {
+              originalValue = date.toISOString().split('T')[0];
+            }
+          }
+          
+          // Initialize editing state
+          if (!editingState.eventDetails.active) {
+            editingState.eventDetails.active = true;
+            editingState.eventDetails.originalValues = {};
+            editingState.eventDetails.currentValues = {};
+          }
+          editingState.eventDetails.originalValues['eventDate'] = originalValue;
+          editingState.eventDetails.currentValues['eventDate'] = originalValue;
+          
+          // Create date input
+          const input = document.createElement('input');
+          input.type = 'date';
+          input.className = 'form-input';
+          if (originalValue) {
+            input.value = originalValue;
+          }
+          
+          // Replace field with input
+          const fieldContainer = field.parentElement;
+          field.style.display = 'none';
+          fieldContainer.insertBefore(input, field);
+          input.focus();
+          
+          // Track changes
+          input.addEventListener('change', () => {
+            checkValueChanged('eventDetails', 'eventDate', input.value);
+          });
+          
+          // Close on Escape
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+              cancelSection('eventDetails');
+              input.remove();
+              field.style.display = '';
+            }
+          });
+          
+          // Close input on blur (don't save yet)
+          input.addEventListener('blur', () => {
+            input.remove();
+            field.style.display = '';
+          });
+        });
+      }
+      
+      // Event Location with Autocomplete
+      const eventLocationAction = $('#eventLocationValue')?.closest('.form-field')?.querySelector('.form-field-action');
+      if (eventLocationAction) {
+        eventLocationAction.addEventListener('click', (e) => {
+          e.preventDefault();
+          const field = $('#eventLocationValue');
+          const currentValue = field.textContent.trim();
+          const isEmpty = field.classList.contains('empty') || currentValue === 'Add';
+          const originalValue = isEmpty ? '' : currentValue;
+          
+          // Initialize editing state
+          if (!editingState.eventDetails.active) {
+            editingState.eventDetails.active = true;
+            editingState.eventDetails.originalValues = {};
+            editingState.eventDetails.currentValues = {};
+          }
+          editingState.eventDetails.originalValues['eventLocation'] = originalValue;
+          editingState.eventDetails.currentValues['eventLocation'] = originalValue;
+          
+          // Create input with autocomplete
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'form-input';
+          input.style.width = '100%';
+          input.style.flex = '1';
+          input.placeholder = 'Type location...';
+          input.value = isEmpty ? '' : currentValue;
+          
+          // Replace field with input
+          const fieldContainer = field.parentElement;
+          const actionLink = fieldContainer.querySelector('.form-field-action');
+          field.style.display = 'none';
+          fieldContainer.insertBefore(input, field);
+          
+          // Ensure input is visible and focusable
+          input.style.display = 'block';
+          input.style.visibility = 'visible';
+          input.style.opacity = '1';
+          
+          setTimeout(() => {
+            input.focus();
+            input.select();
+          }, 10);
+          
+          // Create autocomplete with "No matches found" message (no custom option)
+          const { wrapper, input: locationInput } = createAutocompleteDropdown(input, LOCATIONS_LIST, (selectedValue) => {
+            // Value selected from dropdown
+            input.value = selectedValue;
+            input.dataset.selectedFromDropdown = 'true';
+            checkValueChanged('eventDetails', 'eventLocation', selectedValue);
+            removeFieldError('eventLocationValue');
+          }, {
+            showNoMatches: true,
+            noMatchesText: 'No matches found — please choose an available location.'
+          });
+          
+          // Store reference to input for validation
+          editingState.eventDetails.eventLocationInput = locationInput || input;
+          
+          // Track changes
+          input.addEventListener('input', () => {
+            checkValueChanged('eventDetails', 'eventLocation', input.value);
+            // Clear error when user starts typing
+            if (input.value.trim()) {
+              removeFieldError('eventLocationValue');
+            }
+          });
+          
+          // Close on Escape
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+              cancelSection('eventDetails');
+              wrapper.remove();
+              input.remove();
+              field.style.display = '';
+            }
+          });
+          
+          // Close input on blur (but don't save yet)
+          let dropdownClicked = false;
+          wrapper.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('autocomplete-item')) {
+              dropdownClicked = true;
+            }
+          });
+          
+          input.addEventListener('blur', (e) => {
+            // Delay to allow dropdown click
+            setTimeout(() => {
+              if (!dropdownClicked && document.activeElement !== input) {
+                wrapper.remove();
+                input.remove();
+                field.style.display = '';
+              }
+              dropdownClicked = false;
+            }, 200);
+          });
+        });
+      }
+
+      // Account Details - Email
+      const emailAction = $('#emailValue')?.closest('.form-field')?.querySelector('.form-field-action');
+      if (emailAction) {
+        emailAction.addEventListener('click', (e) => {
+          e.preventDefault();
+          const field = $('#emailValue');
+          const currentValue = field.textContent.trim();
+          const isEmpty = field.classList.contains('empty') || currentValue === 'Add';
+          const originalValue = isEmpty ? '' : currentValue;
+          
+          // Initialize editing state
+          if (!editingState.accountDetails.active) {
+            editingState.accountDetails.active = true;
+            editingState.accountDetails.originalValues = {};
+            editingState.accountDetails.currentValues = {};
+          }
+          editingState.accountDetails.originalValues['email'] = originalValue;
+          editingState.accountDetails.currentValues['email'] = originalValue;
+          
+          // Create input
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'form-input';
+          input.value = isEmpty ? '' : currentValue;
+          input.placeholder = 'Enter email address';
+          
+          // Replace field with input
+          const fieldContainer = field.parentElement;
+          field.style.display = 'none';
+          fieldContainer.insertBefore(input, field);
+          input.focus();
+          input.select();
+          
+          // Track changes
+          input.addEventListener('input', () => {
+            checkValueChanged('accountDetails', 'email', input.value);
+          });
+          
+          // Close on Escape
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+              cancelSection('accountDetails');
+              input.remove();
+              field.style.display = '';
+            }
+          });
+          
+          // Close input on blur
+          input.addEventListener('blur', () => {
+            input.remove();
+            field.style.display = '';
+          });
+        });
+      }
+      
+      // Account Details - Phone
+      const phoneAction = $('#phoneValue')?.closest('.form-field')?.querySelector('.form-field-action');
+      if (phoneAction) {
+        phoneAction.addEventListener('click', (e) => {
+          e.preventDefault();
+          const field = $('#phoneValue');
+          const currentValue = field.textContent.trim();
+          const isEmpty = field.classList.contains('empty') || currentValue === 'Add';
+          const originalValue = isEmpty ? '' : currentValue;
+          
+          // Initialize editing state
+          if (!editingState.accountDetails.active) {
+            editingState.accountDetails.active = true;
+            editingState.accountDetails.originalValues = {};
+            editingState.accountDetails.currentValues = {};
+          }
+          editingState.accountDetails.originalValues['phoneNumber'] = originalValue;
+          editingState.accountDetails.currentValues['phoneNumber'] = originalValue;
+          
+          // Create input
+          const input = document.createElement('input');
+          input.type = 'tel';
+          input.className = 'form-input';
+          input.value = isEmpty ? '' : currentValue;
+          input.placeholder = 'Enter phone number';
+          
+          // Replace field with input
+          const fieldContainer = field.parentElement;
+          field.style.display = 'none';
+          fieldContainer.insertBefore(input, field);
+          input.focus();
+          input.select();
+          
+          // Track changes
+          input.addEventListener('input', () => {
+            checkValueChanged('accountDetails', 'phoneNumber', input.value);
+          });
+          
+          // Close on Escape
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+              cancelSection('accountDetails');
+              input.remove();
+              field.style.display = '';
+            }
+          });
+          
+          // Close input on blur
+          input.addEventListener('blur', () => {
+            input.remove();
+            field.style.display = '';
+          });
+        });
+      }
+      
+      // Account Details - Address
+      const addressAction = $('#addressValue')?.closest('.form-field')?.querySelector('.form-field-action');
+      if (addressAction) {
+        addressAction.addEventListener('click', (e) => {
+          e.preventDefault();
+          const field = $('#addressValue');
+          const currentValue = field.textContent.trim();
+          const isEmpty = field.classList.contains('empty') || currentValue === 'Add';
+          const originalValue = isEmpty ? '' : currentValue;
+          
+          // Initialize editing state
+          if (!editingState.accountDetails.active) {
+            editingState.accountDetails.active = true;
+            editingState.accountDetails.originalValues = {};
+            editingState.accountDetails.currentValues = {};
+          }
+          editingState.accountDetails.originalValues['address'] = originalValue;
+          editingState.accountDetails.currentValues['address'] = originalValue;
+          
+          // Create input
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'form-input';
+          input.value = isEmpty ? '' : currentValue;
+          input.placeholder = 'Enter address';
+          
+          // Replace field with input
+          const fieldContainer = field.parentElement;
+          field.style.display = 'none';
+          fieldContainer.insertBefore(input, field);
+          input.focus();
+          input.select();
+          
+          // Track changes
+          input.addEventListener('input', () => {
+            checkValueChanged('accountDetails', 'address', input.value);
+          });
+          
+          // Close on Escape
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+              cancelSection('accountDetails');
+              input.remove();
+              field.style.display = '';
+            }
+          });
+          
+          // Close input on blur
+          input.addEventListener('blur', () => {
+            input.remove();
+            field.style.display = '';
+          });
+        });
+      }
+    }
+
+    // Toggle switches - save state
+    $$('.toggle-switch').forEach(toggle => {
+      toggle.addEventListener('click', function() {
+        this.classList.toggle('active');
+        const isActive = this.classList.contains('active');
+        const toggleType = this.dataset.toggle;
+        
+        if (toggleType) {
+          SettingsManager.updateNotifications({ [toggleType]: isActive });
+        }
+      });
+    });
+
+    // Change password button
+    $('#changePasswordBtn')?.addEventListener('click', function() {
+      const newPass = $('#newPassword').value;
+      const confirmPass = $('#confirmPassword').value;
+      
+      if (!newPass || !confirmPass) {
+        alert('Please fill in both password fields.');
+        return;
+      }
+      
+      if (newPass.length < 8) {
+        alert('Password must be at least 8 characters long.');
+        return;
+      }
+      
+      if (newPass !== confirmPass) {
+        alert('Passwords do not match.');
+        return;
+      }
+      
+      // Save password
+      if (SettingsManager.updatePassword(newPass)) {
+        alert('Password changed successfully!');
+        $('#newPassword').value = '';
+        $('#confirmPassword').value = '';
+      } else {
+        alert('Error saving password. Please try again.');
+      }
+    });
+
+    // Delete account button
+    $('#deleteAccountBtn')?.addEventListener('click', function() {
+      if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+        if (confirm('This will permanently delete all your data. Are you absolutely sure?')) {
+          if (SettingsManager.deleteAccount()) {
+            alert('Account deleted successfully. Redirecting...');
+            setTimeout(() => {
+          window.location.href = 'index.html';
+            }, 1500);
+          } else {
+            alert('Error deleting account. Please try again.');
+          }
+        }
+      }
+    });
+
+    // Add Payment Method button
+    $('#addPaymentBtn')?.addEventListener('click', showAddPaymentModal);
+
+    // Initialize
+    loadEventData();
+    // Initialize navigation handlers
+    function initNavigation() {
+      // Back to Dashboard button
+      const backBtn = $('#backToDashboardBtn');
+      if (backBtn) {
+        backBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          navigateToDashboard();
+        });
+      }
+      
+      // Clickable title
+      const titleLink = $('#settingsTitleLink');
+      if (titleLink) {
+        titleLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          navigateToDashboard();
+        });
+      }
+    }
+    
+    loadSettings();
+    loadEventData();
+    initSaveButtons();
+    initEditableFields();
+    initNavigation();
+  </script>
+</body>
+</html>

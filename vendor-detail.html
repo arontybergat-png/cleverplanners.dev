@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CleverPlanners – Vendor Details</title>
+  <style>
+    :root{
+      --ink:#1e293b; --muted:#6b7280; --cream:#fbf6ed; --panel:#f4ecdc; --brand:#111827; --accent1:#ff7ab6; --accent2:#89f7d3; --ring:#e5dcc7; --radius:20px; --shadow:0 10px 30px rgba(16,24,40,.08);
+      --ok:#16a34a; --warn:#f59e0b; --soft:#faf7f1;
+      --bg:#fbf6ed;--text:#1e293b;--card:#fff;
+    }
+    *{box-sizing:border-box}
+    html:focus-within{scroll-behavior:smooth}
+    @media (prefers-reduced-motion: reduce){ html:focus-within{scroll-behavior:auto} }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;margin:0;background:var(--cream);color:var(--ink)}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    :focus-visible{outline:2px solid var(--ring); outline-offset:2px; border-radius:10px}
+
+    /* Header */
+    header{
+      position:sticky;
+      top:0;
+      z-index:100;
+      background:rgba(255,255,255,0.95);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      border-bottom:1px solid rgba(240,234,219,0.5);
+    }
+    .nav{
+      height:56px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      max-width:1400px;
+      margin:0 auto;
+      padding:0 22px;
+    }
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:800;
+      font-size:1.5rem;
+      color:var(--brand);
+      letter-spacing:-0.02em;
+      text-decoration:none;
+      transition:opacity 0.2s;
+    }
+    .logo:hover{
+      opacity:0.9;
+    }
+    .brand-badge{
+      width:28px;
+      height:28px;
+      border-radius:999px;
+      background:#0b1320;
+      color:#fff;
+      display:grid;
+      place-items:center;
+      font-weight:700;
+      font-size:0.75rem;
+    }
+
+    /* Vendor Hero */
+    .vendor-hero{
+      background:var(--card);
+      border-bottom:1px solid var(--ring);
+      padding:40px 0;
+    }
+    .vendor-hero-inner{
+      max-width:1400px;
+      margin:0 auto;
+      padding:0 22px;
+    }
+    .vendor-header{
+      display:grid;
+      grid-template-columns:1fr 400px;
+      gap:40px;
+      margin-bottom:30px;
+    }
+    .vendor-gallery{
+      position:relative;
+      border-radius:var(--radius);
+      overflow:hidden;
+      background:var(--soft);
+      aspect-ratio:16/10;
+    }
+    .vendor-gallery img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+    .vendor-info-header{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+    .vendor-badges{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .vendor-badge{
+      background:var(--brand);
+      color:#fff;
+      padding:6px 14px;
+      border-radius:999px;
+      font-size:0.85rem;
+      font-weight:600;
+    }
+    .vendor-badge.verified{
+      background:var(--ok);
+    }
+    .vendor-badge.popular{
+      background:var(--accent1);
+    }
+    .vendor-name{
+      font-size:2.5rem;
+      font-weight:800;
+      color:var(--ink);
+      margin:0;
+      line-height:1.2;
+    }
+    .vendor-category{
+      font-size:1.1rem;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:1px;
+      font-weight:600;
+    }
+    .vendor-rating{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .rating-stars{
+      color:#ffc107;
+      font-size:1.2rem;
+    }
+    .rating-value{
+      font-size:1.2rem;
+      font-weight:700;
+      color:var(--ink);
+    }
+    .rating-count{
+      color:var(--muted);
+      font-size:1rem;
+    }
+    .vendor-location{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      color:var(--muted);
+      font-size:1rem;
+    }
+    .vendor-actions{
+      display:flex;
+      gap:12px;
+      margin-top:20px;
+    }
+    .btn-action{
+      padding:14px 28px;
+      border-radius:8px;
+      font-weight:600;
+      font-size:1rem;
+      cursor:pointer;
+      transition:all 0.3s;
+      border:none;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .btn-primary-action{
+      background:var(--brand);
+      color:#fff;
+      flex:1;
+    }
+    .btn-primary-action:hover{
+      background:#0a0f1a;
+      transform:translateY(-2px);
+      box-shadow:0 4px 12px rgba(17,24,39,0.2);
+    }
+    .btn-secondary-action{
+      background:var(--card);
+      color:var(--ink);
+      border:2px solid var(--ring);
+    }
+    .btn-secondary-action:hover{
+      background:var(--soft);
+      border-color:var(--brand);
+    }
+    .btn-favorite{
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      background:var(--card);
+      border:2px solid var(--ring);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:1.5rem;
+      cursor:pointer;
+      transition:all 0.3s;
+    }
+    .btn-favorite:hover{
+      background:var(--soft);
+      border-color:var(--accent1);
+    }
+    .btn-favorite.active{
+      color:var(--accent1);
+      border-color:var(--accent1);
+    }
+
+    /* Main Content */
+    .vendor-content{
+      max-width:1400px;
+      margin:0 auto;
+      padding:40px 22px;
+      display:grid;
+      grid-template-columns:1fr 350px;
+      gap:40px;
+    }
+    .vendor-main{
+      display:flex;
+      flex-direction:column;
+      gap:40px;
+    }
+    .content-section{
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:32px;
+      box-shadow:var(--shadow);
+    }
+    .section-title{
+      font-size:1.5rem;
+      font-weight:700;
+      color:var(--ink);
+      margin-bottom:20px;
+      padding-bottom:16px;
+      border-bottom:2px solid var(--ring);
+    }
+    .vendor-description{
+      font-size:1.05rem;
+      line-height:1.8;
+      color:var(--ink);
+    }
+    .vendor-features{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+      gap:16px;
+    }
+    .feature-item{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:16px;
+      background:var(--soft);
+      border-radius:8px;
+    }
+    .feature-icon{
+      width:40px;
+      height:40px;
+      border-radius:50%;
+      background:var(--brand);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:1.2rem;
+    }
+    .pricing-grid{
+      display:grid;
+      gap:16px;
+    }
+    .pricing-item{
+      padding:20px;
+      background:var(--soft);
+      border-radius:8px;
+      border:2px solid var(--ring);
+    }
+    .pricing-item-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:12px;
+    }
+    .pricing-name{
+      font-weight:600;
+      color:var(--ink);
+    }
+    .pricing-amount{
+      font-size:1.5rem;
+      font-weight:700;
+      color:var(--brand);
+    }
+    .pricing-note{
+      font-size:0.9rem;
+      color:var(--muted);
+    }
+    .reviews-list{
+      display:flex;
+      flex-direction:column;
+      gap:24px;
+    }
+    .review-item{
+      padding-bottom:24px;
+      border-bottom:1px solid var(--ring);
+    }
+    .review-item:last-child{
+      border-bottom:none;
+    }
+    .review-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:start;
+      margin-bottom:12px;
+    }
+    .reviewer-name{
+      font-weight:600;
+      color:var(--ink);
+    }
+    .review-date{
+      color:var(--muted);
+      font-size:0.9rem;
+    }
+    .review-rating{
+      color:#ffc107;
+      margin-bottom:8px;
+    }
+    .review-text{
+      color:var(--ink);
+      line-height:1.6;
+    }
+
+    /* Sidebar */
+    .vendor-sidebar{
+      display:flex;
+      flex-direction:column;
+      gap:24px;
+    }
+    .sidebar-card{
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:24px;
+      box-shadow:var(--shadow);
+    }
+    .sidebar-card-title{
+      font-size:1.1rem;
+      font-weight:700;
+      color:var(--ink);
+      margin-bottom:16px;
+    }
+    .contact-form{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .form-input{
+      padding:12px 16px;
+      border:2px solid var(--ring);
+      border-radius:8px;
+      font-size:0.95rem;
+      transition:all 0.3s;
+    }
+    .form-input:focus{
+      outline:none;
+      border-color:var(--brand);
+    }
+    .form-textarea{
+      min-height:120px;
+      resize:vertical;
+    }
+    .availability-calendar{
+      display:grid;
+      grid-template-columns:repeat(7, 1fr);
+      gap:4px;
+      margin-top:12px;
+    }
+    .calendar-day{
+      aspect-ratio:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:4px;
+      font-size:0.85rem;
+      background:var(--soft);
+      color:var(--muted);
+    }
+    .calendar-day.available{
+      background:var(--ok-bg);
+      color:var(--ok-text);
+      font-weight:600;
+    }
+    .calendar-day.unavailable{
+      background:#fee2e2;
+      color:#991b1b;
+    }
+
+    @media (max-width:1024px){
+      .vendor-header{
+        grid-template-columns:1fr;
+      }
+      .vendor-content{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <a href="index.html" class="logo">
+        <span class="brand-badge">CP</span>
+        CleverPlanners
+      </a>
+      <a href="vendors.html" style="color:var(--muted);font-weight:500">← Back to Search</a>
+    </div>
+  </header>
+
+  <div class="vendor-hero">
+    <div class="vendor-hero-inner">
+      <div class="vendor-header">
+        <div class="vendor-gallery">
+          <img src="https://via.placeholder.com/800x500" alt="Vendor Gallery">
+        </div>
+        <div class="vendor-info-header">
+          <div class="vendor-badges">
+            <span class="vendor-badge verified">✓ Verified</span>
+            <span class="vendor-badge popular">Popular</span>
+          </div>
+          <h1 class="vendor-name" id="vendorName">Grand Ballroom Events</h1>
+          <div class="vendor-category" id="vendorCategory">Reception Venue</div>
+          <div class="vendor-rating">
+            <span class="rating-stars">★★★★★</span>
+            <span class="rating-value">4.8</span>
+            <span class="rating-count">(127 reviews)</span>
+          </div>
+          <div class="vendor-location">
+            <span>📍</span>
+            <span id="vendorLocation">New York, NY</span>
+          </div>
+          <div class="vendor-actions">
+            <button class="btn-action btn-primary-action" id="addToPlanBtn">
+              <span>+</span>
+              <span>Add to My Plan</span>
+            </button>
+            <button class="btn-favorite" id="favoriteBtn">♡</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vendor-content">
+    <div class="vendor-main">
+      <section class="content-section">
+        <h2 class="section-title">About</h2>
+        <p class="vendor-description" id="vendorDescription">
+          Grand Ballroom Events is a premier event venue located in the heart of New York City. With over 10 years of experience, we specialize in hosting elegant weddings, bar mitzvahs, and corporate events. Our stunning ballroom features high ceilings, crystal chandeliers, and state-of-the-art sound and lighting systems. We offer full-service event planning, catering coordination, and flexible space configurations to accommodate events from 50 to 500 guests.
+        </p>
+      </section>
+
+      <section class="content-section">
+        <h2 class="section-title">Services & Features</h2>
+        <div class="vendor-features">
+          <div class="feature-item">
+            <div class="feature-icon">🏛️</div>
+            <div>
+              <div style="font-weight:600">Indoor & Outdoor</div>
+              <div style="font-size:0.9rem;color:var(--muted)">Flexible spaces</div>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🍽️</div>
+            <div>
+              <div style="font-weight:600">Catering Available</div>
+              <div style="font-size:0.9rem;color:var(--muted)">In-house & external</div>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🎵</div>
+            <div>
+              <div style="font-weight:600">Sound System</div>
+              <div style="font-size:0.9rem;color:var(--muted)">Professional audio</div>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🅿️</div>
+            <div>
+              <div style="font-weight:600">Parking</div>
+              <div style="font-size:0.9rem;color:var(--muted)">On-site available</div>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">♿</div>
+            <div>
+              <div style="font-weight:600">Accessible</div>
+              <div style="font-size:0.9rem;color:var(--muted)">Wheelchair friendly</div>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📸</div>
+            <div>
+              <div style="font-weight:600">Photo Ready</div>
+              <div style="font-size:0.9rem;color:var(--muted)">Beautiful backdrops</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2 class="section-title">Pricing</h2>
+        <div class="pricing-grid">
+          <div class="pricing-item">
+            <div class="pricing-item-header">
+              <div class="pricing-name">Starting Price</div>
+              <div class="pricing-amount">$5,000</div>
+            </div>
+            <div class="pricing-note">Base rental fee for up to 100 guests</div>
+          </div>
+          <div class="pricing-item">
+            <div class="pricing-item-header">
+              <div class="pricing-name">Per Additional Guest</div>
+              <div class="pricing-amount">$50</div>
+            </div>
+            <div class="pricing-note">For events over 100 guests</div>
+          </div>
+          <div class="pricing-item">
+            <div class="pricing-item-header">
+              <div class="pricing-name">Full Service Package</div>
+              <div class="pricing-amount">$8,500</div>
+            </div>
+            <div class="pricing-note">Includes catering, decor, and coordination</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2 class="section-title">Reviews</h2>
+        <div class="reviews-list">
+          <div class="review-item">
+            <div class="review-header">
+              <div>
+                <div class="reviewer-name">Sarah M.</div>
+                <div class="review-rating">★★★★★</div>
+              </div>
+              <div class="review-date">2 weeks ago</div>
+            </div>
+            <div class="review-text">
+              Absolutely stunning venue! The staff was incredibly professional and helped make our wedding day perfect. The ballroom looked amazing and all our guests were impressed.
+            </div>
+          </div>
+          <div class="review-item">
+            <div class="review-header">
+              <div>
+                <div class="reviewer-name">David L.</div>
+                <div class="review-rating">★★★★☆</div>
+              </div>
+              <div class="review-date">1 month ago</div>
+            </div>
+            <div class="review-text">
+              Great venue with excellent service. The catering was delicious and the space was perfect for our bar mitzvah. Would definitely recommend!
+            </div>
+          </div>
+          <div class="review-item">
+            <div class="review-header">
+              <div>
+                <div class="reviewer-name">Rachel K.</div>
+                <div class="review-rating">★★★★★</div>
+              </div>
+              <div class="review-date">2 months ago</div>
+            </div>
+            <div class="review-text">
+              The best decision we made for our wedding! The team was responsive, the venue was beautiful, and everything went smoothly. Worth every penny!
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="vendor-sidebar">
+      <div class="sidebar-card">
+        <h3 class="sidebar-card-title">Contact Vendor</h3>
+        <form class="contact-form" id="contactForm">
+          <input type="text" class="form-input" placeholder="Your Name" required>
+          <input type="email" class="form-input" placeholder="Your Email" required>
+          <input type="tel" class="form-input" placeholder="Phone Number">
+          <textarea class="form-input form-textarea" placeholder="Message" required></textarea>
+          <button type="submit" class="btn-action btn-primary-action">Send Message</button>
+        </form>
+      </div>
+
+      <div class="sidebar-card">
+        <h3 class="sidebar-card-title">Availability</h3>
+        <div class="availability-calendar" id="availabilityCalendar">
+          <!-- Calendar will be generated by JS -->
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <h3 class="sidebar-card-title">Quick Info</h3>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:0.95rem">
+          <div style="display:flex;justify-content:space-between">
+            <span style="color:var(--muted)">Capacity:</span>
+            <span style="font-weight:600">50-500 guests</span>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span style="color:var(--muted)">Setup Time:</span>
+            <span style="font-weight:600">2 hours</span>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span style="color:var(--muted)">Response Time:</span>
+            <span style="font-weight:600">Within 24 hours</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    // Get vendor ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const vendorId = urlParams.get('id') || '1';
+    const isPreview = urlParams.get('preview') === 'true';
+
+    let vendor;
+
+    // Check if this is a preview from onboarding
+    if (isPreview) {
+      const previewData = localStorage.getItem('vendorPreviewData');
+      if (previewData) {
+        try {
+          const data = JSON.parse(previewData);
+          vendor = {
+            name: data.businessName || 'Your Business',
+            category: data.tagline || 'Your Category',
+            location: data.city && data.state ? `${data.city}, ${data.state}` : (data.primaryLocation || 'Your Location'),
+            description: data.description || 'Your business description will appear here.',
+            email: data.email || '',
+            phone: data.phone || '',
+            website: data.website || '',
+            eventTypes: data.eventTypes || [],
+            services: data.services || [],
+            availability: {
+              days: data.daysAvailable || [],
+              window: data.availabilityWindow || '',
+              leadTime: data.leadTime || ''
+            },
+            booking: {
+              type: data.bookingType || '',
+              deposit: data.depositRequired || '',
+              depositAmount: data.depositAmount || '',
+              paymentMethods: data.paymentMethods || []
+            },
+            social: {
+              instagram: data.instagram || '',
+              facebook: data.facebook || '',
+              tiktok: data.tiktok || '',
+              youtube: data.youtube || '',
+              googleBusiness: data.googleBusiness || ''
+            },
+            rating: null, // No rating for preview
+            reviews: 0
+          };
+          
+          // Show preview banner
+          const banner = document.createElement('div');
+          banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:linear-gradient(135deg, #ff7ab6 0%, #89f7d3 100%);color:#fff;padding:14px 24px;text-align:center;font-weight:600;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;gap:12px;';
+          banner.innerHTML = '<span>👁️ Preview Mode</span><span style="opacity:0.9;font-weight:400;">This is how your vendor profile will appear to customers</span><a href="vendor-onboarding.html" style="margin-left:auto;color:#fff;text-decoration:underline;font-weight:500;opacity:0.95;">← Back to Edit</a>';
+          document.body.insertBefore(banner, document.body.firstChild);
+          
+          // Adjust header position to account for banner
+          const header = document.querySelector('header');
+          if (header) {
+            header.style.marginTop = '52px';
+          }
+          
+          // Adjust vendor hero position
+          const vendorHero = document.querySelector('.vendor-hero');
+          if (vendorHero) {
+            vendorHero.style.marginTop = '52px';
+          }
+        } catch (e) {
+          console.error('Error parsing preview data:', e);
+        }
+      }
+    }
+
+    // If no preview data, use mock data
+    if (!vendor) {
+      // Mock vendor data (in production, fetch from API)
+      const vendors = {
+        '1': {
+          name: 'Grand Ballroom Events',
+          category: 'Reception Venue',
+          location: 'New York, NY',
+          rating: 4.8,
+          reviews: 127,
+          description: 'Grand Ballroom Events is a premier event venue located in the heart of New York City. With over 10 years of experience, we specialize in hosting elegant weddings, bar mitzvahs, and corporate events.'
+        }
+      };
+      vendor = vendors[vendorId] || vendors['1'];
+    }
+
+    // Update page content
+    document.getElementById('vendorName').textContent = vendor.name;
+    document.getElementById('vendorCategory').textContent = vendor.category;
+    document.getElementById('vendorLocation').textContent = vendor.location;
+    
+    // Update description
+    if (document.getElementById('vendorDescription')) {
+      document.getElementById('vendorDescription').textContent = vendor.description;
+    }
+    
+    // Hide rating/reviews for preview
+    if (isPreview && vendor.rating === null) {
+      const ratingSection = document.querySelector('.vendor-rating');
+      if (ratingSection) {
+        ratingSection.style.display = 'none';
+      }
+      
+      // Hide verified/popular badges for preview
+      const badges = document.querySelector('.vendor-badges');
+      if (badges) {
+        badges.style.display = 'none';
+      }
+      
+      // Hide action buttons in preview mode
+      const vendorActions = document.querySelector('.vendor-actions');
+      if (vendorActions) {
+        vendorActions.style.display = 'none';
+      }
+    }
+    
+    // Update services section if preview data has services
+    if (isPreview && vendor.services && vendor.services.length > 0) {
+      const servicesSection = document.querySelector('.vendor-features');
+      if (servicesSection) {
+        let servicesHTML = '';
+        vendor.services.forEach(service => {
+          servicesHTML += `
+            <div class="feature-item">
+              <div class="feature-icon">✨</div>
+              <div>
+                <div style="font-weight:600">${service.name || 'Service'}</div>
+                <div style="font-size:0.9rem;color:var(--muted)">${service.category || ''}${service.basePrice ? ` • $${service.basePrice}${service.priceStructure === 'starting' ? ' starting' : ''}` : ''}</div>
+              </div>
+            </div>
+          `;
+        });
+        servicesSection.innerHTML = servicesHTML;
+      }
+    }
+    
+    // Update event types if available
+    if (isPreview && vendor.eventTypes && vendor.eventTypes.length > 0) {
+      // Could add event types display if there's a section for it
+    }
+
+    // Favorite button
+    document.getElementById('favoriteBtn').addEventListener('click', function() {
+      this.classList.toggle('active');
+      this.textContent = this.classList.contains('active') ? '♥' : '♡';
+    });
+
+    // Add to plan button
+    document.getElementById('addToPlanBtn').addEventListener('click', function() {
+      const isLoggedIn = localStorage.getItem('userLoggedIn') === 'true';
+      if (!isLoggedIn) {
+        if (confirm('Please log in to add vendors to your plan. Go to login page?')) {
+          window.location.href = 'login.html?return=vendor-detail.html?id=' + vendorId;
+        }
+      } else {
+        // Add to plan logic
+        let plan = JSON.parse(localStorage.getItem('userPlan') || '[]');
+        if (!plan.find(v => v.id === vendorId)) {
+          plan.push({ id: vendorId, name: vendor.name, category: vendor.category });
+          localStorage.setItem('userPlan', JSON.stringify(plan));
+          alert('Vendor added to your plan!');
+          this.textContent = '✓ Added to Plan';
+          this.style.background = 'var(--ok)';
+        } else {
+          alert('This vendor is already in your plan!');
+        }
+      }
+    });
+
+    // Contact form
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Message sent! The vendor will contact you soon.');
+      e.target.reset();
+    });
+
+    // Simple calendar (showing current month)
+    function generateCalendar() {
+      const calendar = document.getElementById('availabilityCalendar');
+      const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+      const today = new Date();
+      const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+      const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      
+      // Header
+      days.forEach(day => {
+        const header = document.createElement('div');
+        header.textContent = day;
+        header.style.fontWeight = '600';
+        header.style.color = 'var(--muted)';
+        calendar.appendChild(header);
+      });
+
+      // Days
+      for (let i = 0; i < firstDay.getDay(); i++) {
+        const empty = document.createElement('div');
+        calendar.appendChild(empty);
+      }
+
+      for (let day = 1; day <= lastDay.getDate(); day++) {
+        const dayEl = document.createElement('div');
+        dayEl.className = 'calendar-day';
+        dayEl.textContent = day;
+        
+        // Random availability (in production, fetch from API)
+        if (Math.random() > 0.3) {
+          dayEl.classList.add('available');
+        } else if (Math.random() > 0.7) {
+          dayEl.classList.add('unavailable');
+        }
+        
+        calendar.appendChild(dayEl);
+      }
+    }
+
+    generateCalendar();
+  </script>
+</body>
+</html>
+
+
+
+

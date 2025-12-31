@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAQ | CleverPlanners</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1e293b;
+      --muted: #6b7280;
+      --cream: #fbf6ed;
+      --brand: #111827;
+      --ring: #e5dcc7;
+      --radius: 20px;
+      --shadow: 0 10px 30px rgba(16,24,40,.08);
+      --soft: #faf7f1;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+    .faq-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+    .faq-sidebar {
+      position: sticky;
+      top: 2rem;
+      width: 220px;
+      flex-shrink: 0;
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--ring);
+      max-height: calc(100vh - 4rem);
+      overflow-y: auto;
+    }
+    .sidebar-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--ring);
+    }
+    .sidebar-nav {
+      list-style: none;
+    }
+    .sidebar-nav-item {
+      margin-bottom: 0.5rem;
+    }
+    .sidebar-nav-link {
+      display: block;
+      padding: 0.75rem 1rem;
+      color: var(--muted);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+    }
+    .sidebar-nav-link:hover {
+      background: var(--soft);
+      color: var(--ink);
+    }
+    .sidebar-nav-link.active {
+      background: var(--brand);
+      color: #fff;
+    }
+    .faq-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .faq-section {
+      margin-bottom: 3rem;
+      scroll-margin-top: 2rem;
+    }
+    .faq-section-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--ring);
+    }
+    .faq-accordion {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1px solid var(--ring);
+      margin-bottom: 1rem;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,.03);
+      transition: all 0.2s ease;
+    }
+    .faq-accordion:hover {
+      box-shadow: var(--shadow);
+      border-color: #d4cbb2;
+    }
+    .faq-question {
+      width: 100%;
+      padding: 1.25rem 1.5rem;
+      background: transparent;
+      border: none;
+      text-align: left;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s ease;
+    }
+    .faq-question:hover {
+      background: var(--soft);
+    }
+    .faq-question::after {
+      content: '+';
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: var(--muted);
+      transition: transform 0.3s ease, color 0.2s ease;
+    }
+    .faq-accordion.open .faq-question::after {
+      transform: rotate(45deg);
+      color: var(--brand);
+    }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+      padding: 0 1.5rem;
+    }
+    .faq-accordion.open .faq-answer {
+      max-height: 500px;
+      padding: 0 1.5rem 1.5rem 1.5rem;
+    }
+    .faq-answer-content {
+      color: var(--muted);
+      line-height: 1.7;
+      padding-top: 0.5rem;
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 2rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .back-link:hover {
+      color: var(--ink);
+    }
+    @media (max-width: 900px) {
+      .faq-container {
+        flex-direction: column;
+        padding: 1rem;
+      }
+      .faq-sidebar {
+        position: relative;
+        top: 0;
+        width: 100%;
+        max-height: none;
+      }
+      .sidebar-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .sidebar-nav-item {
+        margin-bottom: 0;
+      }
+      .sidebar-nav-link {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="faq-container">
+    <!-- Sidebar Navigation -->
+    <nav class="faq-sidebar">
+      <h2 class="sidebar-title">FAQ Categories</h2>
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-item">
+          <a href="#signup-login" class="sidebar-nav-link active" data-category="signup-login">Sign Up / Login</a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="#privacy-data" class="sidebar-nav-link" data-category="privacy-data">Privacy & Data</a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="#billing-payments" class="sidebar-nav-link" data-category="billing-payments">Billing & Payments</a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="#vendor-questions" class="sidebar-nav-link" data-category="vendor-questions">Vendor Questions</a>
+        </li>
+        <li class="sidebar-nav-item">
+          <a href="#general-questions" class="sidebar-nav-link" data-category="general-questions">General Questions</a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="faq-content">
+      <!-- Sign Up / Login Section -->
+      <section id="signup-login" class="faq-section">
+        <h2 class="faq-section-title">Sign Up / Login</h2>
+        
+        <div class="faq-accordion">
+          <button class="faq-question">How do I create an account?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              Click "Sign Up" in the top navigation or "Start Planning Free" on the homepage. You'll be asked to provide your email and create a password. It's completely free to create an account.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-accordion">
+          <button class="faq-question">I forgot my password. How do I reset it?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              On the login page, click "Forgot Password" and enter your email address. We'll send you a link to reset your password.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-accordion">
+          <button class="faq-question">Do I need an account to use CleverPlanners?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              You can browse vendors without an account, but you'll need to create a free account to save your event plan, message vendors, and manage bookings.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-accordion">
+          <button class="faq-question">Can I use social media to sign up?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              Currently, we support email-based sign up. Social media login options are coming soon!
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Privacy & Data Section -->
+      <section id="privacy-data" class="faq-section">
+        <h2 class="faq-section-title">Privacy & Data</h2>
+        
+        <div class="faq-accordion">
+          <button class="faq-question">How is my personal information protected?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              We use industry-standard encryption and security measures to protect your data. Your personal information is never sold to third parties. For more details, see our <a href="privacy.html" style="color: var(--brand); font-weight: 600;">Privacy Policy</a>.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-accordion">
+          <button class="faq-question">What information do you collect?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              We collect information you provide directly, such as your name, email, event details, and preferences. We also collect usage data to improve our service. You can view and update your information in your account settings.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-accordion">
+          <button class="faq-question">Can I delete my account and data?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              Yes, you can delete your account at any time through your account settings. This will permanently remove your personal data from our systems.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-accordion">
+          <button class="faq-question">Who can see my event information?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              Your event details are private and only shared with vendors you choose to contact. Vendors can only see the information you provide when messaging them.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Billing & Payments Section -->
+      <section id="billing-payments" class="faq-section">
+        <h2 class="faq-section-title">Billing & Payments</h2>
+        
+        <div class="faq-accordion">
+          <button class="faq-question">Is CleverPlanners free to use?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              Yes! Creating an account and using our planning tools is completely free. You only pay vendors directly for their services. We don't charge any fees for using the platform.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-accordion">
+          <button class="faq-question">How do I pay vendors?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              Payments are made directly to vendors according to their payment terms. CleverPlanners facilitates the connection but doesn't process payments. You'll work out payment details directly with each vendor.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-accordion">
+          <button class="faq-question">What payment methods do vendors accept?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              Payment methods vary by vendor. Most vendors accept credit cards, bank transfers, and checks. Discuss payment options directly with your chosen vendors.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-accordion">
+          <button class="faq-question">Are there any hidden fees?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              No hidden fees. CleverPlanners is free to use. You only pay vendors for their services at the prices they quote you.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Vendor Questions Section -->
+      <section id="vendor-questions" class="faq-section">
+        <h2 class="faq-section-title">Vendor Questions</h2>
+        
+        <div class="faq-accordion">
+          <button class="faq-question">How do I contact vendors?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              Once you've selected vendors, you can message them directly through your dashboard's "Messages & Quotes" section. All communication happens in one convenient place.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-accordion">
+          <button class="faq-question">How are vendors selected and verified?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              We work with reputable vendors in the event planning industry. While we don't verify every detail, we review vendor profiles and encourage user reviews to help maintain quality.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-accordion">
+          <button class="faq-question">Can I see vendor reviews and ratings?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              Yes, vendor profiles include reviews and ratings from other users. You can view these when browsing vendor details.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-accordion">
+          <button class="faq-question">What if I have an issue with a vendor?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              If you encounter any issues, please contact us through our <a href="contact.html" style="color: var(--brand); font-weight: 600;">contact page</a>. We'll do our best to help resolve the situation.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-accordion">
+          <button class="faq-question">How do I become a vendor?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              Vendors can sign up through our <a href="vendor-intake.html" style="color: var(--brand); font-weight: 600;">vendor onboarding page</a>. We'll review your application and get you set up on the platform.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- General Questions Section -->
+      <section id="general-questions" class="faq-section">
+        <h2 class="faq-section-title">General Questions</h2>
+        
+        <div class="faq-accordion">
+          <button class="faq-question">How do I get started with event planning?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              Simply click "Start Planning Free" on our homepage and fill out the event planning questionnaire. We'll match you with vendors based on your event type, date, location, and budget.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-accordion">
+          <button class="faq-question">Can I change my event details after creating a plan?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              Yes, you can update your event details anytime through your dashboard settings. Changes will be reflected in your vendor matches and recommendations.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-accordion">
+          <button class="faq-question">What types of events can I plan?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              CleverPlanners supports all types of events including weddings, bar mitzvahs, corporate events, fundraisers, anniversaries, and more. Our platform adapts to your specific event needs.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-accordion">
+          <button class="faq-question">How do I save vendors to my plan?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              When browsing vendors, click "Add to Plan" on any vendor card. They'll be saved to your dashboard where you can manage all your selected vendors.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-accordion">
+          <button class="faq-question">Can I share my event plan with others?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              Currently, event plans are private to your account. Sharing features are coming soon!
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-accordion">
+          <button class="faq-question">What if I need help or have questions?</button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              You can reach out to us through our <a href="contact.html" style="color: var(--brand); font-weight: 600;">contact page</a>, check our FAQ, or email us at support@cleverplanners.com. We're here to help!
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <a href="contact.html" class="back-link">← Back to Contact</a>
+    </div>
+  </div>
+
+  <script>
+    // Accordion functionality - only one open per section
+    document.querySelectorAll('.faq-question').forEach(question => {
+      question.addEventListener('click', function() {
+        const accordion = this.parentElement;
+        const section = accordion.closest('.faq-section');
+        const isOpen = accordion.classList.contains('open');
+
+        // Close all accordions in this section
+        section.querySelectorAll('.faq-accordion').forEach(acc => {
+          acc.classList.remove('open');
+        });
+
+        // Toggle this accordion
+        if (!isOpen) {
+          accordion.classList.add('open');
+        }
+      });
+    });
+
+    // Sidebar navigation - smooth scroll and active state
+    document.querySelectorAll('.sidebar-nav-link').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        const targetSection = document.querySelector(targetId);
+        
+        if (targetSection) {
+          // Update active state
+          document.querySelectorAll('.sidebar-nav-link').forEach(l => l.classList.remove('active'));
+          this.classList.add('active');
+
+          // Smooth scroll to section
+          targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // Update active sidebar link on scroll
+    const sections = document.querySelectorAll('.faq-section');
+    const sidebarLinks = document.querySelectorAll('.sidebar-nav-link');
+
+    function updateActiveLink() {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (window.scrollY >= sectionTop - 100) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      sidebarLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('data-category') === current) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', updateActiveLink);
+    updateActiveLink(); // Initial call
+  </script>
+</body>
+</html>

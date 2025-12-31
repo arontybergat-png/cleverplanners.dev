@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join as a Vendor - CleverPlanners</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      /* Core Colors - Matching site design system */
+      --ink: #1e293b;
+      --muted: #6b7280;
+      --cream: #fbf6ed;
+      --panel: #f4ecdc;
+      --brand: #111827;
+      --accent1: #ff7ab6;
+      --accent2: #89f7d3;
+      --ring: #e5dcc7;
+      --soft: #faf7f1;
+      --paper: #ffffff;
+      --ok: #16a34a;
+      --warn: #f59e0b;
+      
+      /* Design Tokens */
+      --radius: 20px;
+      --radius-sm: 16px;
+      --radius-lg: 32px;
+      --shadow: 0 4px 20px rgba(16, 24, 40, 0.06);
+      --shadow-md: 0 8px 32px rgba(16, 24, 40, 0.1);
+      --shadow-lg: 0 16px 48px rgba(16, 24, 40, 0.12);
+      --shadow-xl: 0 24px 64px rgba(16, 24, 40, 0.16);
+      
+      /* Gradients */
+      --gradient-brand: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+      --gradient-accent: linear-gradient(135deg, var(--accent2) 0%, #b9a7ff 50%, var(--accent1) 100%);
+    }
+
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Header */
+    header {
+      background: #fff;
+      border-bottom: 1px solid #f0eadb;
+      padding: 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 68px;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--brand);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+      transition: opacity 0.2s;
+    }
+
+    .logo:hover {
+      opacity: 0.9;
+    }
+
+    .back-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--ink);
+    }
+
+    /* Hero Section - Two Column Layout */
+    .hero {
+      padding: 5rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      background: var(--cream);
+      position: relative;
+    }
+
+    .hero-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    /* Left Column - Form */
+    .form-column {
+      position: sticky;
+      top: 100px;
+    }
+
+    .form-container {
+      background: var(--paper);
+      border-radius: var(--radius);
+      padding: 3rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--ring);
+      transition: all 0.3s ease;
+    }
+
+    .form-container:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .form-header {
+      margin-bottom: 2rem;
+    }
+
+    .form-header h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .form-header p {
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: var(--ink);
+      font-size: 0.9rem;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 44px 12px 16px;
+      border: 1px solid var(--ring);
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: all 0.2s ease;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    .form-group input:hover {
+      border-color: #d4cbb2;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
+    }
+
+    .form-group input.error {
+      border-color: #dc2626;
+    }
+
+    .form-group input.valid {
+      border-color: var(--ok);
+      padding-right: 44px;
+    }
+
+    .form-group input.valid:focus {
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+    }
+
+    /* Success checkmark icon */
+    .field-status {
+      position: absolute;
+      right: 14px;
+      top: 38px;
+      width: 20px;
+      height: 20px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .field-status.show {
+      display: flex;
+    }
+
+    .field-status.success {
+      color: var(--ok);
+    }
+
+    .field-status svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 3;
+    }
+
+    .error-message {
+      color: #dc2626;
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+      display: none;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .cta-section {
+      margin-top: 2rem;
+    }
+
+    .btn-primary {
+      background: var(--gradient-brand);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 100%;
+      font-family: inherit;
+      letter-spacing: -0.01em;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-primary.loading {
+      pointer-events: none;
+      position: relative;
+      color: transparent;
+    }
+
+    .btn-primary.loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .btn-primary.success {
+      background: var(--ok);
+      pointer-events: none;
+    }
+
+    .btn-primary.success::before {
+      display: none;
+    }
+
+    .helper-text {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+
+
+    /* Right Column - Marketing Content */
+    .marketing-column {
+      padding-top: 1rem;
+    }
+
+    .marketing-content h1 {
+      font-size: 3.25rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+    }
+
+    .marketing-content .subtitle {
+      font-size: 1.25rem;
+      color: var(--muted);
+      margin-bottom: 3.5rem;
+      line-height: 1.6;
+      max-width: 90%;
+    }
+
+    .hero-trust-indicators {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      padding-top: 2.5rem;
+      margin-top: 1rem;
+    }
+
+    .trust-item-large {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 1.1rem;
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .trust-icon-large {
+      color: var(--ok);
+      font-size: 1.5rem;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(22, 163, 74, 0.1);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* Value Proposition Section */
+    .value-prop {
+      padding: 5rem 2rem;
+      background: var(--soft);
+      margin-top: 0;
+    }
+
+    .value-prop-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .value-prop-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .value-prop-header h2 {
+      font-size: 2.75rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+    }
+
+    .value-prop-header p {
+      font-size: 1.2rem;
+      color: var(--muted);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Benefits Section */
+    .benefits {
+      padding: 6rem 2rem;
+      background: var(--cream);
+      margin-top: 0;
+      position: relative;
+    }
+
+    .benefits-content {
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .benefits-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .benefits-header h2 {
+      font-size: 2.75rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+      position: relative;
+      display: inline-block;
+    }
+
+    .benefits-header h2 .word {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(10px);
+      margin-right: 0.08em;
+    }
+
+    .benefits-header h2 .word.question-mark {
+      margin-right: 0;
+      margin-left: 0.02em;
+    }
+
+    .benefits-header.animated .word:nth-child(1) {
+      animation: fadeInWord 0.5s ease-out 0.1s forwards;
+    }
+
+    .benefits-header.animated .word:nth-child(2) {
+      animation: fadeInWord 0.5s ease-out 0.3s forwards;
+    }
+
+    .benefits-header.animated .word:nth-child(3) {
+      animation: fadeInWord 0.5s ease-out 0.5s forwards;
+    }
+
+    .benefits-header.animated .word.question-mark {
+      animation: fadeInWord 0.5s ease-out 0.7s forwards, questionBounce 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) 1.2s forwards;
+    }
+
+    /* Fallback: show text if animation doesn't trigger */
+    .benefits-header:not(.animated) .word {
+      opacity: 1;
+      transform: translateY(0);
+      animation: none;
+    }
+
+    @keyframes fadeInWord {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes questionBounce {
+      0%, 100% {
+        transform: translateY(0) scale(1);
+      }
+      50% {
+        transform: translateY(-8px) scale(1.15);
+      }
+    }
+
+
+    .benefits-header p {
+      font-size: 1.2rem;
+      color: var(--muted);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Narrative Journey Layout */
+    .benefits-journey {
+      position: relative;
+      padding-left: 4rem;
+      padding-top: 2rem;
+    }
+
+    /* Timeline line with gradient */
+    .benefits-journey::before {
+      content: '';
+      position: absolute;
+      left: 1.5rem;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, 
+        var(--ring) 0%, 
+        rgba(229, 220, 199, 0.5) 20%,
+        rgba(229, 220, 199, 0.3) 50%,
+        rgba(229, 220, 199, 0.5) 80%,
+        var(--ring) 100%);
+      border-radius: 2px;
+    }
+
+    .benefit-step {
+      position: relative;
+      padding: 0 0 4rem 0;
+      opacity: 0;
+      transform: translateX(-40px);
+      transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .benefit-step:last-child {
+      padding-bottom: 0;
+    }
+
+    .benefit-step.animated {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Step number indicator - clean single circle */
+    .benefit-step-number {
+      position: absolute;
+      left: -2.5rem;
+      top: 2.5rem;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--brand);
+      border-radius: 50%;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: white;
+      z-index: 3;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      transform: translate(-50%, -50%);
+    }
+
+    .benefit-step.animated .benefit-step-number {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+
+    .benefit-step-content {
+      background: var(--paper);
+      padding: 3rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--ring);
+      box-shadow: var(--shadow);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .benefit-step-content:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
+      border-color: rgba(17, 24, 39, 0.15);
+    }
+
+    /* Subtle gradient overlay on hover */
+    .benefit-step-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.5s ease;
+    }
+
+    .benefit-step.animated .benefit-step-content::before {
+      transform: scaleX(1);
+    }
+
+    .benefit-step.animated .benefit-step-content {
+      box-shadow: var(--shadow-md);
+      border-color: rgba(17, 24, 39, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .benefit-step.animated .benefit-step-content:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15), 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .benefit-step-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 2rem;
+    }
+
+    .benefit-step-icon {
+      width: 72px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--soft) 0%, var(--panel) 100%);
+      border-radius: var(--radius-sm);
+      flex-shrink: 0;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 2px solid transparent;
+    }
+
+    .benefit-step.animated .benefit-step-icon {
+      background: linear-gradient(135deg, var(--panel) 0%, var(--soft) 100%);
+      transform: scale(1.08) rotate(2deg);
+      border-color: rgba(17, 24, 39, 0.08);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      animation: iconGentleBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s;
+    }
+
+    @keyframes iconGentleBounce {
+      0%, 100% {
+        transform: scale(1.08) rotate(2deg) translateY(0);
+      }
+      50% {
+        transform: scale(1.12) rotate(-1deg) translateY(-4px);
+      }
+    }
+
+    .benefit-step-icon svg {
+      width: 32px;
+      height: 32px;
+      stroke: var(--brand);
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: all 0.3s ease;
+    }
+
+    .benefit-step.animated .benefit-step-icon svg {
+      stroke-width: 2.8;
+      animation: iconSlightRotate 0.8s ease-out 0.4s;
+    }
+
+    @keyframes iconSlightRotate {
+      0%, 100% {
+        transform: rotate(0deg);
+      }
+      25% {
+        transform: rotate(-3deg);
+      }
+      75% {
+        transform: rotate(3deg);
+      }
+    }
+
+    .benefit-step-text {
+      flex: 1;
+      padding-top: 0.25rem;
+    }
+
+    .benefit-step-text h3 {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+      transition: color 0.3s ease;
+    }
+
+    .benefit-step.animated .benefit-step-text h3 {
+      color: var(--brand);
+    }
+
+    .benefit-step-text p {
+      font-size: 1.1rem;
+      color: var(--muted);
+      line-height: 1.75;
+      max-width: 600px;
+    }
+
+    /* Stats Section */
+    .stats-section {
+      padding: 5rem 2rem;
+      background: var(--paper);
+      margin-top: 0;
+    }
+
+    .stats-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 3rem;
+      margin-top: 3rem;
+    }
+
+    .stat-card {
+      text-align: center;
+      padding: 2.5rem;
+      background: var(--paper);
+      border-radius: var(--radius);
+      border: 1px solid var(--ring);
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: #d4cbb2;
+    }
+
+    .stat-card-number {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: var(--brand);
+      display: block;
+      line-height: 1;
+      margin-bottom: 1rem;
+      letter-spacing: -0.03em;
+    }
+
+    .stat-card-label {
+      font-size: 1.1rem;
+      color: var(--muted);
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--paper);
+      border-top: 1px solid var(--ring);
+      padding: 2rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: var(--brand);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 968px) {
+      .hero-content {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+
+      .form-column {
+        position: static;
+      }
+
+      .marketing-content h1 {
+        font-size: 2.25rem;
+      }
+
+      .marketing-content .subtitle {
+        font-size: 1.05rem;
+        margin-bottom: 2rem;
+      }
+
+      .hero-trust-indicators {
+        gap: 1.25rem;
+        padding-top: 2rem;
+      }
+
+      .trust-item-large {
+        font-size: 1rem;
+      }
+
+      .benefits-header h2 {
+        font-size: 1.75rem;
+      }
+
+      .benefits-header p {
+        font-size: 1.05rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+      }
+
+      .stat-card-number {
+        font-size: 2.5rem;
+      }
+
+      .benefits-journey {
+        padding-left: 2.5rem;
+      }
+
+      .benefits-journey::before {
+        left: 1rem;
+      }
+
+      .benefit-step {
+        padding: 0 0 3rem 0;
+      }
+
+      .benefit-step-number {
+        left: -1.75rem;
+        top: 2rem;
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+      }
+
+      .benefit-step-content {
+        padding: 2rem;
+      }
+
+      .benefit-step-header {
+        gap: 1.5rem;
+      }
+
+      .benefit-step-icon {
+        width: 60px;
+        height: 60px;
+      }
+
+      .benefit-step-icon svg {
+        width: 28px;
+        height: 28px;
+      }
+
+      .benefit-step-text h3 {
+        font-size: 1.4rem;
+      }
+
+      .benefit-step-text p {
+        font-size: 1rem;
+      }
+
+      .form-container {
+        padding: 2rem 1.5rem;
+      }
+
+      .form-header h2 {
+        font-size: 1.5rem;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .trust-indicators {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .hero {
+        padding: 2rem 1rem;
+      }
+
+      .benefits {
+        padding: 3rem 1rem;
+      }
+
+      .marketing-content h1 {
+        font-size: 1.75rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-card-number {
+        font-size: 2rem;
+      }
+    }
+
+    /* Scroll Animations */
+    .animate-on-scroll {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .animate-on-scroll.animated {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .animate-fade-in {
+      opacity: 0;
+      transition: opacity 0.8s ease-out;
+    }
+
+    .animate-fade-in.animated {
+      opacity: 1;
+    }
+
+    .animate-slide-left {
+      opacity: 0;
+      transform: translateX(-50px);
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .animate-slide-left.animated {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .animate-slide-right {
+      opacity: 0;
+      transform: translateX(50px);
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .animate-slide-right.animated {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .animate-scale {
+      opacity: 0;
+      transform: scale(0.9);
+      transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .animate-scale.animated {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Stagger animation delays for grid items */
+      .benefit-step:nth-child(1) { transition-delay: 0.1s; }
+      .benefit-step:nth-child(2) { transition-delay: 0.2s; }
+      .benefit-step:nth-child(3) { transition-delay: 0.3s; }
+      .benefit-step:nth-child(4) { transition-delay: 0.4s; }
+      .benefit-step:nth-child(5) { transition-delay: 0.5s; }
+      .benefit-step:nth-child(6) { transition-delay: 0.6s; }
+
+    .stat-card:nth-child(1) { transition-delay: 0.1s; }
+    .stat-card:nth-child(2) { transition-delay: 0.2s; }
+    .stat-card:nth-child(3) { transition-delay: 0.3s; }
+    .stat-card:nth-child(4) { transition-delay: 0.4s; }
+
+    /* Parallax effect for hero */
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Number counter animation */
+    .stat-number,
+    .stat-card-number {
+      transition: all 0.3s ease;
+    }
+
+    /* Smooth scroll behavior */
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <a href="index.html" class="logo">CleverPlanners</a>
+      <a href="vendors.html" class="back-link">Back to Vendors</a>
+    </div>
+  </header>
+
+  <!-- Hero Section - Two Column Layout -->
+  <section class="hero">
+    <div class="hero-content">
+      <!-- Left Column - Form -->
+      <div class="form-column">
+        <div class="form-container">
+          <div class="form-header">
+            <h2>Get Started Today</h2>
+          </div>
+
+          <form id="vendorIntakeForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="firstName">First Name <span style="color:#dc2626">*</span></label>
+                <input type="text" id="firstName" name="firstName" required placeholder="John">
+                <div class="field-status" id="firstNameStatus">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </div>
+                <div class="error-message" id="firstNameError">Please enter your first name</div>
+              </div>
+              <div class="form-group">
+                <label for="lastName">Last Name <span style="color:#dc2626">*</span></label>
+                <input type="text" id="lastName" name="lastName" required placeholder="Smith">
+                <div class="field-status" id="lastNameStatus">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </div>
+                <div class="error-message" id="lastNameError">Please enter your last name</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="company">Company / Business Name <span style="color:#dc2626">*</span></label>
+              <input type="text" id="company" name="company" required placeholder="Your Business Name">
+              <div class="field-status" id="companyStatus">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="error-message" id="companyError">Please enter your company name</div>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email Address <span style="color:#dc2626">*</span></label>
+              <input type="email" id="email" name="email" required placeholder="you@yourbusiness.com">
+              <div class="field-status" id="emailStatus">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="error-message" id="emailError">Please enter a valid email address</div>
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Phone Number <span style="color:#dc2626">*</span></label>
+              <input type="tel" id="phone" name="phone" required placeholder="(555) 123-4567">
+              <div class="field-status" id="phoneStatus">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="error-message" id="phoneError">Please enter your phone number</div>
+            </div>
+
+            <div class="cta-section">
+              <button type="submit" class="btn-primary" id="submitBtn">Continue to Vendor Onboarding</button>
+              <p class="helper-text">You'll finish setting up your vendor profile in the next step</p>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+      <!-- Right Column - Marketing Content -->
+      <div class="marketing-column">
+        <div class="marketing-content animate-slide-right">
+          <h1>Grow your business with the platform customers use</h1>
+          
+          <div class="hero-trust-indicators">
+            <div class="trust-item-large">
+              <span class="trust-icon-large">✓</span>
+              <span>Free to join</span>
+            </div>
+            <div class="trust-item-large">
+              <span class="trust-icon-large">✓</span>
+              <span>No credit card required</span>
+            </div>
+            <div class="trust-item-large">
+              <span class="trust-icon-large">✓</span>
+              <span>Setup takes 5 minutes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits Section -->
+  <section class="benefits">
+    <div class="benefits-content">
+      <div class="benefits-header animate-on-scroll">
+        <h2>
+          <span class="word">Why</span>
+          <span class="word">Join</span>
+          <span class="word">CleverPlanners</span>
+          <span class="word question-mark">?</span>
+        </h2>
+      </div>
+
+      <div class="benefits-journey">
+        <div class="benefit-step animate-on-scroll">
+          <span class="benefit-step-number">1</span>
+          <div class="benefit-step-content">
+            <div class="benefit-step-header">
+              <div class="benefit-step-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+              <div class="benefit-step-text">
+                <h3>Reach More Clients</h3>
+                <p>Get discovered by thousands of customers actively searching for vendors like you. Our platform connects you with the right clients at the right time.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="benefit-step animate-on-scroll">
+          <span class="benefit-step-number">2</span>
+          <div class="benefit-step-content">
+            <div class="benefit-step-header">
+              <div class="benefit-step-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+              <div class="benefit-step-text">
+                <h3>Direct Communication</h3>
+                <p>Connect directly with potential clients through our built-in messaging system. No middlemen, no delays—just clear, direct conversations.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="benefit-step animate-on-scroll">
+          <span class="benefit-step-number">3</span>
+          <div class="benefit-step-content">
+            <div class="benefit-step-header">
+              <div class="benefit-step-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M9 11l3 3L22 4"></path>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                </svg>
+              </div>
+              <div class="benefit-step-text">
+                <h3>Online Bookings</h3>
+                <p>Accept bookings directly through the platform. Streamline your workflow with automated confirmations and easy scheduling management.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="benefit-step animate-on-scroll">
+          <span class="benefit-step-number">4</span>
+          <div class="benefit-step-content">
+            <div class="benefit-step-header">
+              <div class="benefit-step-icon">
+                <svg viewBox="0 0 24 24">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </div>
+              <div class="benefit-step-text">
+                <h3>Calendar Integration</h3>
+                <p>Sync your calendar to show real-time availability and reduce booking conflicts. Spend less time managing schedules and more time growing your business.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Questions? Contact us at <a href="mailto:support@cleverplanners.com">support@cleverplanners.com</a></p>
+  </footer>
+
+  <script>
+    const form = document.getElementById('vendorIntakeForm');
+    const errorMessages = {
+      firstName: document.getElementById('firstNameError'),
+      lastName: document.getElementById('lastNameError'),
+      company: document.getElementById('companyError'),
+      email: document.getElementById('emailError'),
+      phone: document.getElementById('phoneError')
+    };
+
+    function showError(fieldName, message) {
+      const field = document.getElementById(fieldName);
+      const errorEl = errorMessages[fieldName];
+      if (field && errorEl) {
+        field.classList.add('error');
+        errorEl.textContent = message;
+        errorEl.classList.add('show');
+      }
+    }
+
+    function clearError(fieldName) {
+      const field = document.getElementById(fieldName);
+      const errorEl = errorMessages[fieldName];
+      if (field && errorEl) {
+        field.classList.remove('error');
+        errorEl.classList.remove('show');
+      }
+    }
+
+    function validateForm() {
+      let isValid = true;
+      
+      // Clear all errors first
+      Object.keys(errorMessages).forEach(key => clearError(key));
+
+      // Validate first name
+      const firstName = document.getElementById('firstName').value.trim();
+      if (!firstName) {
+        showError('firstName', 'Please enter your first name');
+        isValid = false;
+      }
+
+      // Validate last name
+      const lastName = document.getElementById('lastName').value.trim();
+      if (!lastName) {
+        showError('lastName', 'Please enter your last name');
+        isValid = false;
+      }
+
+      // Validate company
+      const company = document.getElementById('company').value.trim();
+      if (!company) {
+        showError('company', 'Please enter your company name');
+        isValid = false;
+      }
+
+      // Validate email
+      const email = document.getElementById('email').value.trim();
+      if (!email) {
+        showError('email', 'Please enter your email address');
+        isValid = false;
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showError('email', 'Please enter a valid email address');
+        isValid = false;
+      }
+
+      // Validate phone
+      const phone = document.getElementById('phone').value.trim();
+      if (!phone) {
+        showError('phone', 'Please enter your phone number');
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    // Real-time validation with success indicators
+    function validateField(fieldName) {
+      const field = document.getElementById(fieldName);
+      const statusEl = document.getElementById(fieldName + 'Status');
+      if (!field || !statusEl) return;
+
+      const value = field.value.trim();
+      let isValid = false;
+
+      switch(fieldName) {
+        case 'firstName':
+        case 'lastName':
+        case 'company':
+          isValid = value.length > 0;
+          break;
+        case 'email':
+          isValid = value.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+          break;
+        case 'phone':
+          isValid = value.length > 0;
+          break;
+      }
+
+      if (isValid && value.length > 0) {
+        field.classList.remove('error');
+        field.classList.add('valid');
+        statusEl.classList.add('show', 'success');
+        clearError(fieldName);
+      } else {
+        field.classList.remove('valid');
+        statusEl.classList.remove('show', 'success');
+      }
+    }
+
+    // Clear errors and remove success state on input
+    Object.keys(errorMessages).forEach(key => {
+      const field = document.getElementById(key);
+      if (field) {
+        field.addEventListener('input', () => {
+          clearError(key);
+          validateField(key);
+        });
+        field.addEventListener('blur', () => validateField(key));
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      if (validateForm()) {
+        const submitBtn = document.getElementById('submitBtn');
+        
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.classList.add('loading');
+        submitBtn.textContent = 'Processing...';
+
+        // Collect form data
+        const intakeData = {
+          firstName: document.getElementById('firstName').value.trim(),
+          lastName: document.getElementById('lastName').value.trim(),
+          company: document.getElementById('company').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          phone: document.getElementById('phone').value.trim()
+        };
+
+        // Simulate processing delay (remove in production if not needed)
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        // Save to localStorage for pre-filling onboarding
+        localStorage.setItem('vendorIntakeData', JSON.stringify(intakeData));
+
+        // Show success state
+        submitBtn.classList.remove('loading');
+        submitBtn.classList.add('success');
+        submitBtn.textContent = '✓ Success! Redirecting...';
+
+        // Redirect to vendor onboarding after brief delay
+        setTimeout(() => {
+          window.location.href = 'vendor-onboarding.html';
+        }, 600);
+      }
+    });
+
+    // Scroll Animation Observer
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animated');
+          // Stop observing once animated
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    // Observe all animated elements
+    document.addEventListener('DOMContentLoaded', () => {
+      // Animate marketing content immediately (above fold)
+      const marketingContent = document.querySelector('.marketing-content');
+      if (marketingContent) {
+        setTimeout(() => {
+          marketingContent.classList.add('animated');
+        }, 300);
+      }
+
+      // Observe scroll-triggered elements
+      const animatedElements = document.querySelectorAll('.animate-on-scroll, .animate-fade-in, .animate-slide-left, .animate-slide-right, .animate-scale');
+      animatedElements.forEach(el => {
+        observer.observe(el);
+        // Check if element is already in view on load
+        const rect = el.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+        if (isVisible) {
+          // Trigger animation immediately if already visible
+          setTimeout(() => {
+            el.classList.add('animated');
+          }, 100);
+        }
+      });
+
+      // Number counter animation for stats
+      const animateNumbers = (element, target, duration = 2000) => {
+        const isIntersecting = element.getBoundingClientRect().top < window.innerHeight;
+        if (!isIntersecting) return;
+
+        const text = element.textContent;
+        const hasPlus = text.includes('+');
+        const hasK = text.includes('K');
+        const hasM = text.includes('M');
+        const hasDollar = text.includes('$');
+        
+        let num = parseFloat(text.replace(/[^0-9.]/g, ''));
+        if (isNaN(num)) return;
+
+        const start = 0;
+        const increment = num / (duration / 16);
+        let current = start;
+
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= num) {
+            current = num;
+            clearInterval(timer);
+          }
+          
+          let display = Math.floor(current).toLocaleString();
+          if (hasK && num >= 1000) display = (current / 1000).toFixed(0) + 'K';
+          if (hasM && num >= 1000000) display = (current / 1000000).toFixed(0) + 'M';
+          if (hasDollar) display = '$' + display;
+          if (hasPlus) display += '+';
+          
+          element.textContent = display;
+        }, 16);
+      };
+
+      // Observe stat numbers for counter animation
+      const statNumbers = document.querySelectorAll('.stat-number, .stat-card-number');
+      const numberObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            animateNumbers(entry.target, 0);
+            numberObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.5 });
+
+      statNumbers.forEach(num => {
+        numberObserver.observe(num);
+      });
+
+      // Parallax effect for hero section
+      let lastScroll = 0;
+      window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const hero = document.querySelector('.hero');
+        const formColumn = document.querySelector('.form-column');
+        const marketingColumn = document.querySelector('.marketing-column');
+        
+        if (hero && scrolled < hero.offsetHeight) {
+          if (formColumn) {
+            formColumn.style.transform = `translateY(${scrolled * 0.1}px)`;
+          }
+          if (marketingColumn) {
+            marketingColumn.style.transform = `translateY(${scrolled * 0.05}px)`;
+          }
+        }
+      }, { passive: true });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,2446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CleverPlanners – Results Page</title>
+  <style>
+    :root{
+      --ink:#1e293b; --muted:#6b7280; --cream:#fbf6ed; --panel:#f4ecdc; --brand:#111827; --accent1:#ff7ab6; --accent2:#89f7d3; --ring:#e5dcc7; --radius:20px; --shadow:0 10px 30px rgba(16,24,40,.08);
+      --ok:#16a34a; --warn:#f59e0b; --soft:#faf7f1;
+      --bg:#fbf6ed;--text:#1e293b;--card:#fff;
+      --ok-bg:#d1fae5;--ok-text:#065f46;--maybe-bg:#fef3c7;--maybe-text:#92400e;
+      --grad-1:#7cf1d6;--grad-2:#b8a8ff;--grad-3:#ff7ab6;
+      --budget-green:#16a34a; --budget-yellow:#f59e0b; --budget-red:#dc2626;
+    }
+    *{box-sizing:border-box}
+    html:focus-within{scroll-behavior:smooth}
+    @media (prefers-reduced-motion: reduce){ html:focus-within{scroll-behavior:auto} }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;margin:0;background:var(--cream);color:var(--ink)}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    :focus-visible{outline:2px solid var(--ring); outline-offset:2px; border-radius:10px}
+
+    .results-header.ribbon{
+      position:sticky;
+      top:0;
+      z-index:60;
+      background:rgba(255,255,255,0.85);
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+      border-bottom:1px solid rgba(229,220,199,0.3);
+      padding:18px 0;
+      box-shadow:0 1px 2px rgba(0,0,0,.02);
+    }
+    .results-header.ribbon::after{display:none}
+    .results-header-inner{
+      max-width:1100px;
+      margin:0 auto;
+      padding:0 22px;
+      display:flex;
+      align-items:flex-start;
+      gap:24px;
+      position:relative;
+    }
+    .logo{
+      position:fixed;
+      top:0;
+      left:0;
+      font-weight:600;
+      font-size:1rem;
+      letter-spacing:-0.02em;
+      color:var(--muted);
+      text-decoration:none;
+      transition:opacity 0.2s, color 0.2s;
+      padding:12px 16px;
+      z-index:100;
+      background:rgba(255,255,255,0.85);
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+      margin:0;
+    }
+    .logo:hover{
+      color:var(--ink);
+      opacity:0.8;
+    }
+    .results-titlewrap{
+      position:relative;
+      z-index:1;
+      flex:1;
+      margin-left:100px;
+      padding-left:20px;
+    }
+    .results-header.ribbon h1{
+      margin:0 0 8px 0;
+      font-size:clamp(1.75rem,3.5vw,2.5rem);
+      font-weight:700;
+      color:var(--ink);
+      letter-spacing:-0.02em;
+      line-height:1.2;
+      opacity:0;
+      transform:translateY(-14px);
+      animation:dropIn 0.6s cubic-bezier(.2,.7,.3,1) forwards;
+      text-align:left;
+    }
+    /* Animated gradient for event type only */
+    #event-type{
+      background: linear-gradient(90deg, var(--accent2), #b9a7ff, var(--accent1));
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      animation: gradientShift 6s ease-in-out infinite;
+      font-weight: 900;
+    }
+    @keyframes gradientShift{
+      0%{ background-position: 0% 50%; }
+      50%{ background-position: 100% 50%; }
+      100%{ background-position: 0% 50%; }
+    }
+    @media (prefers-reduced-motion: reduce){
+      #event-type{ animation: none; }
+    }
+    .results-header.ribbon .subtext{
+      margin:0;
+      color:var(--muted);
+      font-weight:400;
+      font-size:clamp(0.875rem,1.3vw,1rem);
+      display:flex;align-items:center;justify-content:flex-start;gap:12px;
+      opacity:0.7;
+      transform:translateY(10px);
+      animation:fadeUpSub 0.6s ease forwards;
+      animation-delay:0.2s;
+      text-align:left;
+    }
+    /* Typewriter styles for the subtext left-side sentence */
+    #subtext-typed{display:inline-block;white-space:nowrap;overflow:hidden}
+    #subtext-typed.caret{border-right:2px solid var(--muted);animation:blink .9s steps(1,end) infinite;margin-right:2px}
+    @keyframes blink{50%{border-color:transparent}}
+    @keyframes dropIn{
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+    @keyframes fadeUpSub{
+      from{
+        opacity:0;
+        transform:translateY(10px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+    .results-header.ribbon .date{
+      display:inline-flex;
+      align-items:center;
+      background:var(--soft);
+      padding:6px 14px;
+      border-radius:999px;
+      border:1px solid var(--ring);
+      color:var(--ink);
+      font-weight:600;
+      font-size:.95rem;
+      box-shadow:0 1px 2px rgba(0,0,0,.04);
+    }
+    .results-header.ribbon .dot{
+      opacity:.3;
+      color:var(--muted);
+      font-size:1.2em;
+    }
+    .results-header.ribbon .tagline{
+      color:var(--muted);
+      opacity:1;
+      font-style:italic;
+    }
+
+    /* Right column becomes one sticky unit */
+    .right-col{display:flex;flex-direction:column;gap:20px;align-self:start;position:sticky;top:100px;z-index:3}
+
+    .budget-section-label{font-size:0.7rem;color:var(--muted);font-weight:500;text-align:left;margin-bottom:0;text-transform:uppercase;letter-spacing:0.8px;opacity:0.6}
+    .results-budget{background:rgba(255,255,255,0.6);border:1px solid rgba(229,220,199,0.3);border-radius:12px;padding:24px 20px;min-width:260px;box-shadow:0 1px 3px rgba(0,0,0,0.02);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;margin-top:0;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+    .budget-total-display{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:24px;width:100%}
+    .budget-total-value{font-size:1.75rem;font-weight:700;color:var(--ink);line-height:1.2;display:flex;align-items:center;gap:10px;justify-content:center;letter-spacing:-0.02em}
+    .budget-dropdown-arrow{font-size:0.65rem;cursor:pointer;transition:all 0.2s ease;display:inline-block;user-select:none;color:var(--muted);opacity:0.6;padding:2px}
+    .budget-dropdown-arrow:hover{opacity:1;transform:translateY(1px)}
+    .budget-dropdown-arrow.active{transform:rotate(180deg);opacity:1}
+    .budget-circular{position:relative;width:140px;height:140px;flex-shrink:0;margin:0 auto 24px}
+    .budget-circle-bg{fill:none;stroke:rgba(229,220,199,0.4);stroke-width:8;opacity:0.4}
+    .budget-circle-fill{fill:none;stroke-width:8;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1),stroke 0.3s ease}
+    .budget-circle-fill.ok{stroke:var(--budget-green)}
+    .budget-circle-fill.warn{stroke:var(--budget-yellow)}
+    .budget-circle-fill.over{stroke:var(--budget-red)}
+    .budget-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+    .budget-percent{font-size:2.25rem;font-weight:800;line-height:1;color:var(--ink);transition:color 0.3s ease;letter-spacing:-0.03em}
+    .budget-percent.over{color:var(--budget-red)}
+    .budget-label{font-size:0.7rem;color:var(--muted);margin-top:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;opacity:0.8}
+    .budget-stats{display:flex;flex-direction:row;gap:10px;margin-bottom:0;width:100%}
+    .budget-stat-row{display:flex;flex-direction:column;flex:1;padding:14px 12px;background:rgba(250,247,241,0.4);border-radius:10px;transition:all 0.25s cubic-bezier(0.4,0,0.2,1);align-items:center;text-align:center;border:1px solid transparent}
+    .budget-stat-row:hover{background:rgba(250,247,241,0.6);transform:none;border-color:transparent;box-shadow:none}
+    .budget-stat-value{font-size:1.5rem;font-weight:700;color:var(--ink);transition:all 0.3s ease;line-height:1.2;margin-bottom:8px;letter-spacing:-0.02em}
+    .budget-stat-label{font-size:0.8rem;color:var(--muted);font-weight:600;opacity:0.85}
+    .budget-stat-value.animating{animation:countUp 0.6s ease-out}
+    @keyframes countUp{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+    .budget-stat-value.remaining{color:var(--budget-green)}
+    .budget-stat-value.over{color:var(--budget-red);animation:shake 0.5s ease}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+    .budget-panel{display:none;margin-top:16px;padding-top:16px;border-top:1px solid rgba(229,220,199,0.3);animation:slideDown 0.3s ease}
+    .budget-panel.open{display:block}
+    @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+    .budget-controls{display:flex;gap:10px;align-items:center}
+    .budget-slider{flex:1;height:8px;border-radius:4px;background:var(--ring);outline:none;transition:all 0.2s ease}
+    .budget-slider::-webkit-slider-thumb{appearance:none;width:20px;height:20px;border-radius:50%;background:var(--brand);cursor:pointer;box-shadow:0 2px 6px rgba(17,24,39,0.2);transition:all 0.2s ease}
+    .budget-slider::-webkit-slider-thumb:hover{transform:scale(1.2);box-shadow:0 4px 12px rgba(17,24,39,0.3)}
+    .budget-slider::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--brand);cursor:pointer;border:none;box-shadow:0 2px 6px rgba(17,24,39,0.2);transition:all 0.2s ease}
+    .budget-slider::-moz-range-thumb:hover{transform:scale(1.2);box-shadow:0 4px 12px rgba(17,24,39,0.3)}
+    .budget-number{width:120px;padding:8px 12px;border:2px solid var(--ring);border-radius:10px;text-align:right;font-weight:600;font-size:0.95rem;transition:all 0.2s ease}
+    .budget-number:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(17,24,39,0.1)}
+
+    .anchor-nav{position:sticky; top:var(--header-height, 100px); background:rgba(251,246,237,0.6); border-bottom:1px solid rgba(229,220,199,0.25);padding:8px 22px; z-index:50; display:flex; align-items:center; gap:10px;max-width:1100px;margin:0 auto;box-shadow:none;backdrop-filter:blur(8px) saturate(150%);overflow:hidden;max-height:52px;transition:max-height 0.3s ease, top 0.1s ease;margin-top:0}
+    .anchor-nav.expanded{max-height:500px;flex-wrap:wrap}
+    .anchor-nav-wrapper{display:flex;flex-wrap:nowrap;align-items:center;gap:10px;flex:1;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:var(--ring) transparent}
+    .anchor-nav-wrapper::-webkit-scrollbar{height:4px}
+    .anchor-nav-wrapper::-webkit-scrollbar-track{background:transparent}
+    .anchor-nav-wrapper::-webkit-scrollbar-thumb{background:var(--ring);border-radius:2px}
+    .anchor-nav.expanded .anchor-nav-wrapper{flex-wrap:wrap;overflow-x:visible;overflow-y:visible}
+    .anchor-nav a{color:var(--muted);font-weight:500;padding:6px 12px;border-radius:8px;transition:all 0.2s ease;border:1px solid transparent;flex-shrink:0;white-space:nowrap;font-size:0.9rem}
+    .anchor-nav a:hover{color:var(--ink);background:rgba(250,247,241,0.5);border-color:transparent;transform:none}
+    .anchor-nav a.active{color:var(--ink);font-weight:600;background:rgba(229,220,199,0.3);border-color:transparent;box-shadow:none}
+    .anchor-nav-expand{background:transparent;border:1px solid rgba(229,220,199,0.4);border-radius:8px;padding:6px 12px;font-weight:500;font-size:0.85rem;color:var(--muted);cursor:pointer;transition:all 0.2s ease;flex-shrink:0;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+    .anchor-nav-expand:hover{background:rgba(250,247,241,0.5);border-color:rgba(229,220,199,0.5);transform:none;box-shadow:none;color:var(--ink)}
+    .anchor-nav-expand::before{content:'⋯';font-size:1.2em;line-height:1}
+    .anchor-nav-expand::after{content:'Expand'}
+    .anchor-nav.expanded .anchor-nav-expand::after{content:'Collapse'}
+
+    .container{max-width:1100px;margin:0 auto;padding:0 22px}
+    .results-wrap{display:grid;grid-template-columns:2fr 1fr;gap:32px;padding:40px 22px;max-width:1100px;margin:0 auto}
+    @media (max-width:900px){
+      .results-wrap{grid-template-columns:1fr;gap:20px;padding:20px 16px}
+      .results-header.ribbon{
+        padding:14px 0;
+      }
+      .results-header-inner{
+        padding:0 16px;
+        flex-direction:column;
+        gap:16px;
+      }
+      .results-titlewrap{
+        margin-left:0;
+      }
+      .logo{
+        position:relative;
+        font-size:0.95rem;
+        padding:10px 14px;
+      }
+      .container{
+        padding:0 16px;
+      }
+      .svc-body{
+        grid-template-columns:1fr;
+        gap:12px;
+      }
+      .svc-head{
+        padding:12px 14px;
+      }
+      .plan{
+        padding:16px;
+      }
+      .btn{
+        padding:12px 16px;
+        font-size:0.9rem;
+        width:100%;
+      }
+      .anchor-nav{
+        display:none;
+      }
+    }
+
+    .plan{border:1px solid rgba(229,220,199,0.3);background:rgba(255,255,255,0.6);border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.02);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+    .plan h3{margin:0 0 16px 0;color:var(--ink);font-weight:600;font-size:1rem}
+    .divider{height:1px;background:rgba(229,220,199,0.3);margin:10px 0}
+    .plan-row{display:flex;justify-content:space-between;align-items:center;margin:6px 0;gap:12px}
+    .plan-total-row{justify-content:flex-start;gap:8px}
+    .muted{color:var(--muted)}
+    .plan-row strong{font-weight:700}
+    #plan-total{color:var(--ink)}
+
+    .svc-group{border:1px solid var(--ring);background:var(--card);border-radius:var(--radius);margin-bottom:20px;scroll-margin-top:140px;box-shadow:var(--shadow)}
+    .svc-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--ring)}
+    .svc-head h3{margin:0;font-size:1.1rem;font-weight:700;color:var(--ink)}
+    .svc-body{padding:16px;display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    .see-more{border:1px solid var(--ring);background:var(--card);border-radius:12px;padding:8px 14px;font-weight:600;cursor:pointer;transition:all 0.2s ease}
+    .see-more:hover{background:var(--soft);border-color:#d4cbb2;transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+    .see-all{border:1px solid var(--ring);background:var(--card);border-radius:12px;padding:8px 14px;font-weight:600;cursor:pointer;transition:all 0.2s ease;margin-top:12px;width:100%;text-align:center}
+    .see-all:hover{background:var(--soft);border-color:#d4cbb2;transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+    .svc-group .extra{display:none}
+    .svc-group[data-expanded="true"] .extra{display:contents}
+    .svc-group .see-all-container{display:none;padding:0 16px 16px}
+    .svc-group[data-expanded="true"] .see-all-container{display:block}
+    .svc-group[data-see-all="true"] .see-all-container{display:none}
+
+    .vendor-block{ border:1px solid var(--ring);border-radius:var(--radius);padding:18px;background:#fff;display:flex;flex-direction:column;gap:8px;position:relative;box-shadow:var(--shadow);transition:all 0.2s ease; }
+    .vendor-block:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(16,24,40,.12);border-color:#d4cbb2}
+    .vendor-block.recommended{ border:2px solid var(--ring); box-shadow:0 10px 30px rgba(16,24,40,.12), 0 0 0 3px var(--soft) inset; }
+
+    .rec-label{ display:inline-block;padding:4px 10px;border-radius:999px;font-size:.75rem;font-weight:700;color:#fff;background:var(--brand);position:absolute;top:-10px;left:12px;z-index:1;pointer-events:none;box-shadow:0 2px 8px rgba(17,24,39,0.2); }
+
+    .vendor-title{font-weight:800;font-size:1.1rem;color:var(--ink);margin-bottom:4px}
+    .vendor-tags{font-size:.9rem;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+    .badge{padding:4px 8px;border-radius:8px;font-size:.8rem}
+    .avail-ok{background:var(--ok-bg);color:var(--ok-text)}
+    .avail-maybe{background:var(--maybe-bg);color:var(--maybe-text)}
+
+    /* Elegant media area */
+    .media{position:relative;height:120px;border-radius:10px;overflow:hidden;margin-top:4px;background:linear-gradient(135deg,var(--soft) 0%,#fff 100%)}
+    .media-link{display:block;width:100%;height:100%}
+    .media-swatch{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat}
+    .media-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+    .media-overlay span{background:rgba(255,255,255,.85);color:var(--ink);font-weight:700;letter-spacing:.02em;padding:6px 12px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.12);backdrop-filter:blur(4px)}
+    .media-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.5);color:#fff;border:none;width:28px;height:28px;border-radius:999px;display:grid;place-items:center;cursor:pointer;opacity:0;transition:opacity .15s;pointer-events:none}
+    .media-btn:hover{opacity:.8}
+    .media-prev{left:6px}
+    .media-next{right:6px}
+    .vendor-block:hover .media-btn,.vendor-block:focus-within .media-btn{opacity:.85;pointer-events:auto}
+
+    .add-row{display:flex}
+    .add-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 14px;line-height:1.15;border:1px solid var(--ring);border-radius:12px;background:#fff;color:var(--ink);font-weight:600;cursor:pointer;width:100%;font-size:.92rem;transition:all 0.2s ease;position:relative;overflow:hidden}
+    .add-btn:not(.selected):hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.1);border-color:#d4cbb2;background:var(--soft)}
+    .add-btn:active{transform:translateY(0);box-shadow:0 2px 6px rgba(0,0,0,0.08)}
+    @media (prefers-reduced-motion: reduce){.add-btn{transition:none}.add-btn:active{transform:none}}
+    .add-btn.selected{background:var(--brand);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(17,24,39,0.15)}
+    .add-btn.selected:hover{background:#0a0f1a;box-shadow:0 4px 16px rgba(17,24,39,0.25);transform:translateY(-2px)}
+
+    .meta-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:.92rem;color:var(--muted)}
+    .meta-row .price{font-weight:500;color:var(--ink);font-size:1.05rem}
+    .meta-location{color:var(--muted);font-weight:500}
+    .meta-availability{font-weight:500;display:inline-flex;align-items:center;gap:4px;position:relative}
+    .avail-text-ok{color:var(--ok-text)}
+    .avail-text-maybe{color:var(--maybe-text)}
+    .avail-info-icon{display:flex;width:14px;height:14px;border-radius:50%;background:var(--muted);color:#fff;font-size:10px;font-weight:700;cursor:pointer;align-items:center;justify-content:center;transition:all 0.2s ease;flex-shrink:0}
+    .avail-info-icon:hover{background:var(--ink);transform:scale(1.1)}
+
+    .card-divider{height:1px;background:var(--ring);margin:6px 0}
+    .link-row{display:flex;flex-wrap:wrap;gap:8px}
+    .link-row a{display:inline-flex;align-items:center;padding:6px 8px;border:1px solid var(--ring);border-radius:8px;background:var(--card);color:var(--ink);font-weight:600;text-decoration:none;transition:all 0.2s ease}
+    .link-row a:hover{background:var(--soft);border-color:#d4cbb2;transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+
+    .chat-overlay{position:fixed;inset:0;background:rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .2s;z-index:60}
+    .chat-overlay.open{opacity:1;pointer-events:auto}
+    .chat-panel{position:fixed;top:0;right:0;height:100vh;width:400px;max-width:95vw;background:var(--card);border-left:1px solid var(--ring);box-shadow:-8px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .25s;z-index:70;display:flex;flex-direction:column}
+    .chat-panel.open{transform:translateX(0)}
+    .chat-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-bottom:1px solid var(--ring)}
+    .chat-title{margin:0;font-size:1rem}
+    .chat-sub{color:var(--muted);font-size:.85rem}
+    .chat-body{flex:1;overflow:auto;padding:12px;background:var(--soft)}
+    .msg{max-width:78%;padding:8px 10px;border-radius:12px;line-height:1.25;margin:6px 0;word-wrap:break-word;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+    .msg.vendor{background:#fff;border:1px solid var(--ring);align-self:flex-start}
+    .msg.user{background:#e6f7f1;border:1px solid #c6EFE3;align-self:flex-end}
+    .chat-row{display:flex;flex-direction:column}
+    .chat-footer{padding:10px;border-top:1px solid var(--ring);display:flex;gap:8px;align-items:center;background:var(--card)}
+    .chat-footer textarea{flex:1;resize:none;max-height:110px;min-height:38px;padding:8px;border:1px solid var(--ring);border-radius:10px;font-family:inherit}
+    .chat-footer .send{white-space:nowrap;border:1px solid var(--brand);background:var(--brand);color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;transition:all 0.2s ease}
+    .chat-footer .send:hover{background:#0a0f1a;transform:translateY(-1px);box-shadow:0 4px 12px rgba(17,24,39,0.25)}
+    .chat-close,.chat-min{border:1px solid var(--ring);background:var(--card);border-radius:8px;padding:6px 8px;cursor:pointer;color:var(--muted);transition:all 0.2s ease}
+    .chat-close:hover,.chat-min:hover{background:var(--soft);border-color:#d4cbb2}
+    .chat-actions{display:flex;gap:8px;align-items:center}
+    .chat-panel.minimized{top:auto;height:auto;width:260px;right:16px;bottom:16px;border:1px solid var(--ring);transform:translateX(0);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:10px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+    .chat-panel.minimized .chat-head,.chat-panel.minimized .chat-body,.chat-panel.minimized .chat-footer{display:none}
+    .chat-panel.minimized::after{content:attr(data-title);font-weight:700;color:var(--ink)}
+
+    .services-overlay{position:fixed;inset:0;background:rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .2s;z-index:60}
+    .services-overlay.open{opacity:1;pointer-events:auto}
+    .services-panel{position:fixed;top:0;right:0;height:100vh;width:440px;max-width:98vw;background:var(--card);border-left:1px solid var(--ring);box-shadow:-8px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .25s;z-index:75;display:flex;flex-direction:column}
+    .services-panel.open{transform:translateX(0)}
+    .svcdr-head{display:flex;justify-content:space-between;align-items:start;gap:10px;padding:14px;border-bottom:1px solid var(--ring)}
+    .svcdr-title{margin:0;font-size:1.05rem}
+    .svcdr-sub{color:var(--muted);font-size:.9rem;margin-top:2px}
+    .svcdr-actions{display:flex;gap:8px}
+    .svcdr-close{border:1px solid var(--ring);background:var(--card);border-radius:8px;padding:6px 8px;cursor:pointer;color:var(--muted);transition:all 0.2s ease}
+    .svcdr-close:hover{background:var(--soft);border-color:#d4cbb2}
+    .svcdr-body{padding:14px;overflow:auto}
+    .svcdr-blurb{color:var(--muted);margin-bottom:10px}
+    .svcdr-list{display:flex;flex-direction:column;gap:10px}
+    .svcdr-item{display:grid;grid-template-columns:1fr auto;align-items:start;gap:8px 12px;border:1px solid var(--ring);border-radius:10px;padding:10px;background:var(--soft)}
+    .svcdr-item strong{font-weight:700}
+    .svcdr-item .desc{color:var(--muted);font-size:.9rem;margin-top:4px}
+    .svcdr-price{font-weight:700;text-align:right;white-space:nowrap}
+    @media (max-width:520px){.svcdr-item{grid-template-columns:1fr}.svcdr-price{text-align:left}}
+    .svcdr-footer{padding:12px;border-top:1px solid var(--ring);display:flex;gap:8px;justify-content:flex-start;flex-wrap:wrap}
+
+    .toast-region{position:fixed; right:16px; bottom:16px; z-index:90; display:flex; flex-direction:column; gap:8px;}
+    .toast{display:flex; align-items:center; gap:10px; background:#111; color:#fff; padding:10px 12px; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,.2);}
+    .toast .msg{font-size:.95rem}
+    .toast .action{background:#fff; color:#111; border:none; padding:6px 10px; border-radius:8px; cursor:pointer; font-weight:600;}
+    .toast .close{background:transparent; border:1px solid #444; color:#bbb; padding:4px 8px; border-radius:8px; cursor:pointer;}
+
+    .back-cta{
+      position:fixed;
+      left:24px;
+      bottom:24px;
+      z-index:85;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:12px 20px;
+      background:rgba(255,255,255,0.3);
+      border:1px solid rgba(229,220,199,0.3);
+      border-radius:12px;
+      color:rgba(30,41,59,0.4);
+      font-weight:600;
+      text-decoration:none;
+      box-shadow:0 2px 8px rgba(0,0,0,.05);
+      transition:all 0.3s ease;
+      backdrop-filter:blur(8px);
+    }
+    .back-cta:hover{
+      transform:translateY(-2px);
+      box-shadow:0 12px 32px rgba(16,24,40,.12);
+      border-color:var(--ring);
+      background:#fff;
+      color:var(--ink);
+    }
+    .back-cta::before{
+      content:'←';
+      font-size:1.1em;
+    }
+
+    /* Availability info popup */
+    .avail-popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.2);opacity:0;pointer-events:none;transition:opacity 0.2s ease;z-index:100}
+    .avail-popup-overlay.show{opacity:1;pointer-events:auto}
+    .avail-popup{position:fixed;background:#fff;border:1px solid var(--ring);border-radius:var(--radius);padding:20px;box-shadow:0 8px 24px rgba(0,0,0,.15);max-width:320px;z-index:101;opacity:0;transform:translateY(-10px) scale(0.95);transition:all 0.2s ease;pointer-events:none}
+    .avail-popup.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+    .avail-popup h4{margin:0 0 12px 0;font-size:1rem;font-weight:700;color:var(--ink)}
+    .avail-popup p{margin:0 0 10px 0;font-size:0.9rem;color:var(--ink);line-height:1.5}
+    .avail-popup .avail-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+    .avail-popup .avail-item:last-child{margin-bottom:0}
+    .avail-popup .avail-badge{display:inline-block;padding:4px 8px;border-radius:6px;font-size:0.8rem;font-weight:600;flex-shrink:0;margin-top:2px}
+    .avail-popup .avail-badge.ok{background:var(--ok-bg);color:var(--ok-text)}
+    .avail-popup .avail-badge.maybe{background:var(--maybe-bg);color:var(--maybe-text)}
+    .avail-popup .avail-desc{font-size:0.85rem;color:var(--muted);line-height:1.4}
+    .avail-popup-close{position:absolute;top:12px;right:12px;width:24px;height:24px;border:none;background:transparent;color:var(--muted);cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all 0.2s ease;font-size:18px;line-height:1}
+    .avail-popup-close:hover{background:var(--soft);color:var(--ink)}
+    @media (max-width:480px){
+      .avail-popup{max-width:calc(100vw - 32px);left:16px !important;right:16px !important;top:50% !important;transform:translateY(-50%) scale(0.95) !important}
+      .avail-popup.show{transform:translateY(-50%) scale(1) !important}
+    }
+
+    /* Button styles matching plan.html */
+    .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:12px 14px;border:1px solid var(--ring);background:#fff;cursor:pointer;font-weight:600;transition:all 0.2s ease;position:relative;overflow:hidden}
+    .btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.1);border-color:#d4cbb2}
+    .btn:active{transform:translateY(0);box-shadow:0 2px 6px rgba(0,0,0,0.08)}
+    .btn.primary{background:var(--brand);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(17,24,39,0.15)}
+    .btn.primary:hover{background:#0a0f1a;box-shadow:0 4px 16px rgba(17,24,39,0.25);transform:translateY(-2px)}
+    .btn.primary:active{transform:translateY(0);box-shadow:0 2px 8px rgba(17,24,39,0.15)}
+    .btn.ghost{background:transparent;border-color:transparent}
+    .btn.ghost:hover{background:var(--soft)}
+    .btn:disabled{opacity:.5;cursor:not-allowed;transform:none !important;box-shadow:none !important}
+
+    /* Responsive: relax stickiness on mobile */
+    @media (max-width:900px){
+      .right-col{ position:static; top:auto; }
+      .anchor-nav{top:var(--header-height, 70px);padding:10px 16px;background:rgba(251,246,237,0.9);max-height:56px}
+      .anchor-nav.expanded{max-height:400px}
+      .anchor-nav-expand{font-size:0.8rem;padding:5px 10px}
+      .results-header.ribbon{padding:24px 0}
+      .results-header-inner{padding:0 16px;gap:16px}
+      .results-titlewrap{
+        margin-left:0;
+      }
+      .logo{font-size:1.1rem;padding:12px 16px}
+      .results-header.ribbon h1{font-size:clamp(1.75rem,4vw,2.5rem)}
+      .results-header.ribbon .subtext{font-size:clamp(0.9rem,1.5vw,1rem)}
+      .vendor-block{padding:14px}
+      .svc-body{grid-template-columns:1fr;gap:12px;padding:12px}
+      .svc-group{scroll-margin-top:140px}
+      .back-cta{left:16px;bottom:16px;padding:10px 16px;font-size:0.9rem}
+      .budget-circular{width:120px;height:120px;margin:0 auto 16px}
+      .budget-circular svg{width:120px;height:120px}
+      .budget-percent{font-size:1.75rem}
+      .budget-stats{gap:10px;margin-bottom:14px}
+      .budget-stat-row{padding:8px 10px}
+    }
+    @media (max-width:480px){
+      .results-header.ribbon{padding:20px 0}
+      .results-header-inner{padding:0 16px;gap:12px;flex-direction:column;align-items:flex-start}
+      .results-titlewrap{
+        margin-left:0;
+      }
+      .logo{font-size:1rem;padding:10px 14px}
+      .results-header.ribbon h1{font-size:clamp(1.5rem,3.5vw,2rem)}
+      .results-header.ribbon .subtext{font-size:0.9rem}
+      .anchor-nav{top:var(--header-height, 60px);padding:8px 12px;gap:6px;max-width:100%;background:rgba(251,246,237,0.95);max-height:52px}
+      .anchor-nav.expanded{max-height:350px}
+      .anchor-nav a{font-size:0.85rem;padding:6px 10px}
+    }
+
+    /* Profile Icon */
+    .profile-container{
+      position:fixed;
+      top:20px;
+      right:24px;
+      z-index:100;
+      display:none;
+      opacity:0;
+      transform:scale(0.9) translateY(-10px);
+      transition:opacity 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .profile-container.signed-in{
+      display:block;
+      opacity:1;
+      transform:scale(1) translateY(0);
+    }
+    .profile-icon{
+      width:44px;
+      height:44px;
+      border-radius:12px;
+      background:linear-gradient(135deg, #a78bfa 0%, #ec4899 50%, #06b6d4 100%);
+      background-size:200% 200%;
+      animation:profileGradientShift 8s ease infinite;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-weight:700;
+      font-size:1.1rem;
+      cursor:pointer;
+      border:2.5px solid rgba(255,255,255,0.9);
+      box-shadow:0 4px 16px rgba(167,139,250,0.25), 0 2px 8px rgba(0,0,0,.1), 0 0 0 1px rgba(255,255,255,0.15) inset, 0 1px 3px rgba(0,0,0,.12) inset;
+      transition:all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position:relative;
+      text-shadow:0 1px 3px rgba(0,0,0,.2);
+      letter-spacing:-0.01em;
+      overflow:hidden;
+    }
+    @keyframes profileGradientShift{
+      0%, 100%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+    }
+    @media (prefers-reduced-motion: reduce){
+      .profile-icon{animation:none}
+    }
+    .profile-icon::before{
+      content:'';
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      bottom:0;
+      border-radius:12px;
+      background:linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 100%);
+      pointer-events:none;
+      opacity:0.8;
+    }
+    .profile-icon::after{
+      content:'';
+      position:absolute;
+      top:-50%;
+      left:-50%;
+      width:200%;
+      height:200%;
+      background:radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+      pointer-events:none;
+      transition:opacity 0.3s ease;
+    }
+    .profile-icon:hover{
+      transform:scale(1.08) translateY(-2px) rotate(2deg);
+      box-shadow:0 8px 24px rgba(167,139,250,0.4), 0 4px 12px rgba(236,72,153,0.25), 0 0 0 1px rgba(255,255,255,0.2) inset, 0 2px 6px rgba(0,0,0,.15) inset;
+      border-color:rgba(255,255,255,1);
+      background-position:100% 50%;
+    }
+    .profile-icon:hover::after{
+      opacity:0.6;
+    }
+    .profile-icon:active{
+      transform:scale(1.03) translateY(0) rotate(0deg);
+      box-shadow:0 3px 12px rgba(167,139,250,0.3), 0 0 0 1px rgba(255,255,255,0.15) inset;
+    }
+    .profile-icon:focus-visible{
+      outline:3px solid rgba(167,139,250,0.5);
+      outline-offset:4px;
+      box-shadow:0 4px 16px rgba(167,139,250,0.25), 0 0 0 4px rgba(167,139,250,0.15);
+    }
+    .profile-icon svg{
+      width:20px;
+      height:20px;
+      stroke-width:2.5;
+      filter:drop-shadow(0 1px 2px rgba(0,0,0,.2));
+      position:relative;
+      z-index:1;
+    }
+    .profile-dropdown{
+      position:absolute;
+      top:calc(100% + 10px);
+      right:0;
+      background:var(--card);
+      border:1px solid var(--ring);
+      border-radius:14px;
+      box-shadow:0 8px 24px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.08);
+      min-width:180px;
+      padding:6px;
+      display:none;
+      z-index:101;
+      backdrop-filter:blur(12px) saturate(180%);
+      -webkit-backdrop-filter:blur(12px) saturate(180%);
+    }
+    .profile-dropdown.open{
+      display:block;
+      animation:fadeInDropdown 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes fadeInDropdown{
+      from{opacity:0;transform:translateY(-8px) scale(0.95)}
+      to{opacity:1;transform:translateY(0) scale(1)}
+    }
+    .profile-dropdown-item{
+      display:block;
+      width:100%;
+      padding:12px 16px;
+      border:none;
+      background:transparent;
+      color:var(--ink);
+      font-weight:600;
+      font-size:0.9rem;
+      text-align:left;
+      cursor:pointer;
+      border-radius:10px;
+      transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration:none;
+      position:relative;
+    }
+    .profile-dropdown-item:hover{
+      background:var(--soft);
+      color:var(--ink);
+      transform:translateX(2px);
+    }
+    .profile-dropdown-item:active{
+      background:var(--ring);
+      transform:translateX(0);
+    }
+    .profile-dropdown-item:focus-visible{
+      outline:2px solid var(--grad-2);
+      outline-offset:-2px;
+    }
+    @media (max-width:768px){
+      .profile-container{
+        top:16px;
+        right:16px;
+      }
+      .profile-dropdown{
+        min-width:140px;
+        right:-8px;
+      }
+    }
+      .anchor-nav-expand{font-size:0.75rem;padding:4px 8px}
+      .svc-group{scroll-margin-top:120px}
+      .results-wrap{padding:16px 12px;gap:16px}
+      .vendor-block{padding:12px}
+      .add-btn{padding:10px 12px;font-size:0.9rem}
+      .results-budget{padding:18px}
+      .budget-circular{width:100px;height:100px;margin:0 auto 14px}
+      .budget-circular svg{width:100px;height:100px}
+      .budget-circle-bg,.budget-circle-fill{stroke-width:10}
+      .budget-percent{font-size:1.5rem}
+      .budget-label{font-size:0.7rem}
+      .budget-stats{gap:8px;margin-bottom:12px}
+      .budget-stat-row{padding:8px}
+      .budget-stat-value{font-size:1rem}
+    }
+    .event-date-cursive{font-family:'Brush Script MT','Lucida Handwriting','Comic Sans MS',cursive;font-style:italic;color:var(--ink);opacity:.9;letter-spacing:.5px;white-space:nowrap}
+    @media (max-width:600px){ .event-date-cursive{font-size:.95rem;opacity:.85} }
+  </style>
+</head>
+<body data-budget-target="30000">
+  <section class="section" id="results">
+    <div class="results-header ribbon">
+      <div class="profile-container" id="profileContainer">
+        <div class="profile-icon" id="profileIcon" aria-label="User profile" role="button" tabindex="0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <div class="profile-dropdown" id="profileDropdown">
+          <button class="profile-dropdown-item" id="settingsBtn">Settings</button>
+          <button class="profile-dropdown-item" id="logoutBtn">Log Out</button>
+        </div>
+      </div>
+      <div class="results-header-inner">
+        <a href="index.html" class="logo">CleverPlanners</a>
+        <div class="results-titlewrap">
+          <h1 id="page-title">Let's Plan the <span id="event-type">Wedding</span></h1>
+          <p class="subtext"><span id="subtext-typed" class="caret" aria-live="polite"></span><span id="event-date-nice" class="event-date-cursive" style="display:none"></span></p>
+        </div>
+      </div>
+    </div>
+
+    <nav class="anchor-nav" id="anchorNav" aria-label="Category navigation"></nav>
+
+    <div class="results-wrap" role="region" aria-labelledby="page-title">
+      <div id="results-left"></div>
+
+      <!-- Right column wrapper: Budget Tracker above the summary -->
+      <div class="right-col">
+        <div class="budget-section-label">BUDGET TRACKER</div>
+        <aside class="results-budget" id="resultsBudget" aria-label="Budget Tracker">
+          <div class="budget-total-display">
+            <div class="budget-total-value">
+              <span id="budgetTotal">$0</span>
+              <span class="budget-dropdown-arrow" id="budgetToggle" aria-expanded="false" aria-controls="budgetPanel">▼</span>
+            </div>
+          </div>
+          
+          <div class="budget-circular">
+            <svg width="140" height="140" viewBox="0 0 140 140">
+              <circle class="budget-circle-bg" cx="70" cy="70" r="64"></circle>
+              <circle class="budget-circle-fill ok" id="budgetCircle" cx="70" cy="70" r="64" stroke-dasharray="402" stroke-dashoffset="402"></circle>
+            </svg>
+            <div class="budget-center">
+              <div class="budget-percent" id="budgetPercent">0%</div>
+              <div class="budget-label">Used</div>
+            </div>
+          </div>
+          
+          <div class="budget-stats">
+            <div class="budget-stat-row">
+              <span class="budget-stat-value" id="budgetSpent">$0</span>
+              <span class="budget-stat-label">Spent</span>
+            </div>
+            <div class="budget-stat-row">
+              <span class="budget-stat-value remaining" id="budgetRemaining">$0</span>
+              <span class="budget-stat-label" id="budgetRemainingLabel">Remaining</span>
+            </div>
+          </div>
+          <div class="budget-panel" id="budgetPanel">
+            <div class="budget-controls">
+              <input type="range" id="budgetSlider" class="budget-slider" min="100" max="300000" step="500" value="30000" aria-label="Total budget slider" />
+              <input type="text" id="budgetNumber" class="budget-number" value="$30,000" aria-label="Total budget input" />
+            </div>
+          </div>
+        </aside>
+
+        <aside class="plan" id="plan-aside" aria-labelledby="plan-heading">
+          <h3 id="plan-heading">Your Event Plan</h3>
+          <div id="plan-list"></div>
+          <div class="divider" aria-hidden="true"></div>
+          <div class="plan-row plan-total-row"><span class="muted">Estimated Total:</span><strong id="plan-total">$0.00</strong></div>
+          <div class="divider" aria-hidden="true"></div>
+          <button class="btn primary" id="plan-finalize" type="button">Finish Selection & Continue</button>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <div class="chat-overlay" id="chatOverlay" aria-hidden="true"></div>
+  <aside class="chat-panel" id="chatPanel" aria-labelledby="chatTitle" aria-modal="true" role="dialog">
+    <div class="chat-head">
+      <div>
+        <h4 class="chat-title" id="chatTitle">Message Vendor</h4>
+        <div class="chat-sub" id="chatSub"></div>
+      </div>
+      <div class="chat-actions">
+        <button class="chat-min" id="chatMin" type="button" aria-label="Minimize chat">–</button>
+        <button class="chat-close" id="chatClose" type="button" aria-label="Close chat">✕</button>
+      </div>
+    </div>
+    <div class="chat-body" id="chatBody"></div>
+    <div class="chat-footer">
+      <textarea id="chatInput" placeholder="Write a quick message…" rows="1"></textarea>
+      <button class="send" id="chatSend" type="button">Send</button>
+    </div>
+  </aside>
+
+  <div class="services-overlay" id="servicesOverlay" aria-hidden="true"></div>
+  <aside class="services-panel" id="servicesPanel" aria-modal="true" role="dialog">
+    <div class="svcdr-head">
+      <div>
+        <h4 class="svcdr-title" id="servicesTitle">Vendor Services</h4>
+        <div class="svcdr-sub" id="servicesSub"></div>
+      </div>
+      <div class="svcdr-actions">
+        <span id="servicesAvail" class="badge avail-ok" style="align-self:center;display:none;">Available</span>
+        <button class="svcdr-close" id="servicesClose" aria-label="Close services">✕</button>
+      </div>
+    </div>
+    <div class="svcdr-body">
+      <div id="servicesList" class="svcdr-list"></div>
+    </div>
+    <div class="svcdr-footer">
+      <button class="btn primary" id="servicesAdd">Use Vendor</button>
+      <button class="btn ghost" id="servicesMsg">Message</button>
+      <button class="btn ghost" id="servicesDetails">Full Details <span class="arrow">→</span></button>
+    </div>
+  </aside>
+
+  <a href="plan.html?step=6" class="back-cta">Back</a>
+
+  <!-- Availability Info Popup -->
+  <div class="avail-popup-overlay" id="availPopupOverlay"></div>
+  <div class="avail-popup" id="availPopup">
+    <button class="avail-popup-close" id="availPopupClose" aria-label="Close">×</button>
+    <h4>Availability Status</h4>
+    <div class="avail-item">
+      <span class="avail-badge ok">Available</span>
+      <div class="avail-desc">This vendor is confirmed available for your event date and ready to book.</div>
+    </div>
+    <div class="avail-item">
+      <span class="avail-badge maybe">Possibly available</span>
+      <div class="avail-desc">This vendor may be available, but requires confirmation. Contact them to verify availability.</div>
+    </div>
+  </div>
+
+  <div class="toast-region" id="toastRegion" role="status" aria-live="polite"></div>
+
+  <script>
+    const fmtUSD = new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2});
+    const fmtUSD0 = new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0});
+    const fmt = n => fmtUSD.format(n||0);
+    const fmtShort = n => fmtUSD0.format(n||0);
+    const $  = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+
+    // Safe text escaping utility
+    function escapeHtml(text){
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Utility: Create element with attributes
+    function createElement(tag, {className, textContent, attributes={}, children=[], style={}} = {}){
+      const el = document.createElement(tag);
+      if(className) el.className = className;
+      if(textContent) el.textContent = textContent;
+      Object.entries(attributes).forEach(([key, value]) => el.setAttribute(key, value));
+      Object.entries(style).forEach(([key, value]) => el.style[key] = value);
+      children.forEach(child => el.appendChild(child));
+      return el;
+    }
+
+    // Utility: Clear element children safely
+    function clearElement(el){
+      if(!el) return;
+      el.textContent = '';
+      while(el.firstChild){
+        el.removeChild(el.firstChild);
+      }
+    }
+
+    // Utility: Safe error handler wrapper
+    function safeExecute(fn, errorMessage = 'An error occurred. Please try again.'){
+      try{
+        return fn();
+      }catch(err){
+        console.error(errorMessage, err);
+        showToast(errorMessage);
+        return null;
+      }
+    }
+
+    function showToast(message, {actionLabel, onAction, duration=4000} = {}){
+      const region = $('#toastRegion');
+      if(!region){ alert(message); return; }
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      
+      const msgSpan = document.createElement('span');
+      msgSpan.className = 'msg';
+      msgSpan.textContent = message;
+      toast.appendChild(msgSpan);
+      
+      if(actionLabel){
+        const actionBtn = document.createElement('button');
+        actionBtn.className = 'action';
+        actionBtn.type = 'button';
+        actionBtn.textContent = actionLabel;
+        toast.appendChild(actionBtn);
+      }
+      
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'close';
+      closeBtn.type = 'button';
+      closeBtn.setAttribute('aria-label', 'Dismiss');
+      closeBtn.textContent = 'Close';
+      toast.appendChild(closeBtn);
+      
+      region.appendChild(toast);
+      const cleanup = ()=>toast.remove();
+      let timer = setTimeout(cleanup, duration);
+      closeBtn.addEventListener('click', ()=>{ clearTimeout(timer); cleanup(); });
+      const actionBtn = toast.querySelector('.action');
+      if(actionBtn){ actionBtn.addEventListener('click', ()=>{ clearTimeout(timer); onAction && onAction(); cleanup(); }); }
+    }
+
+    const STORAGE = {
+      KEY: 'cleverplanners-plan-v1',
+      save(state){ try{ localStorage.setItem(this.KEY, JSON.stringify(state)); }catch(_){} },
+      load(){ try{ return JSON.parse(localStorage.getItem(this.KEY)||'null'); }catch(_){ return null; } }
+    };
+
+    let TARGET = Number(document.body.dataset.budgetTarget || 30000);
+    let customBudgetValue = null;
+
+    const selectedPlan = new Map();
+    const LOAD_STATE = new Map();
+
+    // Elegant background set with soft silver/blue as default (index 0)
+    const MEDIA_BACKGROUNDS = [
+      // Soft silver/blue (default)
+      'linear-gradient(135deg,#f5f7fb 0%, #e8edf5 60%, #f9fbff 100%)',
+      // Gold foil
+      'linear-gradient(135deg, #f7e6b5 0%, #e8c266 35%, #f7e6b5 55%, #b88a2a 100%)',
+      // Brushed silver
+      'repeating-linear-gradient(90deg,#f5f7fa 0 6px,#e7eaef 6px 12px,#d9dde4 12px 18px)',
+      // Pearl
+      'radial-gradient(circle at 30% 20%,#fff 0%,#f1f4f8 30%,#e9eef6 55%,#fefefe 100%)',
+      // Soft linen
+      'repeating-linear-gradient(0deg, #f8f3ed 0 8px, #f0e8dd 8px 16px), linear-gradient(90deg,#fff,#f4eee6)',
+      // Marble
+      'linear-gradient(120deg,#fbfbfb 0%,#ececec 40%,#ffffff 60%,#e7e7e7 100%)',
+      // Midnight gradient
+      'linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#334155 100%)'
+    ];
+
+    const CATEGORIES = {
+      Hall: {
+        recommended: [
+          { id:'hall_regal', name:'Regal Hall', price:15000, avail:'ok', tags:['Lakewood','$$$','Weddings'],
+            services:[
+              {name:'Standard Hall Rental', price:15000, desc:'Up to 300 guests, tables & chairs'},
+              {name:'Premium Decor Package', price:3500, desc:'Custom lighting, linens, centerpieces'},
+              {name:'Chuppah Setup', price:1200}
+            ]}
+        ],
+        more: [
+          { id:'hall_grand', name:'Grand Vista Ballroom', price:22000, avail:'maybe', tags:['Brooklyn','$$$$','Luxury'],
+            services:[{name:'Ballroom Rental', price:22000, desc:'Grand hall, valet parking included'},{name:'VIP Suite', price:1800}] },
+          { id:'hall_crystal', name:'Crystal Terrace', price:18500, avail:'ok', tags:['Queens','$$$','Scenic'],
+            services:[{name:'Terrace Package', price:18500, desc:'Outdoor ceremony + indoor reception'}]},
+          { id:'hall_royal', name:'Royal Court', price:26000, avail:'ok', tags:['Monsey','$$$$','Banquet'] }
+        ]
+      },
+      Music: {
+        recommended: [
+          { id:'music_simcha', name:'Simcha Band', price:4500, avail:'ok', tags:['Lakewood','$$','Live'],
+            services:[{name:'5-Piece Band', price:4500, desc:'Keys, drums, bass, guitar, horns'},{name:'Badchan', price:600},{name:'Ceremony Trio', price:900}] }
+        ],
+        more: [
+          { id:'music_djlevi', name:'DJ Levi', price:2800, avail:'ok', tags:['Brooklyn','$$','Modern'],
+            services:[{name:'DJ Set (4 hrs)', price:2800},{name:'Uplighting', price:400}] },
+          { id:'music_neshama', name:'Neshama Orchestra', price:6500, avail:'maybe', tags:['Queens','$$$','Orchestra'] },
+          { id:'music_shira', name:'Shira Choir', price:5200, avail:'ok', tags:['Monsey','$$$','Choir'] }
+        ]
+      },
+      Photography: {
+        recommended: [
+          { id:'photo_lens', name:'Lens & Light Studio', price:3200, avail:'ok', tags:['Monsey','$$','Photo'],
+            services:[{name:'Full Day Photo', price:3200, desc:'8 hrs, 2 shooters, gallery delivery'},{name:'Engagement Session', price:450},{name:'Albums', price:650}] }
+        ],
+        more: [
+          { id:'photo_moments', name:'Moments Video', price:2700, avail:'ok', tags:['Brooklyn','$$','Video'],
+            services:[{name:'Highlight Film', price:2700},{name:'Full Documentary', price:3900}] },
+          { id:'photo_everafter', name:'EverAfter Films', price:4100, avail:'ok', tags:['Lakewood','$$$','Cinema'] },
+          { id:'photo_studio', name:'Studio Simcha', price:2900, avail:'ok', tags:['Queens','$$','Photo'] }
+        ]
+      },
+      Catering: {
+        recommended: [
+          { id:'cat_kosher', name:'Kosher Feast Co.', price:13500, avail:'ok', tags:['Queens','$$$','Full Service'],
+            services:[{name:'Buffet Menu', price:13500, desc:'Appetizers, mains, desserts'},{name:'Plated Upgrade', price:2800},{name:'Premium Bar', price:1900}] }
+        ],
+        more: [
+          { id:'cat_bountiful', name:'Bountiful Caterers', price:18000, avail:'ok', tags:['Brooklyn','$$$','Premium'] },
+          { id:'cat_simcha', name:'Simcha Delights', price:15800, avail:'ok', tags:['Monsey','$$$','Plated'] },
+          { id:'cat_joyful', name:'Joyful Table', price:14200, avail:'ok', tags:['Lakewood','$$$','Buffet'] }
+        ]
+      }
+    };
+
+    const servicesOverlay = $('#servicesOverlay');
+    const servicesPanel   = $('#servicesPanel');
+    const servicesTitle   = $('#servicesTitle');
+    const servicesSub     = $('#servicesSub');
+    const servicesAvail   = $('#servicesAvail');
+    const servicesList    = $('#servicesList');
+    const servicesClose   = $('#servicesClose');
+    const servicesAdd     = $('#servicesAdd');
+    const servicesMsg     = $('#servicesMsg');
+    const servicesDetails = $('#servicesDetails');
+    let activeServices = null;
+
+    const chatOverlay = $('#chatOverlay');
+    const chatPanel   = $('#chatPanel');
+    const chatBody    = $('#chatBody');
+    const chatInput   = $('#chatInput');
+    const chatSend    = $('#chatSend');
+    const chatClose   = $('#chatClose');
+    const chatMin     = $('#chatMin');
+    const chatTitle   = $('#chatTitle');
+    const chatSub     = $('#chatSub');
+    const messagesByVendor = new Map();
+    let activeChat = null;
+    let lastFocused = null;
+    let selectedLocations = [];
+    let allowAnywhere = false;
+    let selectedServices = [];
+
+    // Map service names to vendor categories
+    function getCategoryForService(serviceName){
+      const service = (serviceName || '').toLowerCase();
+      // Music category
+      if (service.includes('singer') || service.includes('vocalist') || service.includes('dj') || 
+          service.includes('band') || service.includes('orchestra') || service.includes('choir') ||
+          service.includes('chazzan') || service.includes('cantor') || service.includes('mc') ||
+          service.includes('host') || service.includes('performer')) {
+        return 'Music';
+      }
+      // Photography category
+      if (service.includes('photographer') || service.includes('videographer') || 
+          service.includes('photo') || service.includes('video') || service.includes('drone')) {
+        return 'Photography';
+      }
+      // Catering category
+      if (service.includes('caterer') || service.includes('catering') || 
+          service.includes('wait staff') || service.includes('bar service') ||
+          service.includes('dessert')) {
+        return 'Catering';
+      }
+      // Hall category (always show, but could be triggered by venue-related services)
+      if (service.includes('hall') || service.includes('venue') || service.includes('ballroom')) {
+        return 'Hall';
+      }
+      return null;
+    }
+
+    // Generate 4 mock vendors for a given service
+    function generateMockVendorsForService(serviceName, serviceIndex){
+      const displayLoc = getDisplayLocation();
+      const basePrice = 1000 + (serviceIndex * 500) + Math.floor(Math.random() * 2000);
+      const vendors = [];
+      
+      // Generate 4 unique vendor names based on service type
+      // Extract a shorter service name for display
+      const shortName = serviceName.length > 20 ? serviceName.split(' ')[0] : serviceName;
+      const namePrefixes = ['Elite', 'Premium', 'Royal', 'Grand'];
+      const nameSuffixes = ['Services', 'Solutions', 'Group', 'Studio'];
+      const vendorNames = [];
+      for (let i = 0; i < 4; i++) {
+        vendorNames.push(`${namePrefixes[i]} ${shortName} ${nameSuffixes[i]}`);
+      }
+      
+      const priceVariations = [basePrice, basePrice + 500, basePrice + 1000, basePrice + 1500];
+      const availOptions = ['ok', 'ok', 'maybe', 'ok']; // First 3 ok, 4th maybe
+      
+      for (let i = 0; i < 4; i++){
+        vendors.push({
+          id: `vendor_${serviceName.toLowerCase().replace(/[^a-z0-9]/g, '_')}_${i}`,
+          name: vendorNames[i],
+          price: priceVariations[i],
+          avail: availOptions[i],
+          tags: [displayLoc, '$$$', serviceName],
+          services: [
+            {name: `${serviceName} Package`, price: priceVariations[i], desc: `Complete ${serviceName.toLowerCase()} service`},
+            {name: 'Premium Upgrade', price: priceVariations[i] + 500}
+          ]
+        });
+      }
+      
+      return vendors;
+    }
+
+    // Build a service group (similar to buildCategory but for individual services)
+    function buildServiceGroup(serviceName, serviceIndex){
+      const group = document.createElement('section');
+      group.className = 'svc-group';
+      group.dataset.expanded = 'false';
+      group.id = 'svc-' + serviceName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+      group.setAttribute('aria-label', serviceName);
+
+      const head = document.createElement('div');
+      head.className = 'svc-head';
+      const h3 = document.createElement('h3');
+      h3.textContent = serviceName;
+      head.appendChild(h3);
+      const seeMoreBtn = document.createElement('button');
+      seeMoreBtn.className = 'see-more';
+      seeMoreBtn.type = 'button';
+      seeMoreBtn.dataset.seeMore = serviceName;
+      seeMoreBtn.setAttribute('aria-expanded', 'false');
+      seeMoreBtn.setAttribute('aria-controls', `${group.id}-body`);
+      seeMoreBtn.textContent = 'See More →';
+      head.appendChild(seeMoreBtn);
+
+      const body = document.createElement('div');
+      body.className = 'svc-body';
+      body.id = `${group.id}-body`;
+
+      // Generate 4 mock vendors
+      const allVendors = generateMockVendorsForService(serviceName, serviceIndex);
+      const initial = allVendors.slice(0, 2); // First 2 shown
+      const remaining = allVendors.slice(2); // Last 2 hidden
+
+      // First vendor is recommended
+      initial.forEach((v, idx) => {
+        body.appendChild(vendorCard(serviceName, v, idx === 0));
+      });
+
+      const extra = document.createElement('div');
+      extra.className = 'extra';
+      extra.id = `${group.id}-extra`;
+      body.appendChild(extra);
+
+      // Add "See All" button container (hidden initially)
+      const seeAllContainer = document.createElement('div');
+      seeAllContainer.className = 'see-all-container';
+      const seeAllBtn = document.createElement('button');
+      seeAllBtn.className = 'see-all';
+      seeAllBtn.type = 'button';
+      seeAllBtn.dataset.seeAll = serviceName;
+      seeAllBtn.setAttribute('aria-expanded', 'false');
+      seeAllBtn.textContent = 'See All';
+      seeAllContainer.appendChild(seeAllBtn);
+      body.appendChild(seeAllContainer);
+
+      // Store state for "See More" functionality
+      LOAD_STATE.set(group.id, { 
+        serviceName, 
+        queue: remaining.slice(), 
+        loaded: 0, 
+        seeAllShown: false, 
+        filteredRec: [allVendors[0]], // First vendor is recommended
+        filteredMore: allVendors.slice(1), // Rest are in "more"
+        allVendors: allVendors // Store all vendors for findVendorById
+      });
+
+      group.appendChild(head);
+      group.appendChild(body);
+      return group;
+    }
+
+    // Extract location name from user input (e.g., "Lakewood, NJ" -> "Lakewood")
+    function extractLocationName(locationInput){
+      if (!locationInput || typeof locationInput !== 'string') return '';
+      // Remove common suffixes like ", NJ", ", NY", ", State", etc.
+      const cleaned = locationInput.trim().split(',')[0].trim();
+      return cleaned;
+    }
+
+    // Get the display location for vendor cards (user's selected location)
+    function getDisplayLocation(){
+      if (allowAnywhere) return 'Multiple Locations';
+      if (selectedLocations.length === 0) return 'Multiple Locations';
+      // Use the first selected location for mock results (e.g., "Lakewood, NJ")
+      return selectedLocations[0];
+    }
+
+    // Update vendor tags to show user's selected location instead of original
+    function getUpdatedVendorTags(vendor){
+      const originalTags = vendor.tags || [];
+      const displayLoc = getDisplayLocation();
+      // Replace the first tag (which is usually the location) with user's location
+      const updatedTags = [...originalTags];
+      if (updatedTags.length > 0) {
+        updatedTags[0] = displayLoc;
+      } else {
+        updatedTags.push(displayLoc);
+      }
+      return updatedTags;
+    }
+
+    function escapeHtml(s){
+      const map = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#039;'};
+      return s.replace(/[&<>"']/g, c => map[c]);
+    }
+    const fmtTags = v => (v.tags||[]).slice(0,2).join(' • ');
+
+    function findVendorById(id){
+      let found=null;
+      // First check dynamically generated vendors from service groups
+      for (const [groupId, state] of LOAD_STATE.entries()) {
+        if (state.serviceName) {
+          const allVendors = state.allVendors || [...(state.filteredRec||[]), ...(state.filteredMore||[])];
+          const v = allVendors.find(vendor => vendor.id === id);
+          if (v) {
+            found = {vendor: v, cat: state.serviceName};
+            break;
+          }
+        }
+      }
+      if (found) return found;
+      
+      // Fallback to original CATEGORIES
+      Object.entries(CATEGORIES).some(([cat,data])=>{
+        const inRec = (data.recommended||[]).find(v=>v.id===id);
+        const inMore= (data.more||[]).find(v=>v.id===id);
+        const v = inRec||inMore;
+        if(v){ found={vendor:v, cat}; return true; }
+        return false;
+      });
+      return found;
+    }
+
+    function createMediaCarousel(id){
+      const mediaDiv = document.createElement('div');
+      mediaDiv.className = 'media';
+      mediaDiv.dataset.vid = id;
+      mediaDiv.dataset.idx = '0';
+      
+      const link = document.createElement('a');
+      link.href = '#';
+      link.className = 'media-link';
+      link.dataset.link = id;
+      link.title = 'View vendor';
+      
+      const swatch = document.createElement('div');
+      swatch.className = 'media-swatch';
+      swatch.style.background = MEDIA_BACKGROUNDS[0];
+      
+      link.appendChild(swatch);
+      
+      const prevBtn = document.createElement('button');
+      prevBtn.className = 'media-btn media-prev';
+      prevBtn.type = 'button';
+      prevBtn.setAttribute('aria-label', 'Previous');
+      prevBtn.textContent = '‹';
+      
+      const nextBtn = document.createElement('button');
+      nextBtn.className = 'media-btn media-next';
+      nextBtn.type = 'button';
+      nextBtn.setAttribute('aria-label', 'Next');
+      nextBtn.textContent = '›';
+      
+      mediaDiv.appendChild(link);
+      mediaDiv.appendChild(prevBtn);
+      mediaDiv.appendChild(nextBtn);
+      
+      return mediaDiv;
+    }
+
+    function vendorCard(cat, v, isRecommended){
+      const wrap = document.createElement('div');
+      const card = document.createElement('div');
+      const catClass = 'cat-' + cat.toLowerCase();
+      card.className = `vendor-block ${catClass}` + (isRecommended ? ' recommended' : '');
+      card.setAttribute('tabindex','0');
+      card.setAttribute('role','group');
+      card.setAttribute('aria-label', `${v.name} – ${cat}`);
+
+      if(isRecommended){
+        const lab = document.createElement('div');
+        lab.className = 'rec-label';
+        lab.textContent = 'Recommended';
+        card.insertAdjacentElement('afterbegin', lab);
+      }
+
+      const availabilityText = v.avail==='ok' ? 'Available' : 'Possibly available';
+      const availClass = v.avail==='ok' ? 'avail-text-ok' : 'avail-text-maybe';
+
+      // Vendor title
+      const title = document.createElement('div');
+      title.className = 'vendor-title';
+      title.textContent = v.name;
+      card.appendChild(title);
+
+      // Media carousel
+      card.appendChild(createMediaCarousel(v.id));
+
+      // Meta row
+      const metaRow = document.createElement('div');
+      metaRow.className = 'meta-row';
+      
+      const price = document.createElement('span');
+      price.className = 'price';
+      price.textContent = `From ${fmtShort(v.price)}`;
+      metaRow.appendChild(price);
+      
+      const dot1 = document.createElement('span');
+      dot1.className = 'dot';
+      dot1.textContent = '•';
+      metaRow.appendChild(dot1);
+      
+      const location = document.createElement('span');
+      location.className = 'meta-location';
+      // Use user's selected location for mock results
+      const displayLoc = getDisplayLocation();
+      location.textContent = displayLoc;
+      metaRow.appendChild(location);
+      
+      const dot2 = document.createElement('span');
+      dot2.className = 'dot';
+      dot2.textContent = '•';
+      metaRow.appendChild(dot2);
+      
+      const availability = document.createElement('span');
+      availability.className = `meta-availability ${availClass}`;
+      availability.textContent = availabilityText;
+      
+      const infoIcon = document.createElement('span');
+      infoIcon.className = 'avail-info-icon';
+      infoIcon.dataset.availInfo = 'true';
+      infoIcon.setAttribute('aria-label', 'Availability information');
+      infoIcon.title = 'What does this mean?';
+      infoIcon.textContent = 'i';
+      availability.appendChild(infoIcon);
+      
+      metaRow.appendChild(availability);
+      card.appendChild(metaRow);
+
+      // Divider
+      const divider = document.createElement('div');
+      divider.className = 'card-divider';
+      divider.setAttribute('aria-hidden', 'true');
+      card.appendChild(divider);
+
+      // Add button row
+      const addRow = document.createElement('div');
+      addRow.className = 'add-row';
+      const addBtn = document.createElement('button');
+      addBtn.className = 'add-btn';
+      addBtn.type = 'button';
+      addBtn.dataset.id = v.id;
+      addBtn.dataset.cat = cat;
+      addBtn.dataset.name = v.name;
+      addBtn.dataset.price = v.price;
+      addBtn.setAttribute('aria-pressed', 'false');
+      addBtn.textContent = 'Use This Vendor';
+      addRow.appendChild(addBtn);
+      card.appendChild(addRow);
+
+      // Link row
+      const linkRow = document.createElement('div');
+      linkRow.className = 'link-row';
+      
+      const msgLink = document.createElement('a');
+      msgLink.href = '#';
+      msgLink.dataset.msg = v.id;
+      msgLink.dataset.vname = v.name;
+      msgLink.dataset.cat = cat;
+      msgLink.textContent = 'Message';
+      linkRow.appendChild(msgLink);
+      
+      const servicesLink = document.createElement('a');
+      servicesLink.href = '#';
+      servicesLink.dataset.services = v.id;
+      servicesLink.dataset.vname = v.name;
+      servicesLink.dataset.cat = cat;
+      servicesLink.textContent = 'View Services';
+      linkRow.appendChild(servicesLink);
+      
+      const detailsLink = document.createElement('a');
+      detailsLink.href = `vendor-detail.html?id=${v.id}`;
+      detailsLink.textContent = 'Full Details';
+      linkRow.appendChild(detailsLink);
+      
+      card.appendChild(linkRow);
+
+      card.addEventListener('keydown', (e)=>{
+        if(e.key!=='ArrowLeft' && e.key!=='ArrowRight') return;
+        const media = card.querySelector('.media');
+        if(!media) return;
+        const idx = Number(media.dataset.idx||0);
+        const count = MEDIA_BACKGROUNDS.length;
+        const delta = e.key==='ArrowRight'?1:-1;
+        const newIdx = (idx + delta + count) % count;
+        media.dataset.idx = newIdx;
+        media.querySelector('.media-swatch').style.background = MEDIA_BACKGROUNDS[newIdx];
+      });
+
+      wrap.appendChild(card);
+      return wrap;
+    }
+
+    function buildCategory(cat, data){
+      const group = document.createElement('section');
+      group.className = 'svc-group';
+      group.dataset.expanded = 'false';
+      group.id = 'cat-' + cat.toLowerCase();
+      group.setAttribute('aria-label', cat);
+
+      const head = document.createElement('div');
+      head.className = 'svc-head';
+      const h3 = document.createElement('h3');
+      h3.textContent = cat;
+      head.appendChild(h3);
+      const seeMoreBtn = document.createElement('button');
+      seeMoreBtn.className = 'see-more';
+      seeMoreBtn.type = 'button';
+      seeMoreBtn.dataset.seeMore = cat;
+      seeMoreBtn.setAttribute('aria-expanded', 'false');
+      seeMoreBtn.setAttribute('aria-controls', `${group.id}-body`);
+      seeMoreBtn.textContent = 'See More →';
+      head.appendChild(seeMoreBtn);
+
+      const body = document.createElement('div');
+      body.className = 'svc-body';
+      body.id = `${group.id}-body`;
+
+      const rec = (data.recommended||[]);
+      const more = (data.more||[]);
+      // Show all vendors (mock results - we'll update their location tags)
+      const combined = [...rec, ...more];
+      const initial = combined.slice(0,2);
+      const remaining = combined.slice(2);
+
+      initial.forEach(v => body.appendChild(vendorCard(cat, v, !!rec.find(r=>r.id===v.id))));
+
+      const extra = document.createElement('div');
+      extra.className = 'extra';
+      extra.id = `${group.id}-extra`;
+      body.appendChild(extra);
+
+      // Add "See All" button container
+      const seeAllContainer = document.createElement('div');
+      seeAllContainer.className = 'see-all-container';
+      const seeAllBtn = document.createElement('button');
+      seeAllBtn.className = 'see-all';
+      seeAllBtn.type = 'button';
+      seeAllBtn.dataset.seeAll = cat;
+      seeAllBtn.setAttribute('aria-expanded', 'false');
+      seeAllBtn.textContent = 'See All';
+      seeAllContainer.appendChild(seeAllBtn);
+      body.appendChild(seeAllContainer);
+
+      LOAD_STATE.set(group.id, { cat, queue: remaining.slice(), loaded: 0, seeAllShown: false, filteredRec: rec, filteredMore: more });
+
+      group.appendChild(head);
+      group.appendChild(body);
+      return group;
+    }
+
+    function buildResults(){
+      const left = $('#results-left');
+      const nav  = $('#anchorNav');
+      if(!left || !nav){
+        showToast('Error: layout containers missing.');
+        return;
+      }
+      left.innerHTML = ''; nav.innerHTML = '';
+      
+      // Create wrapper for navigation links
+      const navWrapper = document.createElement('div');
+      navWrapper.className = 'anchor-nav-wrapper';
+      nav.appendChild(navWrapper);
+      
+      // Create expand button
+      const expandBtn = document.createElement('button');
+      expandBtn.className = 'anchor-nav-expand';
+      expandBtn.type = 'button';
+      expandBtn.setAttribute('aria-label', 'Expand category menu');
+      expandBtn.setAttribute('aria-expanded', 'false');
+      nav.appendChild(expandBtn);
+      
+      // Handle expand button click
+      expandBtn.addEventListener('click', () => {
+        const isExpanded = nav.classList.contains('expanded');
+        if (isExpanded) {
+          nav.classList.remove('expanded');
+          expandBtn.setAttribute('aria-expanded', 'false');
+        } else {
+          nav.classList.add('expanded');
+          expandBtn.setAttribute('aria-expanded', 'true');
+        }
+      });
+
+      // Build service groups dynamically for each selected service
+      if (selectedServices && selectedServices.length > 0){
+        selectedServices.forEach((serviceName, index) => {
+          const section = buildServiceGroup(serviceName, index);
+          left.appendChild(section);
+          const a = document.createElement('a');
+          a.href = '#' + section.id;
+          a.textContent = serviceName;
+          a.setAttribute('data-nav', '');
+          a.setAttribute('role', 'link');
+          navWrapper.appendChild(a);
+        });
+      } else {
+        // Fallback: show all categories if no services selected (for testing)
+        Object.entries(CATEGORIES).forEach(([cat,data])=>{
+          const section = buildCategory(cat, data);
+          left.appendChild(section);
+          const a=document.createElement('a');
+          a.href='#'+section.id; a.textContent=cat; a.setAttribute('data-nav','');
+          a.setAttribute('role','link');
+          navWrapper.appendChild(a);
+        });
+      }
+    }
+
+    function refreshPlan(){
+      const listEl = $('#plan-list');
+      const totalEl= $('#plan-total');
+
+      const items = Array.from(selectedPlan.values());
+      if(!items.length){
+        clearElement(listEl);
+        const p = createElement('p', {
+          className: 'muted',
+          textContent: 'No vendors selected yet.'
+        });
+        listEl.appendChild(p);
+        totalEl.textContent = fmt(0);
+      } else {
+        const total = items.reduce((s,v)=>s+(v.price||0),0);
+
+        const byCat = new Map();
+        items.forEach(v=>{
+          const curr = byCat.get(v.cat) || {total:0,count:0};
+          curr.total += v.price||0; curr.count += 1;
+          byCat.set(v.cat, curr);
+        });
+
+        clearElement(listEl);
+        [...byCat.entries()]
+          .sort((a,b)=>a[0].localeCompare(b[0]))
+          .forEach(([cat, {total, count}]) => {
+            const row = createElement('div', {
+              className: 'plan-row',
+              children: [
+                createElement('span', {textContent: cat + (count>1 ? ` (${count})` : '')}),
+                createElement('strong', {textContent: fmt(total)})
+              ]
+            });
+            listEl.appendChild(row);
+          });
+
+        totalEl.textContent = fmt(total);
+      }
+
+      // keep budget bar in sync
+      const sum = Array.from(selectedPlan.values()).reduce((s,v)=>s+(v.price||0),0);
+      BUDGET.updateBar(sum);
+
+      STORAGE.save({
+        TARGET,
+        customBudgetValue,
+        plan:[...selectedPlan.entries()].map(([id,v])=>({id,...v}))
+      });
+    }
+
+    function openChat({id, name, cat}){
+      lastFocused = document.activeElement;
+      activeChat = {id, name, cat};
+      chatTitle.textContent = `Message ${name}`;
+      chatSub.textContent   = `${cat} • Quick inquiry`;
+      chatPanel.dataset.title = `Chat – ${name}`;
+      chatPanel.setAttribute('aria-hidden','false');
+      chatPanel.setAttribute('aria-label', `Chat with ${name}`);
+      if(!messagesByVendor.has(id)){
+        messagesByVendor.set(id, [
+          {from:'vendor', text:`Hi! Thanks for reaching out to ${name}. How can we help?`, ts:Date.now()}
+        ]);
+      }
+      renderChat();
+      chatOverlay.classList.add('open');
+      chatPanel.classList.add('open');
+      chatPanel.classList.remove('minimized');
+      chatInput.value = '';
+      setTimeout(()=>chatInput.focus(), 60);
+    }
+    function renderChat(){
+      const msgs = messagesByVendor.get(activeChat?.id) || [];
+      chatBody.textContent = '';
+      msgs.forEach(m => {
+        const row = document.createElement('div');
+        row.className = 'chat-row';
+        const msg = document.createElement('div');
+        msg.className = `msg ${m.from==='user'?'user':'vendor'}`;
+        msg.textContent = m.text;
+        row.appendChild(msg);
+        chatBody.appendChild(row);
+      });
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+    function sendChatMessage(){
+      const text = chatInput.value.trim();
+      if(!text || !activeChat) return;
+      const arr = messagesByVendor.get(activeChat.id);
+      arr.push({from:'user', text, ts:Date.now()});
+      chatInput.value = '';
+      renderChat();
+      setTimeout(()=>{
+        const arr2 = messagesByVendor.get(activeChat.id);
+        if(!arr2) return;
+        arr2.push({from:'vendor', text:'Thanks for your message! We\'ll get back to you shortly.', ts:Date.now()});
+        renderChat();
+      }, 600);
+    }
+
+    function openServices(id){
+      lastFocused = document.activeElement;
+      const found = findVendorById(id);
+      if(!found) return;
+      const {vendor:v, cat} = found;
+
+      activeServices = {id: v.id, name: v.name, cat};
+
+      servicesTitle.textContent = v.name;
+      servicesSub.textContent = 'These are the typical services and starting prices. Your final quote will depend on your event details.';
+      servicesAvail.style.display = 'inline-block';
+      servicesAvail.textContent = v.avail==='ok' ? 'Available' : 'Possibly available';
+      servicesAvail.className = `badge ${v.avail==='ok'?'avail-ok':'avail-maybe'}`;
+
+      const list = v.services || [];
+      servicesList.textContent = '';
+      if(!list.length){
+        const item = document.createElement('div');
+        item.className = 'svcdr-item';
+        const left = document.createElement('div');
+        left.className = 'svcdr-left';
+        const strong = document.createElement('strong');
+        strong.textContent = 'This vendor hasn\'t listed services yet.';
+        const desc = document.createElement('div');
+        desc.className = 'desc';
+        desc.textContent = 'Tell them what you need and request a custom quote.';
+        left.appendChild(strong);
+        left.appendChild(desc);
+        const price = document.createElement('div');
+        price.className = 'svcdr-price';
+        item.appendChild(left);
+        item.appendChild(price);
+        servicesList.appendChild(item);
+        
+        const btnContainer = document.createElement('div');
+        btnContainer.style.cssText = 'display:flex;justify-content:flex-end;margin-top:8px;';
+        const requestBtn = document.createElement('button');
+        requestBtn.className = 'btn primary';
+        requestBtn.id = 'servicesRequestBtn';
+        requestBtn.type = 'button';
+        requestBtn.textContent = 'Request custom quote';
+        btnContainer.appendChild(requestBtn);
+        servicesList.appendChild(btnContainer);
+      }else{
+        list.forEach(s => {
+          const item = document.createElement('div');
+          item.className = 'svcdr-item';
+          const left = document.createElement('div');
+          left.className = 'svcdr-left';
+          const strong = document.createElement('strong');
+          strong.textContent = s.name;
+          left.appendChild(strong);
+          if(s.desc){
+            const desc = document.createElement('div');
+            desc.className = 'desc';
+            desc.textContent = s.desc;
+            left.appendChild(desc);
+          }
+          const price = document.createElement('div');
+          price.className = 'svcdr-price';
+          price.textContent = `From ${fmtShort(s.price)}`;
+          item.appendChild(left);
+          item.appendChild(price);
+          servicesList.appendChild(item);
+        });
+      }
+
+      servicesOverlay.classList.add('open');
+      servicesPanel.classList.add('open');
+      servicesPanel.setAttribute('aria-hidden','false');
+      servicesPanel.setAttribute('aria-label', `Services for ${v.name}`);
+      setTimeout(()=>$('#servicesClose').focus(), 50);
+
+      const rq = $('#servicesRequestBtn');
+      if(rq){ rq.addEventListener('click', ()=>alert('Custom quote requested (demo)')); }
+    }
+
+    function closeServices(){
+      servicesOverlay.classList.remove('open');
+      servicesPanel.classList.remove('open');
+      servicesPanel.setAttribute('aria-hidden','true');
+      activeServices = null;
+      lastFocused?.focus?.();
+    }
+
+    function setupEvents(){
+      // Availability info popup handlers
+      const availPopup = $('#availPopup');
+      const availPopupOverlay = $('#availPopupOverlay');
+      const availPopupClose = $('#availPopupClose');
+      
+      function showAvailPopup(event){
+        if(!availPopup || !availPopupOverlay) return;
+        const rect = event.target.getBoundingClientRect();
+        const popupWidth = 320;
+        const padding = 16;
+        
+        // Position popup near the icon, but keep it in viewport
+        let left = rect.left;
+        if(left + popupWidth > window.innerWidth - padding){
+          left = window.innerWidth - popupWidth - padding;
+        }
+        if(left < padding) left = padding;
+        
+        let top = rect.bottom + 8;
+        // If popup would go off bottom, position it above instead
+        if(top + 200 > window.innerHeight - padding){
+          top = rect.top - 200;
+        }
+        
+        availPopup.style.left = `${left}px`;
+        availPopup.style.top = `${Math.max(padding, top)}px`;
+        availPopupOverlay.classList.add('show');
+        availPopup.classList.add('show');
+      }
+      
+      function hideAvailPopup(){
+        if(availPopup) availPopup.classList.remove('show');
+        if(availPopupOverlay) availPopupOverlay.classList.remove('show');
+      }
+      
+      document.addEventListener('click', (e)=>{
+        // Handle availability info icon clicks
+        const infoIcon = e.target.closest('[data-avail-info]');
+        if(infoIcon){
+          e.preventDefault();
+          e.stopPropagation();
+          showAvailPopup(e);
+          return;
+        }
+        
+        // Close popup when clicking overlay or close button
+        if(e.target === availPopupOverlay || e.target === availPopupClose || e.target.closest('.avail-popup-close')){
+          hideAvailPopup();
+          return;
+        }
+        
+        // Close popup when clicking outside
+        if(availPopup && availPopup.classList.contains('show') && !e.target.closest('.avail-popup')){
+          hideAvailPopup();
+        }
+
+        // Handle "Add to Plan" button clicks (event delegation)
+        const addBtn = e.target.closest('.add-btn');
+        if(addBtn){
+          e.preventDefault();
+          try{
+            // Check if user is logged in
+            const isLoggedIn = localStorage.getItem('userLoggedIn') === 'true';
+            if(!isLoggedIn){
+              if(confirm('Please log in to save vendors to your plan. Go to login page?')){
+                window.location.href = 'login.html?return=results.html';
+              }
+              return;
+            }
+            
+            const id = addBtn.dataset.id;
+            const cat = addBtn.dataset.cat;
+            const name = addBtn.dataset.name;
+            const price = Number(addBtn.dataset.price||0);
+            const nowSelected = !addBtn.classList.contains('selected');
+            
+            if(nowSelected){
+              addBtn.classList.add('selected');
+              addBtn.setAttribute('aria-pressed','true');
+              addBtn.textContent = '✓ Using This Vendor';
+              selectedPlan.set(id,{cat,name,price});
+              
+              // Save to user plan
+              let userPlan = JSON.parse(localStorage.getItem('userPlan') || '[]');
+              if(!userPlan.find(v => v.id === id)){
+                userPlan.push({id, cat, name, price});
+                localStorage.setItem('userPlan', JSON.stringify(userPlan));
+              }
+            } else {
+              addBtn.classList.remove('selected');
+              addBtn.setAttribute('aria-pressed','false');
+              addBtn.textContent = 'Use This Vendor';
+              selectedPlan.delete(id);
+              
+              // Remove from user plan
+              let userPlan = JSON.parse(localStorage.getItem('userPlan') || '[]');
+              userPlan = userPlan.filter(v => v.id !== id);
+              localStorage.setItem('userPlan', JSON.stringify(userPlan));
+            }
+            refreshPlan();
+          }catch(err){
+            console.error('Error handling add button:', err);
+            showToast('An error occurred. Please try again.');
+          }
+          return;
+        }
+
+        // Handle navigation link clicks
+        const navLink = e.target.closest('a[data-nav]');
+        if (navLink) {
+          e.preventDefault();
+          try{
+            document.querySelectorAll('a[data-nav]').forEach(a => a.classList.remove('active'));
+            navLink.classList.add('active');
+            const targetId = navLink.getAttribute('href');
+            const section = document.querySelector(targetId);
+            if (section) {
+              section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            // Auto-collapse the navigation menu after selection
+            const nav = $('#anchorNav');
+            const expandBtn = nav?.querySelector('.anchor-nav-expand');
+            if (nav && nav.classList.contains('expanded')) {
+              nav.classList.remove('expanded');
+              if (expandBtn) {
+                expandBtn.setAttribute('aria-expanded', 'false');
+              }
+            }
+          }catch(err){
+            console.error('Error navigating:', err);
+          }
+          return;
+        }
+
+        // Handle "See More" button clicks (event delegation)
+        const seeMoreBtn = e.target.closest('[data-see-more]');
+        if(seeMoreBtn){
+          try{
+            const g = seeMoreBtn.closest('.svc-group');
+            if(!g) return;
+            const state = LOAD_STATE.get(g.id);
+            const extra = document.getElementById(`${g.id}-extra`);
+            const expanded = g.dataset.expanded==='true';
+            if(!expanded){
+              // Show 2 additional items
+              if(state && extra){
+                const toAdd = state.queue.splice(0, 2);
+                const cat = state.cat || state.serviceName; // Support both category and service groups
+                toAdd.forEach(v => extra.appendChild(vendorCard(cat, v, !!(state.filteredRec||[]).find(r=>r.id===v.id))));
+                state.loaded += toAdd.length;
+              }
+              g.dataset.expanded = 'true';
+              seeMoreBtn.textContent = 'Show Less ↑';
+              seeMoreBtn.setAttribute('aria-expanded','true');
+            } else {
+              // Collapse back
+              if(extra){
+                clearElement(extra);
+              }
+              if(state){
+                state.loaded = 0;
+                state.seeAllShown = false;
+                state.queue = [...(state.filteredRec||[]), ...(state.filteredMore||[])].slice(2);
+              }
+              g.dataset.expanded = 'false';
+              g.dataset.seeAll = 'false';
+              seeMoreBtn.textContent = 'See More →';
+              seeMoreBtn.setAttribute('aria-expanded','false');
+              // Reset "See All" button visibility
+              const seeAllBtn = g.querySelector('[data-see-all]');
+              if(seeAllBtn){
+                seeAllBtn.style.display = '';
+              }
+            }
+          }catch(err){
+            console.error('Error toggling see more:', err);
+            showToast('An error occurred. Please try again.');
+          }
+          return;
+        }
+
+        // Handle "See All" button clicks (event delegation)
+        const seeAllBtn = e.target.closest('[data-see-all]');
+        if(seeAllBtn){
+          try{
+            const g = seeAllBtn.closest('.svc-group');
+            if(!g) return;
+            const state = LOAD_STATE.get(g.id);
+            const extra = document.getElementById(`${g.id}-extra`);
+            if(state && extra && state.queue.length > 0){
+              // Show all remaining items
+              const cat = state.cat || state.serviceName; // Support both category and service groups
+              state.queue.forEach(v => extra.appendChild(vendorCard(cat, v, !!(state.filteredRec||[]).find(r=>r.id===v.id))));
+              state.loaded += state.queue.length;
+              state.queue = [];
+              state.seeAllShown = true;
+              g.dataset.seeAll = 'true';
+              seeAllBtn.style.display = 'none';
+              // Scroll to show the new items
+              setTimeout(() => {
+                seeAllBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              }, 100);
+            }
+          }catch(err){
+            console.error('Error showing all:', err);
+            showToast('An error occurred. Please try again.');
+          }
+          return;
+        }
+
+        // Handle message link clicks (event delegation)
+        const msgBtn = e.target.closest('[data-msg]');
+        if(msgBtn){
+          e.preventDefault();
+          try{
+            const id   = msgBtn.dataset.msg;
+            const name = msgBtn.dataset.vname || 'Vendor';
+            const cat  = msgBtn.dataset.cat   || 'Vendor';
+            if(!messagesByVendor.has(id)){
+              messagesByVendor.set(id, [
+                {from:'vendor', text:`Hi! Thanks for reaching out to ${name}. How can we help?`, ts:Date.now()}
+              ]);
+            }
+            openChat({id, name, cat});
+          }catch(err){
+            console.error('Error opening chat:', err);
+            showToast('Unable to open chat. Please try again.');
+          }
+          return;
+        }
+
+        // Handle services link clicks (event delegation)
+        const servicesBtn = e.target.closest('[data-services]');
+        if(servicesBtn){
+          e.preventDefault();
+          try{
+            openServices(servicesBtn.dataset.services);
+          }catch(err){
+            console.error('Error opening services:', err);
+            showToast('Unable to load services. Please try again.');
+          }
+          return;
+        }
+
+        const bookBtn = e.target.closest('[data-book]');
+        if(bookBtn){ alert('Booking flow coming soon.'); return; }
+
+        // Handle details link clicks (event delegation)
+        const detailsBtn = e.target.closest('[data-details]');
+        if(detailsBtn){
+          e.preventDefault();
+          try{
+            openComingSoon(detailsBtn.dataset.details);
+          }catch(err){
+            console.error('Error opening details:', err);
+            showToast('Unable to load details. Please try again.');
+          }
+          return;
+        }
+
+        // Handle media carousel navigation (event delegation)
+        const prev = e.target.closest('.media-prev');
+        const next = e.target.closest('.media-next');
+        if(prev || next){
+          e.preventDefault();
+          e.stopPropagation();
+          try{
+            const media = (prev||next).closest('.media');
+            if(!media) return;
+            const idx = Number(media.dataset.idx||0);
+            const count = MEDIA_BACKGROUNDS.length;
+            const newIdx = (idx + (next?1:-1) + count) % count;
+            media.dataset.idx = newIdx;
+            const swatch = media.querySelector('.media-swatch');
+            if(swatch){
+              swatch.style.background = MEDIA_BACKGROUNDS[newIdx];
+            }
+          }catch(err){
+            console.error('Error navigating media:', err);
+          }
+          return;
+        }
+
+        // Handle media link clicks (event delegation)
+        const mediaLink = e.target.closest('.media-link');
+        if(mediaLink){
+          e.preventDefault();
+          try{
+            openComingSoon(mediaLink.dataset.link);
+          }catch(err){
+            console.error('Error opening media link:', err);
+          }
+          return;
+        }
+      });
+
+      $('#chatSend').addEventListener('click', sendChatMessage);
+      $('#chatInput').addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendChatMessage(); }
+      });
+      $('#chatClose').addEventListener('click', (e)=>{ e.stopPropagation(); chatOverlay.classList.remove('open'); chatPanel.classList.remove('open','minimized'); chatPanel.setAttribute('aria-hidden','true'); activeChat=null; lastFocused?.focus?.(); });
+      $('#chatMin').addEventListener('click', (e)=>{ e.stopPropagation(); chatOverlay.classList.remove('open'); chatPanel.classList.add('minimized','open'); chatPanel.dataset.title = chatTitle.textContent; });
+      $('#chatOverlay').addEventListener('click', ()=>{ chatOverlay.classList.remove('open'); chatPanel.classList.remove('open','minimized'); chatPanel.setAttribute('aria-hidden','true'); activeChat=null; lastFocused?.focus?.(); });
+
+      $('#chatPanel').addEventListener('click', ()=>{
+        if(chatPanel.classList.contains('minimized')){ chatPanel.classList.remove('minimized'); chatOverlay.classList.add('open'); setTimeout(()=>chatInput.focus(), 60); }
+      });
+
+      // Services panel event handlers
+      if(servicesClose){
+        servicesClose.addEventListener('click', (e)=>{
+          e.stopPropagation();
+          closeServices();
+        });
+      }
+      if(servicesOverlay){
+        servicesOverlay.addEventListener('click', ()=>{
+          closeServices();
+        });
+      }
+      if(servicesAdd){
+        servicesAdd.addEventListener('click', ()=>{
+          if(!activeServices) return;
+          const found = findVendorById(activeServices.id);
+          if(found){
+            const {vendor:v, cat} = found;
+            const addBtn = document.querySelector(`.add-btn[data-id="${v.id}"]`);
+            if(addBtn){
+              addBtn.click();
+            }
+            closeServices();
+          }
+        });
+      }
+      if(servicesMsg){
+        servicesMsg.addEventListener('click', ()=>{
+          if(!activeServices) return;
+          const found = findVendorById(activeServices.id);
+          if(found){
+            const {vendor:v, cat} = found;
+            openChat({id: v.id, name: v.name, cat});
+            closeServices();
+          }
+        });
+      }
+      if(servicesDetails){
+        servicesDetails.addEventListener('click', ()=>{
+          if(!activeServices) return;
+          openComingSoon(activeServices.id);
+        });
+      }
+
+      // Handle ESC key to close popup
+      document.addEventListener('keydown', (e)=>{
+        if(e.key === 'Escape' && availPopup && availPopup.classList.contains('show')){
+          hideAvailPopup();
+          return;
+        }
+        if(e.key==='Escape' && (chatPanel.classList.contains('open') || chatPanel.classList.contains('minimized'))) {
+          chatOverlay.classList.remove('open'); chatPanel.classList.remove('open','minimized'); chatPanel.setAttribute('aria-hidden','true'); activeChat=null; lastFocused?.focus?.();
+        }
+        if(e.key==='Escape' && servicesPanel && servicesPanel.classList.contains('open')){
+          closeServices();
+        }
+      });
+    }
+
+    function setupScrollSpy(){
+      const links = $$('a[data-nav]');
+      const map = new Map(links.map(a=>[a.getAttribute('href'), a]));
+      if('IntersectionObserver' in window){
+        const observer = new IntersectionObserver((entries)=>{
+          entries.forEach(entry=>{
+            const id = '#'+entry.target.id;
+            const link = map.get(id);
+            if(!link) return;
+            if(entry.isIntersecting){ links.forEach(l=>l.classList.remove('active')); link.classList.add('active'); }
+          });
+        },{rootMargin:'-40% 0px -55% 0px', threshold:[0,1]});
+        $$('.svc-group').forEach(sec=>observer.observe(sec));
+      }
+
+      const setInitial = ()=>{
+        const hash = location.hash && map.get(location.hash) ? location.hash : links[0]?.getAttribute('href');
+        if(hash){ links.forEach(l=>l.classList.remove('active')); map.get(hash)?.classList.add('active'); }
+      };
+      setInitial();
+      window.addEventListener('hashchange', setInitial);
+    }
+
+    // Animated number counter
+    function animateValue(element, start, end, duration = 600, format = 'currency'){
+      if(!element) return;
+      const startTime = performance.now();
+      const isCurrency = format === 'currency' || element.id === 'budgetSpent' || element.id === 'budgetRemaining' || element.id === 'budgetTotal';
+      const isPercent = format === 'percent' || element.id === 'budgetPercent';
+      
+      function update(currentTime){
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(start + (end - start) * easeOut);
+        
+        if(isCurrency){
+          element.textContent = fmtShort(current);
+        } else if(isPercent){
+          element.textContent = current + '%';
+        } else {
+          element.textContent = current;
+        }
+        
+        if(progress < 1){
+          requestAnimationFrame(update);
+        } else {
+          if(isCurrency){
+            element.textContent = fmtShort(end);
+          } else if(isPercent){
+            element.textContent = end + '%';
+          } else {
+            element.textContent = end;
+          }
+        }
+      }
+      requestAnimationFrame(update);
+    }
+
+    const BUDGET = {
+      init(){
+        this.circle = document.getElementById('budgetCircle');
+        this.percent = document.getElementById('budgetPercent');
+        this.spent = document.getElementById('budgetSpent');
+        this.total = document.getElementById('budgetTotal');
+        this.remaining = document.getElementById('budgetRemaining');
+        this.remainingLabel = document.getElementById('budgetRemainingLabel');
+        this.budgetContainer = document.getElementById('resultsBudget');
+        this.toggle = document.getElementById('budgetToggle');
+        this.panel = document.getElementById('budgetPanel');
+        this.slider = document.getElementById('budgetSlider');
+        this.number = document.getElementById('budgetNumber');
+        
+        // Calculate circle circumference (2 * PI * radius)
+        this.circumference = 2 * Math.PI * 64;
+        if(this.circle){
+          this.circle.style.strokeDasharray = this.circumference;
+          this.circle.style.strokeDashoffset = this.circumference;
+        }
+        
+        // Initialize slider and number input with current TARGET value
+        if(this.slider){
+          this.slider.value = TARGET;
+          this.slider.min = 100;
+          this.slider.max = 300000;
+        }
+        if(this.number){
+          this.number.value = fmtShort(TARGET);
+        }
+        
+        if(this.toggle){
+          this.toggle.addEventListener('click',(e)=>{
+            e.preventDefault();
+            e.stopPropagation();
+            const open = this.panel.classList.toggle('open');
+            this.toggle.textContent = open ? '▲' : '▼';
+            this.toggle.classList.toggle('active', open);
+            this.toggle.setAttribute('aria-expanded', open);
+          });
+        }
+        this.slider.addEventListener('input',()=>{
+          TARGET = snapToStep(Number(this.slider.value));
+          this.number.value = fmtShort(TARGET);
+          this.updateBar(Array.from(selectedPlan.values()).reduce((s,v)=>s+(v.price||0),0));
+          refreshPlan();
+        });
+        this.number.addEventListener('blur',()=>{
+          let n = parseInt(this.number.value.replace(/[^0-9]/g,''),10);
+          if(!isFinite(n)) n = TARGET;
+          TARGET = snapToStep(n);
+          this.slider.value = TARGET;
+          this.number.value = fmtShort(TARGET);
+          this.updateBar(Array.from(selectedPlan.values()).reduce((s,v)=>s+(v.price||0),0));
+          refreshPlan();
+        });
+        
+        // Initialize the budget display
+        this.updateBar(0);
+      },
+      updateBar(total){
+        const spent = total;
+        const pct = Math.min(100, Math.round((spent/TARGET)*100));
+        const remaining = Math.max(0, TARGET - spent);
+        const isOver = spent > TARGET;
+        
+        // Update circular progress
+        if(this.circle){
+          const offset = this.circumference - (pct / 100) * this.circumference;
+          this.circle.style.strokeDashoffset = offset;
+          
+          // Update circle color class
+          this.circle.className = 'budget-circle-fill';
+          if(spent <= TARGET*0.9){ 
+            this.circle.classList.add('ok'); 
+          } else if(spent <= TARGET){ 
+            this.circle.classList.add('warn'); 
+          } else { 
+            this.circle.classList.add('over'); 
+          }
+        }
+        
+        // Animate percentage
+        if(this.percent){
+          const currentPct = parseInt(this.percent.textContent.replace(/[^0-9]/g,'')) || 0;
+          animateValue(this.percent, currentPct, pct, 800, 'percent');
+          this.percent.className = 'budget-percent' + (isOver ? ' over' : '');
+        }
+        
+        // Animate spent amount
+        if(this.spent){
+          const currentSpent = parseInt(this.spent.textContent.replace(/[^0-9]/g,'')) || 0;
+          animateValue(this.spent, currentSpent, spent, 600, 'currency');
+          this.spent.classList.add('animating');
+          setTimeout(()=>this.spent.classList.remove('animating'), 600);
+        }
+        
+        // Update total budget
+        if(this.total){
+          this.total.textContent = fmtShort(TARGET);
+        }
+        
+        // Update remaining
+        if(this.remaining){
+          if(isOver){
+            const over = spent - TARGET;
+            this.remaining.textContent = fmtShort(over);
+            this.remaining.className = 'budget-stat-value over';
+            this.remainingLabel.innerHTML = 'Over Budget';
+            this.remainingLabel.style.color = 'var(--budget-red)';
+          } else {
+            const currentRemaining = parseInt(this.remaining.textContent.replace(/[^0-9]/g,'')) || 0;
+            animateValue(this.remaining, currentRemaining, remaining, 600, 'currency');
+            this.remaining.className = 'budget-stat-value remaining';
+            this.remainingLabel.innerHTML = 'Remaining';
+            this.remainingLabel.style.color = '';
+          }
+        }
+        
+        // Update container state
+        if(this.budgetContainer){
+          if(isOver){
+            this.budgetContainer.classList.add('over-budget');
+          } else {
+            this.budgetContainer.classList.remove('over-budget');
+          }
+        }
+      }
+    };
+
+    function getStepFor(val){
+      if(val <= 50000) return 500;
+      if(val <= 150000) return 1000;
+      return 5000;
+    }
+    function snapToStep(val){
+      const step = getStepFor(val);
+      val = Math.round(val/step)*step;
+      if(val<100) val=100;
+      if(val>300000) val=300000;
+      return val;
+    }
+
+    function runSelfTests(){
+      const results = [];
+      const assert = (name, cond) => results.push({name, pass: !!cond});
+      assert('no preselected vendors by default', document.querySelectorAll('.add-btn.selected').length === 0);
+      const firstGroup = document.querySelector('.svc-group');
+      if(firstGroup){
+        const initialCards = firstGroup.querySelectorAll('.vendor-block');
+        assert('initially 2 cards per category', initialCards.length === 2);
+      } else { assert('category present', true); }
+      const firstPrice = document.querySelector('.vendor-block .meta-row .price');
+      if(firstPrice){
+        const priceText = firstPrice.textContent.trim();
+        assert('price label uses short format', /^From \$\d{1,3}(,\d{3})*$/.test(priceText));
+      } else { assert('price present', true); }
+      const firstAvail = document.querySelector('.vendor-block .meta-availability');
+      if(firstAvail){
+        const hasOk = firstAvail.classList.contains('avail-text-ok');
+        const hasMaybe = firstAvail.classList.contains('avail-text-maybe');
+        assert('availability is color-coded', hasOk || hasMaybe);
+      } else { assert('availability present', true); }
+      const bar = document.getElementById('budgetFill');
+      assert('budget bar exists', !!bar);
+      console.log('[Self-tests]', results);
+      const pass = results.filter(r=>r.pass).length;
+      const fail = results.length - pass;
+      showToast(fail===0 ? `Self-tests passed (${pass})` : `Self-tests: ${pass} passed, ${fail} failed`);
+    }
+
+    function loadEventData(){
+      return safeExecute(() => {
+        const saved = sessionStorage.getItem('cleverplanners_results_data');
+        if(!saved) return;
+        const data = JSON.parse(saved);
+        
+        // Update event title
+        const eventTypeSpan = $('#event-type');
+        if(eventTypeSpan && data.eventType){
+          const eventType = data.eventType || 'Wedding';
+          eventTypeSpan.textContent = eventType;
+        }
+        
+        // Update budget from plan.html
+        if(data.budget && typeof data.budget === 'number' && data.budget > 0){
+          TARGET = snapToStep(data.budget);
+          // Update the body dataset for consistency
+          document.body.dataset.budgetTarget = TARGET;
+        }
+        
+        // Update event date - you can add date logic here
+        // For now, we'll use a placeholder or extract from data if available
+        const eventDateNice = $('#event-date-nice');
+        if(eventDateNice && data.eventDate){
+          try{
+            const d = new Date(data.eventDate);
+            const formatted = isNaN(d.getTime()) ? String(data.eventDate) : d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+            eventDateNice.textContent = formatted;
+            eventDateNice.style.display = 'inline';
+          }catch(_){
+            eventDateNice.textContent = data.eventDate;
+            eventDateNice.style.display = 'inline';
+          }
+        }
+        
+        // Load selected locations for mock results display
+        if (data.locations && Array.isArray(data.locations)){
+          // Keep full location strings for display (e.g., "Lakewood, NJ")
+          selectedLocations = data.locations.filter(l => l && l.trim());
+        }
+        if (data.anywhere){
+          allowAnywhere = true;
+        }
+        
+        // Load selected services to filter categories
+        if (data.services && Array.isArray(data.services)){
+          selectedServices = data.services;
+        }
+      }, 'Error loading event data');
+    }
+
+    function updateNavStickyPosition(){
+      const header = document.querySelector('.results-header.ribbon');
+      const nav = $('#anchorNav');
+      if(header && nav){
+        const headerHeight = header.offsetHeight;
+        document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
+      }
+    }
+
+    function reallyInit(){
+      try{
+        // Load event data first (including budget) before initializing budget tracker
+        loadEventData();
+        try{ localStorage.removeItem(STORAGE.KEY); }catch(_){ }
+        selectedPlan.clear();
+        buildResults();
+        // Update nav sticky position based on header height (with delay to ensure header is rendered)
+        setTimeout(() => {
+          updateNavStickyPosition();
+          // Also update after a short delay to account for any animations
+          setTimeout(updateNavStickyPosition, 500);
+        }, 100);
+        // Recalculate on window resize
+        window.addEventListener('resize', updateNavStickyPosition);
+        // Initialize budget tracker after loading data so it uses the correct TARGET
+        BUDGET.init();
+        setupEvents();
+        setupScrollSpy();
+        refreshPlan();
+        $('#plan-finalize').addEventListener('click', ()=>{
+          const items = [...selectedPlan.values()];
+          if (items.length === 0) {
+            showToast('Please select at least one vendor to continue.');
+            return;
+          }
+          // Save selections and redirect to dashboard
+          window.location.href = 'dashboard.html';
+        });
+      } catch(err){
+        console.error('[init] error', err);
+        showToast('Init error: ' + (err?.message||err));
+      }
+    }
+
+    if(document.readyState === 'complete' || document.readyState === 'interactive'){
+      setTimeout(reallyInit, 0);
+    } else {
+      document.addEventListener('DOMContentLoaded', reallyInit);
+    }
+
+    // Initialize typewriter for the header subtext
+    try{
+      const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const el = document.getElementById('subtext-typed');
+      const full = "Pick your vendors — we'll create a complete, organized plan.";
+      if (el){
+        if (prefersReduced){
+          el.textContent = full;
+          el.classList.remove('caret');
+        } else {
+          if (!el.dataset.done){
+            el.textContent = '';
+            let i = 0;
+            const step = ()=>{
+              if (i <= full.length){
+                el.textContent = full.slice(0,i);
+                i++;
+                setTimeout(step, 45); // slower typing speed
+              } else {
+                el.classList.remove('caret');
+                el.dataset.done = '1';
+              }
+            };
+            step();
+          }
+        }
+      }
+    }catch(_){}
+
+    // Profile dropdown functionality
+    const profileIcon = document.getElementById('profileIcon');
+    const profileDropdown = document.getElementById('profileDropdown');
+    const profileContainer = document.getElementById('profileContainer');
+    
+    // Check if user is signed in (has userPlan or userLoggedIn in localStorage)
+    function checkSignedIn() {
+      const userPlan = localStorage.getItem('userPlan');
+      const userLoggedIn = localStorage.getItem('userLoggedIn') === 'true';
+      const isSignedIn = userPlan || userLoggedIn;
+      
+      if (isSignedIn && profileContainer) {
+        profileContainer.classList.add('signed-in');
+      } else if (profileContainer) {
+        profileContainer.classList.remove('signed-in');
+      }
+    }
+    
+    // Check on page load
+    checkSignedIn();
+    
+    if (profileIcon && profileDropdown) {
+      // Toggle dropdown on icon click
+      profileIcon.addEventListener('click', (e) => {
+        e.stopPropagation();
+        profileDropdown.classList.toggle('open');
+      });
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!profileIcon.contains(e.target) && !profileDropdown.contains(e.target)) {
+          profileDropdown.classList.remove('open');
+        }
+      });
+      
+      // Close dropdown on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && profileDropdown.classList.contains('open')) {
+          profileDropdown.classList.remove('open');
+        }
+      });
+      
+      // Handle Settings button click
+      document.getElementById('settingsBtn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        profileDropdown.classList.remove('open');
+        window.location.href = 'settings.html';
+      });
+      
+      // Handle Log Out button click
+      document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        profileDropdown.classList.remove('open');
+        // Clear session
+        localStorage.removeItem('userLoggedIn');
+        localStorage.removeItem('userPlan');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userName');
+        // Redirect to index
+        window.location.href = 'index.html';
+      });
+    }
+  </script>
+</body>
+</html>

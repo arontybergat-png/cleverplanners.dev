@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Design Options Preview</title>
+  <style>
+    *{box-sizing:border-box; margin:0; padding:0}
+    body{
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      background:#f5f5f5;
+      padding:40px 20px;
+      line-height:1.6;
+    }
+    .container{
+      max-width:1400px;
+      margin:0 auto;
+    }
+    h1{
+      font-size:2.5rem;
+      margin-bottom:40px;
+      text-align:center;
+      color:#1e293b;
+    }
+    .options-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
+      gap:30px;
+      margin-bottom:60px;
+    }
+    .option-card{
+      background:#fff;
+      border-radius:20px;
+      padding:30px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.1);
+      transition:transform 0.3s;
+    }
+    .option-card:hover{
+      transform:translateY(-5px);
+    }
+    .option-title{
+      font-size:1.5rem;
+      font-weight:800;
+      margin-bottom:15px;
+      color:#1e293b;
+    }
+    .option-description{
+      color:#6b7280;
+      margin-bottom:20px;
+    }
+    .preview-box{
+      height:200px;
+      border-radius:12px;
+      margin-bottom:20px;
+      position:relative;
+      overflow:hidden;
+    }
+    
+    /* Option 1: Glassmorphism */
+    .option-1 .preview-box{
+      background:linear-gradient(135deg, #fbf6ed 0%, #fff 100%);
+      border:2px solid rgba(229,220,199,0.4);
+      backdrop-filter:blur(20px);
+    }
+    .option-1 .preview-box::before{
+      content:'';
+      position:absolute;
+      inset:0;
+      background:linear-gradient(135deg, rgba(137,247,211,0.1) 0%, rgba(255,122,182,0.1) 100%);
+    }
+    .option-1 .btn{
+      background:linear-gradient(135deg, #111827 0%, #1f2937 100%);
+      color:#fff;
+      padding:12px 24px;
+      border-radius:16px;
+      border:none;
+      font-weight:600;
+      box-shadow:0 4px 20px rgba(16,24,40,.1);
+    }
+    
+    /* Option 2: Minimalist */
+    .option-2 .preview-box{
+      background:#fff;
+      border:1px solid #e5e7eb;
+    }
+    .option-2 .btn{
+      background:#0891b2;
+      color:#fff;
+      padding:12px 24px;
+      border-radius:8px;
+      border:none;
+      font-weight:600;
+      box-shadow:0 2px 8px rgba(8,145,178,0.2);
+    }
+    
+    /* Option 3: Bold & Vibrant */
+    .option-3 .preview-box{
+      background:linear-gradient(135deg, #6C5CE7 0%, #00D2FF 50%, #ff7ab6 100%);
+    }
+    .option-3 .btn{
+      background:linear-gradient(135deg, #6C5CE7 0%, #00D2FF 100%);
+      color:#fff;
+      padding:12px 24px;
+      border-radius:24px;
+      border:none;
+      font-weight:700;
+      box-shadow:0 8px 24px rgba(108,92,231,0.3);
+    }
+    
+    /* Option 4: Elegant Classic */
+    .option-4 .preview-box{
+      background:linear-gradient(135deg, #faf8f3 0%, #fffef9 100%);
+      border:2px solid #c9a961;
+      position:relative;
+    }
+    .option-4 .preview-box::before{
+      content:'';
+      position:absolute;
+      inset:8px;
+      border:1px solid #d4af37;
+      border-radius:8px;
+    }
+    .option-4 .btn{
+      background:#1a1f3a;
+      color:#fff;
+      padding:12px 24px;
+      border-radius:8px;
+      border:2px solid #d4af37;
+      font-weight:600;
+      box-shadow:0 4px 16px rgba(26,31,58,0.2);
+    }
+    
+    /* Option 5: Neumorphism */
+    .option-5 .preview-box{
+      background:#f0ede5;
+      box-shadow:
+        inset 8px 8px 16px rgba(0,0,0,0.1),
+        inset -8px -8px 16px rgba(255,255,255,0.8);
+    }
+    .option-5 .btn{
+      background:#f0ede5;
+      color:#4a5568;
+      padding:12px 24px;
+      border-radius:16px;
+      border:none;
+      font-weight:600;
+      box-shadow:
+        8px 8px 16px rgba(0,0,0,0.1),
+        -8px -8px 16px rgba(255,255,255,0.8);
+    }
+    .option-5 .btn:active{
+      box-shadow:
+        inset 4px 4px 8px rgba(0,0,0,0.1),
+        inset -4px -4px 8px rgba(255,255,255,0.8);
+    }
+    
+    .features{
+      list-style:none;
+      margin-top:20px;
+    }
+    .features li{
+      padding:8px 0;
+      color:#6b7280;
+      position:relative;
+      padding-left:20px;
+    }
+    .features li::before{
+      content:'✓';
+      position:absolute;
+      left:0;
+      color:#16a34a;
+      font-weight:700;
+    }
+    .btn{
+      cursor:pointer;
+      transition:all 0.3s;
+      display:inline-block;
+    }
+    .btn:hover{
+      transform:translateY(-2px);
+    }
+    .badge{
+      display:inline-block;
+      padding:4px 12px;
+      border-radius:12px;
+      font-size:0.75rem;
+      font-weight:700;
+      margin-bottom:15px;
+    }
+    .option-1 .badge{background:linear-gradient(135deg, #89f7d3 0%, #ff7ab6 100%); color:#fff;}
+    .option-2 .badge{background:#0891b2; color:#fff;}
+    .option-3 .badge{background:linear-gradient(135deg, #6C5CE7 0%, #00D2FF 100%); color:#fff;}
+    .option-4 .badge{background:#d4af37; color:#1a1f3a;}
+    .option-5 .badge{background:#5b9bd5; color:#fff;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 Design Options Preview</h1>
+    
+    <div class="options-grid">
+      <!-- Option 1: Glassmorphism -->
+      <div class="option-card option-1">
+        <span class="badge">Option 1</span>
+        <h2 class="option-title">Premium Glassmorphism</h2>
+        <p class="option-description">Modern, sophisticated design with glass-like effects and gradient accents. Perfect for a premium, contemporary brand.</p>
+        <div class="preview-box"></div>
+        <button class="btn">Preview Style</button>
+        <ul class="features">
+          <li>Backdrop blur effects</li>
+          <li>Gradient accents</li>
+          <li>Premium shadows</li>
+          <li>Smooth animations</li>
+        </ul>
+      </div>
+      
+      <!-- Option 2: Minimalist -->
+      <div class="option-card option-2">
+        <span class="badge">Option 2</span>
+        <h2 class="option-title">Minimalist Clean</h2>
+        <p class="option-description">Clean, spacious design focused on content. Professional and trustworthy aesthetic.</p>
+        <div class="preview-box"></div>
+        <button class="btn">Preview Style</button>
+        <ul class="features">
+          <li>Clean lines</li>
+          <li>White space emphasis</li>
+          <li>Clear typography</li>
+          <li>Subtle interactions</li>
+        </ul>
+      </div>
+      
+      <!-- Option 3: Bold & Vibrant -->
+      <div class="option-card option-3">
+        <span class="badge">Option 3</span>
+        <h2 class="option-title">Bold & Vibrant</h2>
+        <p class="option-description">Energetic, colorful design with vibrant gradients. Fun and exciting for event planning.</p>
+        <div class="preview-box"></div>
+        <button class="btn">Preview Style</button>
+        <ul class="features">
+          <li>Vibrant gradients</li>
+          <li>Bold animations</li>
+          <li>Colorful accents</li>
+          <li>Dynamic interactions</li>
+        </ul>
+      </div>
+      
+      <!-- Option 4: Elegant Classic -->
+      <div class="option-card option-4">
+        <span class="badge">Option 4</span>
+        <h2 class="option-title">Elegant Classic</h2>
+        <p class="option-description">Timeless, refined design with rich colors and elegant details. Perfect for luxury events.</p>
+        <div class="preview-box"></div>
+        <button class="btn">Preview Style</button>
+        <ul class="features">
+          <li>Classic typography</li>
+          <li>Rich colors</li>
+          <li>Gold accents</li>
+          <li>Refined details</li>
+        </ul>
+      </div>
+      
+      <!-- Option 5: Neumorphism -->
+      <div class="option-card option-5">
+        <span class="badge">Option 5</span>
+        <h2 class="option-title">Modern Neumorphism</h2>
+        <p class="option-description">Soft, tactile design with dimensional effects. Friendly and approachable interface.</p>
+        <div class="preview-box"></div>
+        <button class="btn">Preview Style</button>
+        <ul class="features">
+          <li>Soft shadows</li>
+          <li>Tactile feel</li>
+          <li>Subtle depth</li>
+          <li>Gentle animations</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div style="background:#fff; padding:40px; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+      <h2 style="margin-bottom:20px; color:#1e293b;">📋 How to Choose</h2>
+      <ol style="line-height:2; color:#6b7280;">
+        <li><strong>Review</strong> each option's visual preview above</li>
+        <li><strong>Consider</strong> your brand personality and target audience</li>
+        <li><strong>Think about</strong> the mood you want to convey</li>
+        <li><strong>Check</strong> the comparison matrix in DESIGN_OPTIONS.md</li>
+        <li><strong>Request</strong> implementation of your chosen option</li>
+      </ol>
+      
+      <div style="margin-top:30px; padding:20px; background:#f0f9ff; border-radius:12px; border-left:4px solid #0891b2;">
+        <p style="color:#1e293b; font-weight:600; margin-bottom:10px;">💡 Recommendation for Event Marketplace:</p>
+        <p style="color:#6b7280;">We recommend <strong>Option 1 (Glassmorphism)</strong> for the best balance of modern appeal, premium feel, and versatility. However, all options are fully customizable to match your brand perfectly!</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
+

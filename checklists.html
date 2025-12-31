@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CleverPlanners – Checklists</title>
+  <style>
+    :root{
+      --ink:#1e293b; --muted:#6b7280; --cream:#fbf6ed; --panel:#f4ecdc; 
+      --brand:#111827; --accent1:#ff7ab6; --accent2:#89f7d3; 
+      --ring:#e5dcc7; --soft:#faf7f1;
+      --radius:24px; --shadow:0 4px 20px rgba(16,24,40,.06);
+      --grad-2:#b8a8ff;
+      --grad-3:#ff7ab6;
+      --card:#fff;
+    }
+    *{box-sizing:border-box; margin:0; padding:0}
+    body{
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      background:var(--cream);
+      color:var(--ink);
+      line-height:1.6;
+    }
+    a{color:inherit;text-decoration:none}
+    
+    /* Header */
+    .marketplace-header{
+      background:#fff;
+      border-bottom:1px solid #f0eadb;
+      position:sticky;
+      top:0;
+      z-index:1000;
+      box-shadow:0 2px 8px rgba(0,0,0,.03);
+    }
+    .header-main{
+      max-width:1100px;
+      margin:0 auto;
+      padding:0 22px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      height:68px;
+    }
+    .logo{
+      font-size:1.5rem;
+      font-weight:800;
+      color:var(--brand);
+      letter-spacing:-0.02em;
+      transition:opacity 0.2s;
+      text-decoration:none;
+    }
+    .logo:hover{
+      opacity:0.9;
+    }
+    .header-nav{
+      display:flex;
+      gap:32px;
+      align-items:center;
+      flex:1;
+      justify-content:center;
+    }
+    .header-nav a{
+      color:var(--ink);
+      font-weight:600;
+      font-size:0.95rem;
+    }
+    .header-nav a:hover{
+      color:var(--brand);
+    }
+    .header-actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .btn-vendor-nav{
+      padding:6px 14px;
+      border-radius:8px;
+      background:transparent;
+      color:var(--muted);
+      border:1px solid var(--ring);
+      font-weight:500;
+      font-size:0.85rem;
+      transition:all 0.2s ease;
+      white-space:nowrap;
+      text-decoration:none;
+    }
+    .btn-vendor-nav:hover{
+      background:var(--soft);
+      border-color:#d4cbb2;
+      color:var(--ink);
+    }
+    .btn-login-nav,
+    .btn-signup-nav{
+      display:block;
+    }
+    .header-actions.signed-in .btn-login-nav,
+    .header-actions.signed-in .btn-signup-nav{
+      display:none;
+    }
+    .btn-login-nav{
+      color:var(--muted);
+      font-weight:500;
+      font-size:0.9rem;
+      transition:color 0.2s;
+      text-decoration:none;
+      padding:6px 12px;
+    }
+    .btn-login-nav:hover{
+      color:var(--ink);
+    }
+    .btn-signup-nav{
+      background:var(--brand);
+      color:#fff;
+      padding:8px 16px;
+      border-radius:8px;
+      font-weight:600;
+      font-size:0.9rem;
+      transition:all 0.2s ease;
+      box-shadow:0 2px 8px rgba(17,24,39,0.15);
+      text-decoration:none;
+    }
+    .btn-signup-nav:hover{
+      background:#0a0f1a;
+      transform:translateY(-1px);
+      box-shadow:0 4px 12px rgba(17,24,39,0.2);
+    }
+    /* Mobile Menu for checklists.html */
+    .mobile-menu-toggle-checklist{
+      display:none;
+      background:none;
+      border:none;
+      width:32px;
+      height:32px;
+      cursor:pointer;
+      padding:0;
+      flex-direction:column;
+      justify-content:space-around;
+      align-items:center;
+    }
+    .mobile-menu-toggle-checklist span{
+      width:24px;
+      height:2px;
+      background:var(--ink);
+      border-radius:2px;
+      transition:all 0.3s ease;
+    }
+    .mobile-menu-toggle-checklist.active span:nth-child(1){
+      transform:rotate(45deg) translate(8px, 8px);
+    }
+    .mobile-menu-toggle-checklist.active span:nth-child(2){
+      opacity:0;
+    }
+    .mobile-menu-toggle-checklist.active span:nth-child(3){
+      transform:rotate(-45deg) translate(7px, -7px);
+    }
+    .mobile-menu-overlay-checklist{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.5);
+      z-index:999;
+      opacity:0;
+      transition:opacity 0.3s ease;
+    }
+    .mobile-menu-overlay-checklist.show{
+      display:block;
+      opacity:1;
+    }
+    .mobile-menu-drawer-checklist{
+      position:fixed;
+      top:0;
+      right:-100%;
+      width:280px;
+      max-width:85vw;
+      height:100vh;
+      background:#fff;
+      z-index:1000;
+      box-shadow:-4px 0 20px rgba(0,0,0,0.1);
+      transition:right 0.3s ease;
+      overflow-y:auto;
+      padding:20px 0;
+    }
+    .mobile-menu-drawer-checklist.open{
+      right:0;
+    }
+    .mobile-menu-nav-checklist{
+      display:flex;
+      flex-direction:column;
+      gap:0;
+      padding:0;
+    }
+    .mobile-menu-nav-checklist a{
+      display:block;
+      padding:16px 24px;
+      color:var(--ink);
+      font-weight:600;
+      font-size:1rem;
+      text-decoration:none;
+      border-bottom:1px solid var(--soft);
+      transition:background 0.2s;
+    }
+    .mobile-menu-nav-checklist a:hover,
+    .mobile-menu-nav-checklist a.active{
+      background:var(--soft);
+      color:var(--brand);
+    }
+    .mobile-menu-actions-checklist{
+      padding:16px 24px;
+      border-top:1px solid var(--ring);
+      margin-top:8px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .mobile-menu-actions-checklist .btn-vendor-nav,
+    .mobile-menu-actions-checklist .btn-login-nav,
+    .mobile-menu-actions-checklist .btn-signup-nav{
+      width:100%;
+      text-align:center;
+      padding:12px 16px;
+      font-size:0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .mobile-menu-toggle-checklist{
+        display:flex;
+      }
+      .header-main{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        height:60px;
+        padding:0 16px;
+        gap:12px;
+      }
+      .logo{
+        font-size:1.3rem;
+        flex:1;
+        text-align:center;
+      }
+      .header-nav{
+        display:none;
+      }
+      .header-actions {
+        gap: 8px;
+        flex-wrap: wrap;
+        flex-shrink:0;
+      }
+      .btn-vendor-nav{
+        display:none;
+      }
+      .btn-login-nav,
+      .btn-signup-nav {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+      }
+      .container{
+        padding:32px 16px;
+      }
+      .page-title{
+        font-size:2rem;
+      }
+      .page-subtitle{
+        font-size:1rem;
+      }
+      .event-categories{
+        grid-template-columns:1fr;
+        gap:16px;
+      }
+      .category-card{
+        padding:20px;
+      }
+    }
+    
+    /* Main Content */
+    .container{
+      max-width:1100px;
+      margin:0 auto;
+      padding:48px 22px;
+    }
+    .page-title{
+      font-size:2.5rem;
+      font-weight:800;
+      color:var(--ink);
+      margin-bottom:12px;
+      letter-spacing:-0.02em;
+    }
+    .page-subtitle{
+      font-size:1.1rem;
+      color:var(--muted);
+      margin-bottom:48px;
+    }
+    
+    /* Event Type Categories */
+    .event-categories{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+      gap:24px;
+      margin-bottom:48px;
+    }
+    .category-card{
+      background:#fff;
+      border:1px solid var(--ring);
+      border-radius:var(--radius);
+      padding:24px;
+      box-shadow:var(--shadow);
+      transition:all 0.2s;
+    }
+    .category-card:hover{
+      transform:translateY(-2px);
+      box-shadow:0 8px 32px rgba(16,24,40,.12);
+      border-color:#d4cbb2;
+    }
+    .category-name{
+      font-size:1.5rem;
+      font-weight:800;
+      color:var(--ink);
+      margin-bottom:16px;
+      letter-spacing:-0.01em;
+    }
+    .event-list{
+      list-style:none;
+    }
+    .event-list li{
+      padding:8px 0;
+      color:var(--muted);
+      border-bottom:1px solid var(--soft);
+    }
+    .event-list li:last-child{
+      border-bottom:none;
+    }
+    .event-list a{
+      color:var(--ink);
+      font-weight:500;
+      transition:color 0.2s;
+    }
+    .event-list a:hover{
+      color:var(--brand);
+    }
+
+    /* Profile Icon */
+    .profile-container{
+      position:relative;
+      display:none;
+    }
+    .header-actions.signed-in .profile-container{
+      display:block;
+    }
+    .profile-icon{
+      width:40px;
+      height:40px;
+      border-radius:50%;
+      background:linear-gradient(135deg, var(--grad-2) 0%, var(--grad-3) 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-weight:700;
+      font-size:1.1rem;
+      cursor:pointer;
+      border:2px solid #fff;
+      box-shadow:0 2px 8px rgba(0,0,0,.1);
+      transition:all 0.2s ease;
+    }
+    .profile-icon:hover{
+      transform:scale(1.05);
+      box-shadow:0 4px 12px rgba(0,0,0,.15);
+    }
+    .profile-dropdown{
+      position:absolute;
+      top:calc(100% + 8px);
+      right:0;
+      background:var(--card);
+      border:1px solid var(--ring);
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      min-width:160px;
+      padding:8px;
+      display:none;
+      z-index:101;
+    }
+    .profile-dropdown.open{
+      display:block;
+      animation:fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn{
+      from{opacity:0;transform:translateY(-4px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+    .profile-dropdown-item{
+      display:block;
+      width:100%;
+      padding:10px 14px;
+      border:none;
+      background:transparent;
+      color:var(--ink);
+      font-weight:600;
+      font-size:0.9rem;
+      text-align:left;
+      cursor:pointer;
+      border-radius:8px;
+      transition:all 0.2s ease;
+      text-decoration:none;
+    }
+    .profile-dropdown-item:hover{
+      background:var(--soft);
+      color:var(--ink);
+    }
+    .profile-dropdown-item:active{
+      background:var(--ring);
+    }
+    @media (max-width:768px){
+      .profile-container{
+        top:16px;
+        right:16px;
+      }
+      .profile-dropdown{
+        min-width:140px;
+        right:-8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="marketplace-header">
+    <div class="header-main">
+      <button class="mobile-menu-toggle-checklist" id="mobileMenuToggleChecklist" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <a href="index.html" class="logo">CleverPlanners</a>
+      <nav class="header-nav">
+        <a href="vendors.html">Vendors</a>
+        <a href="plan.html">Event Planner</a>
+        <a href="checklists.html" style="color:var(--brand);font-weight:700;">Checklists</a>
+      </nav>
+      <div class="header-actions" id="headerActions">
+        <a href="vendor-intake.html" class="btn-vendor-nav">Become a Vendor</a>
+        <a href="login.html" class="btn-login-nav">Log In</a>
+        <a href="login.html" class="btn-signup-nav">Sign Up</a>
+        <div class="profile-container" id="profileContainer">
+          <div class="profile-icon" id="profileIcon" aria-label="User profile" role="button" tabindex="0">A</div>
+          <div class="profile-dropdown" id="profileDropdown">
+            <button class="profile-dropdown-item" id="settingsBtn">Settings</button>
+            <button class="profile-dropdown-item" id="logoutBtn">Log Out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mobile-menu-overlay-checklist" id="mobileMenuOverlayChecklist"></div>
+    <div class="mobile-menu-drawer-checklist" id="mobileMenuDrawerChecklist">
+      <nav class="mobile-menu-nav-checklist">
+        <a href="vendors.html">Vendors</a>
+        <a href="plan.html">Event Planner</a>
+        <a href="checklists.html" class="active">Checklists</a>
+      </nav>
+      <div class="mobile-menu-actions-checklist">
+        <a href="vendor-intake.html" class="btn-vendor-nav">Become a Vendor</a>
+        <a href="login.html" class="btn-login-nav">Log In</a>
+        <a href="login.html" class="btn-signup-nav">Sign Up</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="container">
+    <h1 class="page-title">Event Checklists</h1>
+    <p class="page-subtitle">Select an event type to view its checklist</p>
+    
+    <div class="event-categories" id="eventCategories">
+      <!-- Event categories will be populated by JavaScript -->
+    </div>
+  </div>
+
+  <script>
+    const EVENT_TYPES = {
+      'Child': ['Bris', 'Vach Nacht', 'Kiddush', 'Baby Naming', 'Pidyon Haben', 'Upsherin', 'Child Birthday'],
+      'Teenager': ['Bar Mitzvah', 'Bat Mitzvah', 'Sweet 16', 'Graduation Party', 'Teenager Birthday'],
+      'Adult': ['Proposal', 'Engagement (Vort / Tenoyim)', 'Wedding', 'Sheva Brachos', 'Anniversary', 'Adult Birthday'],
+      'Other': ['Hachnasas Sefer Torah', 'Shul Dinner / Fundraiser', 'Gala / Charity Event', 'School Dinner / Banquet', 'Corporate Event', 'Custom Event'],
+      'Holiday Events': ['Purim Party', 'Chanukah Party', 'Shabbos Nachamu']
+    };
+
+    function renderEventCategories() {
+      const container = document.getElementById('eventCategories');
+      if (!container) return;
+
+      let html = '';
+      Object.keys(EVENT_TYPES).forEach(category => {
+        const events = EVENT_TYPES[category];
+        html += `
+          <div class="category-card">
+            <h2 class="category-name">${category}</h2>
+            <ul class="event-list">
+              ${events.map(event => `<li><a href="#">${event}</a></li>`).join('')}
+            </ul>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // Initialize
+    renderEventCategories();
+    // Profile dropdown functionality
+    const profileIcon = document.getElementById('profileIcon');
+    const profileDropdown = document.getElementById('profileDropdown');
+    const profileContainer = document.getElementById('profileContainer');
+    const headerActions = document.getElementById('headerActions');
+    
+    // Check if user is signed in (has userPlan or userLoggedIn in localStorage)
+    function checkSignedIn() {
+      const userPlan = localStorage.getItem('userPlan');
+      const userLoggedIn = localStorage.getItem('userLoggedIn') === 'true';
+      const isSignedIn = userPlan || userLoggedIn;
+      
+      if (isSignedIn && headerActions) {
+        headerActions.classList.add('signed-in');
+      } else if (headerActions) {
+        headerActions.classList.remove('signed-in');
+      }
+    }
+    
+    // Check on page load
+    checkSignedIn();
+    
+    if (profileIcon && profileDropdown) {
+      // Toggle dropdown on icon click
+      profileIcon.addEventListener('click', (e) => {
+        e.stopPropagation();
+        profileDropdown.classList.toggle('open');
+      });
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!profileIcon.contains(e.target) && !profileDropdown.contains(e.target)) {
+          profileDropdown.classList.remove('open');
+        }
+      });
+      
+      // Close dropdown on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && profileDropdown.classList.contains('open')) {
+          profileDropdown.classList.remove('open');
+        }
+      });
+      
+      // Handle Settings button click
+      document.getElementById('settingsBtn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        profileDropdown.classList.remove('open');
+        window.location.href = 'settings.html';
+      });
+      
+      // Handle Log Out button click
+      document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        profileDropdown.classList.remove('open');
+        // Clear session
+        localStorage.removeItem('userLoggedIn');
+        localStorage.removeItem('userPlan');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userName');
+        // Redirect to index
+        window.location.href = 'index.html';
+      });
+    }
+
+    // Mobile menu toggle for checklists.html
+    const mobileMenuToggleChecklist = document.getElementById('mobileMenuToggleChecklist');
+    const mobileMenuDrawerChecklist = document.getElementById('mobileMenuDrawerChecklist');
+    const mobileMenuOverlayChecklist = document.getElementById('mobileMenuOverlayChecklist');
+    
+    if (mobileMenuToggleChecklist && mobileMenuDrawerChecklist && mobileMenuOverlayChecklist) {
+      mobileMenuToggleChecklist.addEventListener('click', () => {
+        const isOpen = mobileMenuDrawerChecklist.classList.contains('open');
+        if (isOpen) {
+          mobileMenuDrawerChecklist.classList.remove('open');
+          mobileMenuOverlayChecklist.classList.remove('show');
+          mobileMenuToggleChecklist.classList.remove('active');
+          document.body.style.overflow = '';
+        } else {
+          mobileMenuDrawerChecklist.classList.add('open');
+          mobileMenuOverlayChecklist.classList.add('show');
+          mobileMenuToggleChecklist.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      });
+      
+      mobileMenuOverlayChecklist.addEventListener('click', () => {
+        mobileMenuDrawerChecklist.classList.remove('open');
+        mobileMenuOverlayChecklist.classList.remove('show');
+        mobileMenuToggleChecklist.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+      
+      mobileMenuDrawerChecklist.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          mobileMenuDrawerChecklist.classList.remove('open');
+          mobileMenuOverlayChecklist.classList.remove('show');
+          mobileMenuToggleChecklist.classList.remove('active');
+          document.body.style.overflow = '';
+        });
+      });
+    }
+  </script>
+</body>
+</html>
+
+

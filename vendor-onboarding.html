@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vendor Onboarding – CleverPlanners</title>
+  <style>
+    :root{
+      --ink:#1e293b; --muted:#6b7280; --cream:#fbf6ed; --panel:#f4ecdc; --brand:#111827; --accent1:#ff7ab6; --accent2:#89f7d3; --ring:#e5dcc7; --radius:20px; --shadow:0 10px 30px rgba(16,24,40,.08);
+      --ok:#16a34a; --warn:#f59e0b; --soft:#faf7f1;
+      --radius-sm:16px;
+      --shadow-md:0 8px 32px rgba(16,24,40,.1);
+      --shadow-lg:0 16px 48px rgba(16,24,40,.12);
+      --gradient-brand:linear-gradient(135deg, #111827 0%, #1f2937 100%);
+      --gradient-accent:linear-gradient(135deg, var(--accent2) 0%, #b9a7ff 50%, var(--accent1) 100%);
+      --card:#fff;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;background:var(--cream);color:var(--ink)}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1100px;margin:0 auto;padding:0 22px}
+
+    header{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid #f0eadb;margin:0;padding:0}
+    .nav{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 22px}
+    .logo{font-size:1.5rem;font-weight:800;color:var(--brand);letter-spacing:-0.02em;transition:opacity 0.2s;text-decoration:none}
+    .logo:hover{opacity:0.9}
+
+    /* progress */
+    .progress{position:sticky;top:68px;z-index:40;background:linear-gradient(#fff,#fffccf00);padding:10px 0;border-bottom:1px solid #f0eadb}
+    .bar{height:10px;background:#e9dfca;border-radius:999px;overflow:hidden}
+    .bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent2),#b9a7ff,var(--accent1));transition:width .4s ease}
+    .steps{display:flex;justify-content:space-between;margin-top:8px;font-size:.9rem;color:var(--muted)}
+    .steps span{cursor:default;transition:font-weight 0.2s, color 0.2s}
+    .steps span.completed{cursor:pointer;font-weight:700;color:var(--ink)}
+    .steps span.current{font-weight:700;color:var(--ink)}
+    .steps span.completed:hover{opacity:0.8}
+
+    /* wizard sections */
+    .section{display:none;padding:28px 0}
+    .section.active{display:block}
+
+    /* Animated headings/subtitles */
+    .anim-title, .anim-sub{opacity:0;transform:translateY(10px)}
+    .drop{opacity:0;transform:translateY(-14px)}
+    .section.show .drop{animation:dropIn .5s cubic-bezier(.2,.7,.3,1) forwards}
+    @keyframes dropIn{to{opacity:1;transform:translateY(0)}}
+
+    .section.show .anim-sub{animation:fadeUpSub .6s ease forwards;animation-delay:.2s}
+    @keyframes fadeUpSub{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    .qbox{opacity:0;transform:translateY(12px)}
+    .section.ready .qbox{animation:fadeUpBox .5s ease forwards;animation-delay:.4s}
+    @keyframes fadeUpBox{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+    /* cards & inputs */
+    .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    .card{border:1px solid var(--ring);border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);padding:18px;position:relative}
+    .option{cursor:pointer;display:flex;flex-direction:column;gap:6px;border:2px solid var(--ring);border-radius:var(--radius-sm);transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);position:relative;overflow:hidden;isolation:isolate}
+    .option::before{
+      content:'';
+      position:absolute;
+      top:0;
+      left:-100%;
+      width:100%;
+      height:100%;
+      background:var(--gradient-accent);
+      opacity:0.1;
+      transition:left 0.5s;
+      z-index:0;
+      pointer-events:none;
+    }
+    .card.option:hover::before{
+      left:100%;
+    }
+    .card.option.selected::before{
+      opacity:0;
+    }
+    .card.option:hover{
+      background:var(--soft);
+      border-color:#d4cbb2;
+      transform:translateY(-3px);
+      box-shadow:var(--shadow-md);
+    }
+    .option > *{position:relative;z-index:1}
+    .option.selected{
+      background:var(--gradient-brand);
+      color:#fff;
+      border-color:transparent;
+      box-shadow:var(--shadow-md);
+      transform:scale(1.03);
+      position:relative;
+    }
+    .option.selected::after{
+      content:'';
+      position:absolute;
+      inset:-2px;
+      border-radius:var(--radius-sm);
+      padding:2px;
+      background:var(--gradient-accent);
+      -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite:xor;
+      mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite:exclude;
+      z-index:-1;
+    }
+    .card.option.selected:hover{
+      background:var(--gradient-brand);
+      color:#fff;
+      border-color:transparent;
+      transform:scale(1.03) translateY(-3px);
+      box-shadow:var(--shadow-lg);
+    }
+    .option.selected .help,
+    .option.selected h3{
+      color:#fff;
+    }
+    .help{color:var(--muted);font-size:.95rem}
+
+    label{display:block;font-weight:700;margin:10px 0 6px}
+    input[type="text"], input[type="email"], input[type="tel"], input[type="url"], input[type="number"], input[type="date"], select, textarea{width:100%;padding:12px 12px;border-radius:12px;border:1px solid var(--ring);background:#fff;font-family:inherit}
+    input:disabled, select:disabled{background:#f8f6f1;opacity:.7;cursor:not-allowed}
+    textarea{min-height:100px;resize:vertical}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+    .chip{border:1px solid var(--ring);padding:8px 10px;border-radius:999px;background:#fff;cursor:pointer;transition:all 0.2s}
+    .chip:hover{background:var(--soft);border-color:#d4cbb2}
+    .chip.selected{background:var(--gradient-brand);color:#fff;border-color:transparent}
+    .chip-all-events{font-weight:700;border-width:2px}
+    .chip-all-events:hover{border-color:var(--brand)}
+    .chip-all-events.selected{background:var(--gradient-brand);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(17,24,39,0.15)}
+
+    /* nav row */
+    .navrow{display:flex;justify-content:space-between;gap:10px;margin-top:32px;margin-bottom:32px;position:sticky;bottom:50px;z-index:30;background:transparent;padding:0;pointer-events:none;transition:bottom 0.2s ease;width:100%}
+    .navrow > *{pointer-events:auto}
+    .navrow.back-bottom{justify-content:flex-start}
+    .navrow .btn[data-prev]{margin-left:calc(-22px - 60px);margin-right:auto}
+    .navrow .btn.primary, .navrow .btn[id^="next"]{margin-left:auto;margin-right:calc(-22px - 60px)}
+    @media (max-width: 1200px) {
+      .navrow .btn[data-prev]{margin-left:calc(-22px - 40px)}
+      .navrow .btn.primary, .navrow .btn[id^="next"]{margin-right:calc(-22px - 40px)}
+    }
+    @media (max-width: 900px) {
+      .navrow .btn[data-prev]{margin-left:calc(-22px - 20px)}
+      .navrow .btn.primary, .navrow .btn[id^="next"]{margin-right:calc(-22px - 20px)}
+    }
+    @media (max-width: 768px) {
+      .navrow{bottom:40px;margin-top:24px;margin-bottom:24px;justify-content:center;flex-wrap:wrap;gap:12px}
+      .navrow .btn[data-prev], .navrow .btn.primary, .navrow .btn[id^="next"]{margin-left:0;margin-right:0;flex:1;min-width:120px;max-width:200px}
+    }
+    @media (max-width: 480px) {
+      .navrow{flex-direction:column;align-items:stretch}
+      .navrow .btn[data-prev], .navrow .btn.primary, .navrow .btn[id^="next"]{width:100%;max-width:none}
+    }
+
+    .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:12px 14px;border:1px solid var(--ring);background:#fff;cursor:pointer;font-weight:400;transition:all 0.2s ease;position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+    .btn.primary{font-weight:600}
+    .btn[data-prev]{font-weight:400}
+    .btn[data-prev]:hover{font-weight:600}
+    .btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.1);border-color:#d4cbb2}
+    .btn:active{transform:translateY(0);box-shadow:0 2px 6px rgba(0,0,0,0.08)}
+    .btn.primary{background:var(--brand);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(17,24,39,0.15)}
+    .btn.primary:hover{background:#0a0f1a;box-shadow:0 4px 16px rgba(17,24,39,0.25);transform:translateY(-2px)}
+    .btn.primary:active{transform:translateY(0);box-shadow:0 2px 8px rgba(17,24,39,0.15)}
+    .btn:disabled{opacity:.5;cursor:not-allowed;transform:none !important;box-shadow:none !important}
+
+    /* Service card */
+    .service-card{border:2px solid var(--ring);border-radius:var(--radius-sm);padding:20px;margin-bottom:20px;background:#fff}
+    .service-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+    .service-title{font-size:1.1rem;font-weight:700;margin:0}
+    .btn-remove{background:transparent;border:1px solid var(--ring);border-radius:8px;padding:6px 12px;color:var(--muted);cursor:pointer;font-size:0.85rem}
+    .btn-remove:hover{background:#fee2e2;border-color:#dc2626;color:#dc2626}
+    .btn-add-service{width:100%;padding:12px;background:var(--soft);border:2px dashed var(--ring);border-radius:12px;color:var(--ink);font-weight:600;cursor:pointer;margin-top:12px}
+    .btn-add-service:hover{background:#fff;border-color:var(--brand);color:var(--brand)}
+
+    /* Price structure */
+    .price-options{display:grid;grid-template-columns:repeat(auto-fit, minmax(120px, 1fr));gap:12px;margin-top:12px}
+    .price-option{border:2px solid var(--ring);border-radius:12px;padding:12px;text-align:center;cursor:pointer;transition:all 0.2s;background:#fff}
+    .price-option:hover{background:var(--soft);border-color:#d4cbb2}
+    .price-option.selected{background:var(--gradient-brand);color:#fff;border-color:transparent}
+    .price-option input[type="radio"]{display:none}
+
+    /* File upload */
+    .file-upload{border:2px dashed var(--ring);border-radius:12px;padding:32px;text-align:center;background:var(--soft);cursor:pointer;transition:all 0.2s}
+    .file-upload:hover{border-color:var(--brand);background:#fff}
+    .file-upload input[type="file"]{display:none}
+    .file-upload-icon{font-size:2rem;margin-bottom:8px}
+    .file-upload-text{color:var(--muted);font-weight:500}
+
+    /* Add-on items */
+    .addon-item{display:flex;gap:12px;align-items:center;margin-bottom:12px;padding:12px;background:var(--soft);border-radius:8px}
+    .addon-item input{flex:1}
+
+    /* Checkbox/Radio groups */
+    .checkbox-group, .radio-group{display:flex;align-items:flex-start;gap:12px;padding:12px;border:2px solid var(--ring);border-radius:12px;background:#fff;cursor:pointer;transition:all 0.2s;margin-bottom:12px}
+    .checkbox-group:hover, .radio-group:hover{background:var(--soft);border-color:#d4cbb2}
+    .checkbox-group input[type="checkbox"], .radio-group input[type="radio"]{width:20px;height:20px;margin-top:2px;cursor:pointer;flex-shrink:0}
+    .checkbox-group label, .radio-group label{margin:0;font-weight:400;cursor:pointer;flex:1}
+
+    /* Error messages */
+    .error-message{color:#dc2626;font-size:.85rem;margin-top:4px;display:none}
+    .error-message.show{display:block}
+    input.error, select.error, textarea.error{border-color:#dc2626}
+
+    /* Live Preview Panel - Reusable */
+    .step-with-preview{
+      display:grid;
+      grid-template-columns:1fr 400px;
+      gap:40px;
+      align-items:start;
+      min-height:0;
+    }
+    .step-with-preview > .qbox{
+      min-height:0;
+      overflow:visible;
+    }
+    .step-1-layout{
+      display:grid;
+      grid-template-columns:1fr 400px;
+      gap:40px;
+      align-items:start;
+    }
+    .live-preview{
+      position:sticky;
+      top:100px;
+      max-height:calc(100vh - 120px);
+      overflow-y:auto;
+      background:var(--soft);
+      border:1px solid var(--ring);
+      border-radius:var(--radius);
+      padding:24px;
+      box-shadow:var(--shadow);
+      opacity:0.95;
+      align-self:start;
+      height:fit-content;
+    }
+    .live-preview-header{
+      margin-bottom:20px;
+      padding-bottom:16px;
+      border-bottom:2px solid var(--ring);
+    }
+    .live-preview-title{
+      font-size:1.1rem;
+      font-weight:700;
+      color:var(--ink);
+      margin:0 0 4px 0;
+    }
+    .live-preview-note{
+      font-size:0.85rem;
+      color:var(--muted);
+      margin:0;
+    }
+    .preview-vendor-card{
+      background:#fff;
+      border-radius:var(--radius-sm);
+      padding:24px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.05);
+    }
+    .preview-vendor-name{
+      font-size:1.75rem;
+      font-weight:800;
+      color:var(--ink);
+      margin:0 0 8px 0;
+      line-height:1.2;
+      min-height:2.1rem;
+    }
+    .preview-vendor-tagline{
+      font-size:0.95rem;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      font-weight:600;
+      margin:0 0 16px 0;
+      min-height:1.2rem;
+    }
+    .preview-vendor-description{
+      font-size:0.95rem;
+      line-height:1.7;
+      color:var(--ink);
+      margin:0;
+      min-height:3rem;
+    }
+    .preview-placeholder{
+      color:var(--muted);
+      font-style:italic;
+      opacity:0.6;
+    }
+    /* Preview items for other steps */
+    .preview-item{
+      padding:12px;
+      background:#fff;
+      border-radius:8px;
+      margin-bottom:12px;
+      border:1px solid var(--ring);
+    }
+    .preview-item-title{
+      font-weight:600;
+      color:var(--ink);
+      margin-bottom:4px;
+    }
+    .preview-item-text{
+      font-size:0.9rem;
+      color:var(--muted);
+      line-height:1.5;
+    }
+    .preview-badge{
+      display:inline-block;
+      padding:4px 10px;
+      background:var(--soft);
+      border:1px solid var(--ring);
+      border-radius:999px;
+      font-size:0.85rem;
+      margin:4px 4px 4px 0;
+      color:var(--ink);
+    }
+    .preview-list{
+      list-style:none;
+      padding:0;
+      margin:0;
+    }
+    .preview-list li{
+      padding:8px 0;
+      border-bottom:1px solid var(--ring);
+      font-size:0.9rem;
+      color:var(--ink);
+    }
+    .preview-list li:last-child{
+      border-bottom:none;
+    }
+
+    @media (max-width:1024px){
+      .step-with-preview,
+      .step-1-layout{
+        grid-template-columns:1fr;
+        gap:32px;
+      }
+      .live-preview{
+        position:relative;
+        top:0;
+        max-height:none;
+      }
+    }
+    @media (max-width:768px){
+      .grid-2{grid-template-columns:1fr}
+      .container{padding:0 16px}
+      .section{padding:20px 0}
+      .step-with-preview,
+      .step-1-layout{
+        gap:24px;
+      }
+      .live-preview{
+        padding:20px;
+      }
+      .preview-vendor-name{
+        font-size:1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <a href="index.html" class="logo">CleverPlanners</a>
+      <a href="vendors.html" style="color:var(--muted);font-weight:500;font-size:0.95rem;">Back to Vendors</a>
+    </div>
+  </header>
+
+  <div class="progress">
+    <div class="container">
+      <div class="bar" aria-label="Progress"><span id="progressFill"></span></div>
+      <div class="steps" aria-hidden="true">
+        <span data-step="1">Business Info</span>
+        <span data-step="2">Services</span>
+        <span data-step="3">Event Types</span>
+        <span data-step="4">Availability</span>
+        <span data-step="5">Location</span>
+        <span data-step="6">Booking</span>
+        <span data-step="7">Media</span>
+        <span data-step="8">Social</span>
+        <span data-step="9">Messaging</span>
+        <span data-step="10">Legal</span>
+      </div>
+    </div>
+  </div>
+
+  <main class="container">
+    <form id="vendorOnboardingForm">
+      <!-- STEP 1: Basic Business Info -->
+      <section class="section active" id="step-1" data-step="1">
+        <h1 class="anim-title drop">Tell us about your business</h1>
+        <p class="anim-sub lead">We'll use this information to create your vendor profile.</p>
+        
+        <div class="step-1-layout">
+          <div class="qbox">
+            <label for="businessName">Business Name <span style="color:#dc2626">*</span></label>
+            <input type="text" id="businessName" name="businessName" required placeholder="Your business name">
+
+            <label for="tagline">Short Tagline / Headline <span style="color:#dc2626">*</span></label>
+            <input type="text" id="tagline" name="tagline" required placeholder="A brief, compelling description">
+
+            <label for="description">Full Business Description <span style="color:#dc2626">*</span></label>
+            <textarea id="description" name="description" required placeholder="Describe your business, experience, and what makes you unique..."></textarea>
+          </div>
+
+          <!-- Live Preview Panel -->
+          <div class="live-preview">
+            <div class="live-preview-header">
+              <h3 class="live-preview-title">Live Preview</h3>
+              <p class="live-preview-note">This is a preview. Your live page may include more details once published.</p>
+            </div>
+            <div class="preview-vendor-card">
+              <h2 class="preview-vendor-name" id="previewName">Your Business Name</h2>
+              <div class="preview-vendor-tagline" id="previewTagline">Your short tagline will appear here</div>
+              <p class="preview-vendor-description" id="previewDescription">Your full business description will appear here. This preview updates as you type.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="navrow back-bottom">
+          <a class="btn ghost" href="vendors.html">Back</a>
+          <button type="button" class="btn primary" id="next-1">Next</button>
+    </div>
+  </section>
+
+      <!-- STEP 2: Services -->
+      <section class="section" id="step-2" data-step="2">
+        <h1 class="anim-title drop">What services do you offer?</h1>
+        <p class="anim-sub lead">Define at least one service. You can add multiple services.</p>
+        
+        <div class="step-with-preview">
+          <div class="qbox" id="services-container">
+          <div class="service-card" data-service="0">
+            <div class="service-header">
+              <h3 class="service-title">Service #1</h3>
+        </div>
+            <label>Service Name <span style="color:#dc2626">*</span></label>
+            <input type="text" name="serviceName[]" required placeholder="e.g., Wedding Photography Package">
+
+            <label>Service Category <span style="color:#dc2626">*</span></label>
+            <select name="serviceCategory[]" required>
+              <option value="">Select a category</option>
+              <option value="Music & Performers">Music & Performers</option>
+              <option value="Photography & Video">Photography & Video</option>
+              <option value="Catering & Food">Catering & Food</option>
+              <option value="Venue & Halls">Venue & Halls</option>
+              <option value="Décor & Flowers">Décor & Flowers</option>
+              <option value="Beauty & Styling">Beauty & Styling</option>
+              <option value="Planning & Coordination">Planning & Coordination</option>
+              <option value="Transportation">Transportation</option>
+              <option value="Rentals & Supplies">Rentals & Supplies</option>
+              <option value="Religious Services">Religious Services</option>
+              <option value="Invitations & Stationery">Invitations & Stationery</option>
+              <option value="Gifts & Favors">Gifts & Favors</option>
+            </select>
+
+            <label>Subcategory (if applicable)</label>
+            <input type="text" name="serviceSubcategory[]" placeholder="e.g., DJ, Live Band, String Quartet">
+
+            <label>Service Description <span style="color:#dc2626">*</span></label>
+            <textarea name="serviceDescription[]" required placeholder="Describe what's included in this service..."></textarea>
+
+            <label>Price Structure <span style="color:#dc2626">*</span></label>
+            <div class="price-options">
+              <label class="price-option">
+                <input type="radio" name="priceStructure[0]" value="flat" required>
+                <div>Flat Fee</div>
+              </label>
+              <label class="price-option">
+                <input type="radio" name="priceStructure[0]" value="starting">
+                <div>Starting At</div>
+              </label>
+              <label class="price-option">
+                <input type="radio" name="priceStructure[0]" value="hourly">
+                <div>Per Hour</div>
+              </label>
+              <label class="price-option">
+                <input type="radio" name="priceStructure[0]" value="per-guest">
+                <div>Per Guest</div>
+              </label>
+        </div>
+
+            <label>Base or Starting Price <span style="color:#dc2626">*</span></label>
+            <input type="number" name="basePrice[]" required placeholder="0" min="0" step="0.01">
+
+            <label>What's Included</label>
+            <textarea name="whatsIncluded[]" placeholder="List what's included in this service..."></textarea>
+
+            <label>Optional Add-ons</label>
+            <div class="addons-container" data-service="0"></div>
+            <button type="button" class="btn-add-service" onclick="addAddon(0)">+ Add Add-on</button>
+
+            <div class="grid-2">
+              <div>
+                <label>Minimum Booking Amount</label>
+                <input type="number" name="minBooking[]" placeholder="0" min="0" step="0.01">
+        </div>
+              <div>
+                <label>Minimum Event Size (guests)</label>
+                <input type="number" name="minEventSize[]" placeholder="0" min="0">
+        </div>
+            </div>
+
+            <div class="grid-2">
+              <div>
+                <label>Maximum Event Size (guests)</label>
+                <input type="number" name="maxEventSize[]" placeholder="Unlimited" min="0">
+              </div>
+              <div>
+                <label>Maximum Capacity</label>
+                <input type="text" name="maxCapacity[]" placeholder="e.g., 200 guests or 8 hours">
+              </div>
+            </div>
+
+            <label>Indoor / Outdoor / Both</label>
+            <div class="price-options">
+              <label class="price-option">
+                <input type="radio" name="venueType[0]" value="indoor">
+                <div>Indoor</div>
+              </label>
+              <label class="price-option">
+                <input type="radio" name="venueType[0]" value="outdoor">
+                <div>Outdoor</div>
+              </label>
+              <label class="price-option">
+                <input type="radio" name="venueType[0]" value="both">
+                <div>Both</div>
+              </label>
+              <label class="price-option">
+                <input type="radio" name="venueType[0]" value="n/a">
+                <div>N/A</div>
+              </label>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn-add-service" onclick="addService()">+ Add Another Service</button>
+          </div>
+
+          <!-- Live Preview Panel -->
+          <div class="live-preview">
+            <div class="live-preview-header">
+              <h3 class="live-preview-title">Live Preview</h3>
+              <p class="live-preview-note">Preview how your services will appear on your profile.</p>
+            </div>
+            <div id="previewServicesList">
+              <div class="preview-item">
+                <div class="preview-item-title preview-placeholder">Your services will appear here</div>
+                <div class="preview-item-text preview-placeholder">Add services to see them in the preview</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="navrow">
+          <button type="button" class="btn" data-prev>Back</button>
+          <button type="button" class="btn primary" id="next-2">Next</button>
+      </div>
+    </section>
+
+      <!-- STEP 3: Event Types -->
+      <section class="section" id="step-3" data-step="3">
+        <h1 class="anim-title drop">What event types do you support?</h1>
+        <p class="anim-sub lead">Select all event types you can accommodate.</p>
+        
+        <div class="step-with-preview">
+          <div class="qbox">
+            <div class="chips" id="eventTypesChips">
+              <!-- All Events Option -->
+              <div class="chip chip-all-events" data-value="All Events">
+                All Events
+              </div>
+              
+              <!-- Child Events -->
+              <div class="chip" data-value="Bris">Bris</div>
+              <div class="chip" data-value="Vach Nacht">Vach Nacht</div>
+              <div class="chip" data-value="Kiddush">Kiddush</div>
+              <div class="chip" data-value="Baby Naming">Baby Naming</div>
+              <div class="chip" data-value="Pidyon Haben">Pidyon Haben</div>
+              <div class="chip" data-value="Upsherin">Upsherin</div>
+              <div class="chip" data-value="Child Birthday">Child Birthday</div>
+              
+              <!-- Teenager Events -->
+              <div class="chip" data-value="Bar Mitzvah">Bar Mitzvah</div>
+              <div class="chip" data-value="Bat Mitzvah">Bat Mitzvah</div>
+              <div class="chip" data-value="Sweet 16">Sweet 16</div>
+              <div class="chip" data-value="Graduation Party">Graduation Party</div>
+              <div class="chip" data-value="Teenager Birthday">Teenager Birthday</div>
+              
+              <!-- Adult Events -->
+              <div class="chip" data-value="Proposal">Proposal</div>
+              <div class="chip" data-value="Engagement (Vort / Tenoyim)">Engagement (Vort / Tenoyim)</div>
+              <div class="chip" data-value="Wedding">Wedding</div>
+              <div class="chip" data-value="Sheva Brachos">Sheva Brachos</div>
+              <div class="chip" data-value="Anniversary">Anniversary</div>
+              <div class="chip" data-value="Adult Birthday">Adult Birthday</div>
+              
+              <!-- Holiday Events -->
+              <div class="chip" data-value="Purim Party">Purim Party</div>
+              <div class="chip" data-value="Chanukah Party">Chanukah Party</div>
+              <div class="chip" data-value="Shabbos Nachamu">Shabbos Nachamu</div>
+              
+              <!-- Other Events -->
+              <div class="chip" data-value="Hachnasas Sefer Torah">Hachnasas Sefer Torah</div>
+              <div class="chip" data-value="Shul Dinner / Fundraiser">Shul Dinner / Fundraiser</div>
+              <div class="chip" data-value="Gala / Charity Event">Gala / Charity Event</div>
+              <div class="chip" data-value="School Dinner / Banquet">School Dinner / Banquet</div>
+              <div class="chip" data-value="Corporate Event">Corporate Event</div>
+              <div class="chip" data-value="Custom Event">Custom Event</div>
+          </div>
+            <input type="hidden" id="eventTypes" name="eventTypes" required>
+        </div>
+
+          <!-- Live Preview Panel -->
+          <div class="live-preview">
+            <div class="live-preview-header">
+              <h3 class="live-preview-title">Live Preview</h3>
+              <p class="live-preview-note">Selected event types will appear on your profile.</p>
+          </div>
+            <div id="previewEventTypes">
+              <div class="preview-placeholder" style="padding:12px;text-align:center;">Select event types to see them here</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="navrow">
+          <button type="button" class="btn" data-prev>Back</button>
+          <button type="button" class="btn primary" id="next-3">Next</button>
+        </div>
+      </section>
+
+      <!-- STEP 4: Availability -->
+      <section class="section" id="step-4" data-step="4">
+        <h1 class="anim-title drop">When are you available?</h1>
+        <p class="anim-sub lead">Help planners know when you're available for bookings.</p>
+        
+        <div class="step-with-preview">
+          <div class="qbox">
+          <label>Days of Week Available <span style="color:#dc2626">*</span></label>
+          <div class="chips" id="daysAvailableChips">
+            <div class="chip" data-value="Monday">Monday</div>
+            <div class="chip" data-value="Tuesday">Tuesday</div>
+            <div class="chip" data-value="Wednesday">Wednesday</div>
+            <div class="chip" data-value="Thursday">Thursday</div>
+            <div class="chip" data-value="Friday">Friday</div>
+            <div class="chip" data-value="Saturday">Saturday</div>
+            <div class="chip" data-value="Sunday">Sunday</div>
+          </div>
+          <input type="hidden" id="daysAvailable" name="daysAvailable" required>
+
+          <label for="availabilityWindow">General Availability Window</label>
+          <select id="availabilityWindow" name="availabilityWindow">
+            <option value="">Select availability</option>
+            <option value="mornings">Mornings</option>
+            <option value="afternoons">Afternoons</option>
+            <option value="evenings">Evenings</option>
+            <option value="all-day">All Day</option>
+            <option value="flexible">Flexible</option>
+          </select>
+
+          <label for="leadTime">Required Lead Time (days) <span style="color:#dc2626">*</span></label>
+          <input type="number" id="leadTime" name="leadTime" required placeholder="e.g., 30" min="0">
+
+          <label for="blackoutDates">Blackout Dates</label>
+          <textarea id="blackoutDates" name="blackoutDates" placeholder="List any dates you're unavailable (e.g., Dec 24-31, 2024)"></textarea>
+
+          <label>Calendar Access (Optional)</label>
+          <div class="checkbox-group">
+            <input type="checkbox" id="googleCalendar" name="calendarAccess[]" value="google">
+            <label for="googleCalendar">Google Calendar</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="outlookCalendar" name="calendarAccess[]" value="outlook">
+            <label for="outlookCalendar">Outlook Calendar</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="icalCalendar" name="calendarAccess[]" value="ical">
+            <label for="icalCalendar">iCal / Other</label>
+          </div>
+        </div>
+
+          <!-- Live Preview Panel -->
+          <div class="live-preview">
+            <div class="live-preview-header">
+              <h3 class="live-preview-title">Live Preview</h3>
+              <p class="live-preview-note">Your availability information will appear here.</p>
+          </div>
+            <div id="previewAvailability">
+              <div class="preview-item">
+                <div class="preview-item-title">Days Available</div>
+                <div id="previewDays" class="preview-item-text preview-placeholder">Select days to see them here</div>
+              </div>
+              <div class="preview-item">
+                <div class="preview-item-title">Availability Window</div>
+                <div id="previewWindow" class="preview-item-text preview-placeholder">Not specified</div>
+              </div>
+              <div class="preview-item">
+                <div class="preview-item-title">Required Lead Time</div>
+                <div id="previewLeadTime" class="preview-item-text preview-placeholder">Not specified</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="navrow">
+          <button type="button" class="btn" data-prev>Back</button>
+          <button type="button" class="btn primary" id="next-4">Next</button>
+        </div>
+      </section>
+
+      <!-- STEP 5: Location & Coverage -->
+      <section class="section" id="step-5" data-step="5">
+        <h1 class="anim-title drop">Contact & Location Information</h1>
+        <p class="anim-sub lead">Tell us how to reach you and where you're located.</p>
+        
+        <div class="step-with-preview">
+          <div class="qbox">
+          <h3 style="font-size:1.1rem;font-weight:700;margin:0 0 16px 0;color:var(--ink);padding-bottom:12px;border-bottom:1px solid var(--ring);">Contact Information</h3>
+          
+          <div class="grid-2">
+            <div>
+              <label for="email">Primary Contact Email <span style="color:#dc2626">*</span></label>
+              <input type="email" id="email" name="email" required placeholder="contact@yourbusiness.com">
+            </div>
+            <div>
+              <label for="phone">Primary Contact Phone <span style="color:#dc2626">*</span></label>
+              <input type="tel" id="phone" name="phone" required placeholder="(555) 123-4567">
+            </div>
+          </div>
+
+          <label for="website">Website URL</label>
+          <input type="url" id="website" name="website" placeholder="https://yourwebsite.com">
+
+          <h3 style="font-size:1.1rem;font-weight:700;margin:24px 0 16px 0;color:var(--ink);padding-top:24px;padding-bottom:12px;border-top:1px solid var(--ring);border-bottom:1px solid var(--ring);">Location</h3>
+
+          <div class="grid-2">
+            <div>
+              <label for="city">City <span style="color:#dc2626">*</span></label>
+              <input type="text" id="city" name="city" required placeholder="City">
+            </div>
+            <div>
+              <label for="state">State / Region <span style="color:#dc2626">*</span></label>
+              <input type="text" id="state" name="state" required placeholder="State or Region">
+            </div>
+        </div>
+
+          <label for="primaryLocation">Primary Service Location <span style="color:#dc2626">*</span></label>
+          <input type="text" id="primaryLocation" name="primaryLocation" required placeholder="City, State">
+
+          <label for="areasServed">Areas Served</label>
+          <textarea id="areasServed" name="areasServed" placeholder="List cities or regions you serve (one per line)"></textarea>
+
+          <div class="grid-2">
+            <div>
+              <label for="travelRadius">Travel Radius</label>
+              <input type="number" id="travelRadius" name="travelRadius" placeholder="0" min="0">
+            </div>
+            <div>
+              <label for="travelRadiusUnit">Unit</label>
+              <select id="travelRadiusUnit" name="travelRadiusUnit">
+                <option value="miles">Miles</option>
+                <option value="km">Kilometers</option>
+              </select>
+            </div>
+        </div>
+
+          <label>Travel Fee</label>
+          <div class="radio-group">
+            <input type="radio" id="travelFeeYes" name="travelFee" value="yes">
+            <label for="travelFeeYes">Yes, I charge a travel fee</label>
+          </div>
+          <div class="radio-group">
+            <input type="radio" id="travelFeeNo" name="travelFee" value="no">
+            <label for="travelFeeNo">No travel fee</label>
+        </div>
+
+          <div class="form-group" id="travelFeeDetails" style="display:none;">
+            <label for="travelFeeAmount">Travel Fee Details</label>
+            <input type="text" id="travelFeeAmount" name="travelFeeAmount" placeholder="e.g., $50 for distances over 25 miles">
+        </div>
+
+          <label>Willing to Travel Out of Area?</label>
+          <div class="radio-group">
+            <input type="radio" id="travelOutYes" name="travelOut" value="yes">
+            <label for="travelOutYes">Yes</label>
+          </div>
+          <div class="radio-group">
+            <input type="radio" id="travelOutNo" name="travelOut" value="no">
+            <label for="travelOutNo">No</label>
+          </div>
+          </div>
+
+          <!-- Live Preview Panel -->
+          <div class="live-preview">
+            <div class="live-preview-header">
+              <h3 class="live-preview-title">Live Preview</h3>
+              <p class="live-preview-note">Contact and location information will appear on your profile.</p>
+            </div>
+            <div id="previewLocation">
+              <div class="preview-item">
+                <div class="preview-item-title">Contact</div>
+                <div id="previewContact" class="preview-item-text preview-placeholder">Email and phone will appear here</div>
+              </div>
+              <div class="preview-item">
+                <div class="preview-item-title">Location</div>
+                <div id="previewLocationText" class="preview-item-text preview-placeholder">City and state will appear here</div>
+              </div>
+              <div class="preview-item">
+                <div class="preview-item-title">Website</div>
+                <div id="previewWebsite" class="preview-item-text preview-placeholder">Not provided</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="navrow">
+          <button type="button" class="btn" data-prev>Back</button>
+          <button type="button" class="btn primary" id="next-5">Next</button>
+        </div>
+      </section>
+
+      <!-- STEP 6: Booking & Payment -->
+      <section class="section" id="step-6" data-step="6">
+        <h1 class="anim-title drop">Booking & Payment Policies</h1>
+        <p class="anim-sub lead">Define how customers can book and pay for your services.</p>
+        
+        <div class="step-with-preview">
+          <div class="qbox">
+          <label>Booking Type <span style="color:#dc2626">*</span></label>
+          <div class="radio-group">
+            <input type="radio" id="bookingInstant" name="bookingType" value="instant" required>
+            <label for="bookingInstant">Instant Book</label>
+          </div>
+          <div class="radio-group">
+            <input type="radio" id="bookingRequest" name="bookingType" value="request" required>
+            <label for="bookingRequest">Request to Book</label>
+          </div>
+
+          <label>Deposit Required? <span style="color:#dc2626">*</span></label>
+          <div class="radio-group">
+            <input type="radio" id="depositYes" name="depositRequired" value="yes" required>
+            <label for="depositYes">Yes</label>
+          </div>
+          <div class="radio-group">
+            <input type="radio" id="depositNo" name="depositRequired" value="no" required>
+            <label for="depositNo">No</label>
+          </div>
+
+          <div class="form-group" id="depositDetails" style="display:none;">
+            <label for="depositAmount">Deposit Amount or Percentage</label>
+            <input type="text" id="depositAmount" name="depositAmount" placeholder="e.g., $500 or 25%">
+        </div>
+
+          <label for="cancellationPolicy">Cancellation Policy <span style="color:#dc2626">*</span></label>
+          <select id="cancellationPolicy" name="cancellationPolicy" required>
+            <option value="">Select policy</option>
+            <option value="full-refund">Full refund if cancelled 30+ days before</option>
+            <option value="partial-refund">Partial refund if cancelled 14+ days before</option>
+            <option value="no-refund">No refunds</option>
+            <option value="custom">Custom policy</option>
+          </select>
+
+          <div class="form-group" id="cancellationCustom" style="display:none;">
+            <label for="cancellationCustomText">Custom Cancellation Policy</label>
+            <textarea id="cancellationCustomText" name="cancellationCustomText" placeholder="Describe your cancellation policy..."></textarea>
+        </div>
+
+          <label for="reschedulingPolicy">Rescheduling Policy</label>
+          <textarea id="reschedulingPolicy" name="reschedulingPolicy" placeholder="Describe your rescheduling policy..."></textarea>
+
+          <label>Payment Methods Accepted <span style="color:#dc2626">*</span></label>
+        <div class="checkbox-group">
+            <input type="checkbox" id="paymentCash" name="paymentMethods[]" value="cash">
+            <label for="paymentCash">Cash</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="paymentCheck" name="paymentMethods[]" value="check">
+            <label for="paymentCheck">Check</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="paymentCredit" name="paymentMethods[]" value="credit">
+            <label for="paymentCredit">Credit Card</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="paymentVenmo" name="paymentMethods[]" value="venmo">
+            <label for="paymentVenmo">Venmo</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="paymentPaypal" name="paymentMethods[]" value="paypal">
+            <label for="paymentPaypal">PayPal</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="paymentZelle" name="paymentMethods[]" value="zelle">
+            <label for="paymentZelle">Zelle</label>
+          </div>
+        </div>
+
+          <!-- Live Preview Panel -->
+          <div class="live-preview">
+            <div class="live-preview-header">
+              <h3 class="live-preview-title">Live Preview</h3>
+              <p class="live-preview-note">Booking and payment policies will appear on your profile.</p>
+            </div>
+            <div id="previewBooking">
+              <div class="preview-item">
+                <div class="preview-item-title">Booking Type</div>
+                <div id="previewBookingType" class="preview-item-text preview-placeholder">Not selected</div>
+              </div>
+              <div class="preview-item">
+                <div class="preview-item-title">Deposit</div>
+                <div id="previewDeposit" class="preview-item-text preview-placeholder">Not specified</div>
+              </div>
+              <div class="preview-item">
+                <div class="preview-item-title">Payment Methods</div>
+                <div id="previewPaymentMethods" class="preview-item-text preview-placeholder">Not selected</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="navrow">
+          <button type="button" class="btn" data-prev>Back</button>
+          <button type="button" class="btn primary" id="next-6">Next</button>
+        </div>
+      </section>
+
+      <!-- STEP 7: Media & Portfolio -->
+      <section class="section" id="step-7" data-step="7">
+        <h1 class="anim-title drop">Showcase your work</h1>
+        <p class="anim-sub lead">Media helps potential customers see what you offer. Strongly encouraged for better conversion.</p>
+        
+        <div class="step-with-preview">
+          <div class="qbox">
+          <label>Logo Upload</label>
+          <div class="file-upload" onclick="document.getElementById('logoUpload').click()">
+            <div class="file-upload-icon">📷</div>
+            <div class="file-upload-text">Click to upload logo</div>
+            <input type="file" id="logoUpload" name="logo" accept="image/*">
+          </div>
+
+          <label>Cover Image</label>
+          <div class="file-upload" onclick="document.getElementById('coverUpload').click()">
+            <div class="file-upload-icon">🖼️</div>
+            <div class="file-upload-text">Click to upload cover image</div>
+            <input type="file" id="coverUpload" name="coverImage" accept="image/*">
+        </div>
+
+          <label>Gallery Images</label>
+          <div class="file-upload" onclick="document.getElementById('galleryUpload').click()">
+            <div class="file-upload-icon">📸</div>
+            <div class="file-upload-text">Click to upload gallery images (multiple)</div>
+            <input type="file" id="galleryUpload" name="galleryImages" accept="image/*" multiple>
+        </div>
+
+          <label for="promoVideo">Promo Video Link (Optional)</label>
+          <input type="url" id="promoVideo" name="promoVideo" placeholder="https://youtube.com/watch?v=... or https://vimeo.com/...">
+        </div>
+        <div class="navrow">
+          <button type="button" class="btn" data-prev>Back</button>
+          <button type="button" class="btn primary" id="next-7">Next</button>
+        </div>
+      </section>
+
+      <!-- STEP 8: Social & External Links -->
+      <section class="section" id="step-8" data-step="8">
+        <h1 class="anim-title drop">Social & External Links</h1>
+        <p class="anim-sub lead">Optional links that will be displayed on your vendor profile.</p>
+        
+        <div class="step-with-preview">
+          <div class="qbox">
+          <label for="instagram">Instagram</label>
+          <input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/yourhandle">
+
+          <label for="facebook">Facebook</label>
+          <input type="url" id="facebook" name="facebook" placeholder="https://facebook.com/yourpage">
+
+          <label for="tiktok">TikTok</label>
+          <input type="url" id="tiktok" name="tiktok" placeholder="https://tiktok.com/@yourhandle">
+
+          <label for="youtube">YouTube / Vimeo</label>
+          <input type="url" id="youtube" name="youtube" placeholder="https://youtube.com/channel/...">
+
+          <label for="googleBusiness">Google Business Profile Link</label>
+          <input type="url" id="googleBusiness" name="googleBusiness" placeholder="https://g.page/yourbusiness">
+          </div>
+
+          <!-- Live Preview Panel -->
+          <div class="live-preview">
+            <div class="live-preview-header">
+              <h3 class="live-preview-title">Live Preview</h3>
+              <p class="live-preview-note">Social links will appear on your profile.</p>
+            </div>
+            <div id="previewSocial">
+              <div class="preview-item">
+                <div class="preview-item-title">Social Links</div>
+                <div id="previewSocialLinks" class="preview-item-text preview-placeholder">No social links added</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="navrow">
+          <button type="button" class="btn" data-prev>Back</button>
+          <button type="button" class="btn primary" id="next-8">Next</button>
+        </div>
+      </section>
+
+      <!-- STEP 9: Messaging Preferences -->
+      <section class="section" id="step-9" data-step="9">
+        <h1 class="anim-title drop">How should customers contact you?</h1>
+        <p class="anim-sub lead">Set your preferred communication method.</p>
+        
+        <div class="step-with-preview">
+          <div class="qbox">
+          <label>Preferred Contact Method <span style="color:#dc2626">*</span></label>
+          <div class="radio-group">
+            <input type="radio" id="contactPlatform" name="preferredContact" value="platform" required>
+            <label for="contactPlatform">Platform Messaging</label>
+          </div>
+          <div class="radio-group">
+            <input type="radio" id="contactEmail" name="preferredContact" value="email" required>
+            <label for="contactEmail">Email</label>
+          </div>
+          <div class="radio-group">
+            <input type="radio" id="contactPhone" name="preferredContact" value="phone" required>
+            <label for="contactPhone">Phone</label>
+          </div>
+
+          <label for="responseTime">Typical Response Time</label>
+          <select id="responseTime" name="responseTime">
+            <option value="">Select response time</option>
+            <option value="within-1-hour">Within 1 hour</option>
+            <option value="within-4-hours">Within 4 hours</option>
+            <option value="within-24-hours">Within 24 hours</option>
+            <option value="within-48-hours">Within 48 hours</option>
+            <option value="varies">Varies</option>
+          </select>
+          </div>
+
+          <!-- Live Preview Panel -->
+          <div class="live-preview">
+            <div class="live-preview-header">
+              <h3 class="live-preview-title">Live Preview</h3>
+              <p class="live-preview-note">Messaging preferences will be shown to customers.</p>
+            </div>
+            <div id="previewMessaging">
+              <div class="preview-item">
+                <div class="preview-item-title">Preferred Contact</div>
+                <div id="previewContactMethod" class="preview-item-text preview-placeholder">Not selected</div>
+              </div>
+              <div class="preview-item">
+                <div class="preview-item-title">Response Time</div>
+                <div id="previewResponseTime" class="preview-item-text preview-placeholder">Not specified</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="navrow">
+          <button type="button" class="btn" data-prev>Back</button>
+          <button type="button" class="btn primary" id="next-9">Next</button>
+        </div>
+      </section>
+
+      <!-- STEP 10: Legal / Trust -->
+      <section class="section" id="step-10" data-step="10">
+        <h1 class="anim-title drop">Legal & Trust Acknowledgements</h1>
+        <p class="anim-sub lead">Final confirmations before you can accept bookings.</p>
+        <div class="qbox">
+        <div class="checkbox-group">
+            <input type="checkbox" id="termsAgreement" name="termsAgreement" required>
+            <label for="termsAgreement">I agree to the platform Terms of Service and Privacy Policy <span style="color:#dc2626">*</span></label>
+        </div>
+
+          <label>Are you licensed / insured? <span style="color:#dc2626">*</span></label>
+          <div class="radio-group">
+            <input type="radio" id="licensedYes" name="licensedInsured" value="yes" required>
+            <label for="licensedYes">Yes</label>
+          </div>
+          <div class="radio-group">
+            <input type="radio" id="licensedNo" name="licensedInsured" value="no" required>
+            <label for="licensedNo">No</label>
+          </div>
+
+          <div class="form-group" id="proofUpload" style="display:none;">
+            <label>Upload Proof (Optional)</label>
+            <div class="file-upload" onclick="document.getElementById('proofFile').click()">
+              <div class="file-upload-icon">📄</div>
+              <div class="file-upload-text">Click to upload license/insurance documents</div>
+              <input type="file" id="proofFile" name="proofFile" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
+          </div>
+        </div>
+        <div class="navrow">
+          <button type="button" class="btn" data-prev>Back</button>
+          <button type="submit" class="btn primary" id="submit-btn">Complete Onboarding</button>
+        </div>
+    </section>
+      </form>
+  </main>
+
+s  <script>
+    let step = 1;
+    let serviceCount = 1;
+    let addonCounts = {0: 0};
+    const completedSteps = new Set([1]);
+    const sections = Array.from(document.querySelectorAll('.section'));
+    const progressFill = document.getElementById('progressFill');
+    const maxSteps = sections.length;
+
+    function clampStep(n) {
+      return Math.max(1, Math.min(maxSteps, n));
+    }
+
+    function showStep(n) {
+      step = clampStep(n);
+      const current = sections.find(s => Number(s.dataset.step) === step);
+      const wasAlreadyShowing = current && current.classList.contains('show');
+      
+      sections.forEach(s => {
+        const isActive = Number(s.dataset.step) === step;
+        s.classList.toggle('active', isActive);
+        // Don't remove show/ready from current step if it's already showing (for initial load)
+        if (!isActive || !wasAlreadyShowing) {
+          s.classList.remove('show', 'ready');
+        }
+      });
+
+      // Mark all previous steps as completed
+      for (let i = 1; i < step; i++) {
+        completedSteps.add(i);
+      }
+      // Current step is also considered completed when viewing it
+      completedSteps.add(step);
+
+      const stepLabels = document.querySelectorAll('.steps span[data-step]');
+      stepLabels.forEach(label => {
+        const stepNum = Number(label.dataset.step);
+        label.classList.remove('completed', 'current');
+        if (completedSteps.has(stepNum)) {
+          label.classList.add('completed');
+        }
+        if (stepNum === step) {
+          label.classList.add('current');
+        }
+      });
+
+      if (progressFill) {
+        const pct = ((step - 1) / (maxSteps - 1)) * 100;
+        progressFill.style.width = pct + '%';
+      }
+
+      try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(_) {}
+
+      if (!current) return;
+
+      // Add show and ready classes with animation delay (unless already showing)
+      if (!current.classList.contains('show')) {
+        setTimeout(() => current.classList.add('show'), 100);
+        setTimeout(() => current.classList.add('ready'), 100);
+      } else {
+        // Already showing, just ensure ready is set
+        current.classList.add('ready');
+      }
+    }
+
+    // Step label click handlers
+    document.querySelectorAll('.steps span[data-step]').forEach(label => {
+      label.style.cursor = 'pointer';
+      label.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetStep = Number(label.dataset.step);
+        if (completedSteps.has(targetStep) || targetStep === step) {
+          showStep(targetStep);
+        }
+      });
+    });
+
+    // Navigation buttons - prevent form submission and handle step navigation
+    // TEMPORARY: Validation disabled for testing - Next button always advances
+    document.querySelectorAll('[id^="next-"]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Extract step number from button ID (e.g., "next-1" -> 1)
+        const buttonId = btn.id;
+        const stepMatch = buttonId.match(/next-(\d+)/);
+        const currentStep = stepMatch ? Number(stepMatch[1]) : step;
+        
+        // Update global step to match button's step
+        step = currentStep;
+        
+        // TEMPORARY: Skip all validation - always advance
+        // Mark current step as completed
+        completedSteps.add(currentStep);
+        
+        // Update step labels to show completion immediately
+        const stepLabels = document.querySelectorAll('.steps span[data-step]');
+        stepLabels.forEach(label => {
+          const stepNum = Number(label.dataset.step);
+          if (stepNum === currentStep) {
+            label.classList.add('completed');
+          }
+        });
+        
+        // Advance to next step
+        const nextStep = currentStep + 1;
+        if (nextStep <= maxSteps) {
+          showStep(nextStep);
+        }
+      });
+    });
+
+    document.querySelectorAll('[data-prev]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (step > 1) {
+          showStep(step - 1);
+        }
+      });
+    });
+
+    // Validation
+    function validateStep(stepNum) {
+      const section = document.getElementById(`step-${stepNum}`);
+      if (!section) return true;
+
+      const requiredFields = section.querySelectorAll('[required]');
+      let isValid = true;
+      const invalidFields = [];
+      
+      // Clear previous errors
+      section.querySelectorAll('.error').forEach(el => {
+        el.classList.remove('error');
+        if (el.style) el.style.borderColor = '';
+      });
+
+      requiredFields.forEach(field => {
+        const fieldType = field.type || '';
+        const tagName = field.tagName ? field.tagName.toLowerCase() : '';
+        
+        // Only validate radio/checkbox if the field is actually a radio or checkbox
+        if (fieldType === 'checkbox' || fieldType === 'radio') {
+          const name = field.name;
+          const checked = section.querySelector(`input[name="${name}"]:checked`);
+          if (!checked) {
+            isValid = false;
+            invalidFields.push(field);
+            const group = field.closest('.radio-group, .checkbox-group');
+            if (group) {
+              group.classList.add('error');
+              group.style.borderColor = '#dc2626';
+            }
+          } else {
+            const group = field.closest('.radio-group, .checkbox-group');
+            if (group) {
+              group.classList.remove('error');
+              group.style.borderColor = '';
+            }
+          }
+        } else if (fieldType === 'hidden') {
+          // Hidden fields (like event types, days available)
+          const value = field.value ? String(field.value).trim() : '';
+          if (value === '') {
+            isValid = false;
+            invalidFields.push(field);
+          }
+        } else {
+          // Handle text, email, tel, url, textarea, select, number
+          // Step 1 validation: Simple check - field must have at least one character
+          // No format validation (email format, phone format, etc.) - just not empty
+          let value = '';
+          if (field.value !== null && field.value !== undefined) {
+            value = String(field.value).trim();
+          }
+          // Simple validation: if field has any text (length > 0), it's valid
+          // This works for: input[type="text"], input[type="email"], input[type="tel"], 
+          // input[type="url"], textarea, select, input[type="number"]
+          if (!value || value.length === 0) {
+            isValid = false;
+            invalidFields.push(field);
+            field.classList.add('error');
+          } else {
+            // Field has at least one character - valid
+            field.classList.remove('error');
+          }
+        }
+      });
+
+      // Special validation for step 2 (services)
+      if (stepNum === 2) {
+        const services = section.querySelectorAll('.service-card');
+        let hasValidService = false;
+        services.forEach(service => {
+          const name = service.querySelector('input[name^="serviceName"]');
+          const category = service.querySelector('select[name^="serviceCategory"]');
+          const desc = service.querySelector('textarea[name^="serviceDescription"]');
+          const price = service.querySelector('input[name^="basePrice"]');
+          const priceStruct = service.querySelector('input[name^="priceStructure"]:checked');
+          if (name?.value?.trim() && category?.value && desc?.value?.trim() && price?.value && priceStruct) {
+            hasValidService = true;
+          }
+        });
+        if (!hasValidService) {
+          isValid = false;
+        }
+      }
+      
+      // Special validation for step 3 (event types)
+      if (stepNum === 3) {
+        const eventTypesInput = document.getElementById('eventTypes');
+        if (eventTypesInput && (!eventTypesInput.value || eventTypesInput.value.trim() === '')) {
+          isValid = false;
+        }
+      }
+      
+      // Special validation for step 4 (availability - days available)
+      if (stepNum === 4) {
+        const daysAvailableInput = document.getElementById('daysAvailable');
+        if (daysAvailableInput && (!daysAvailableInput.value || daysAvailableInput.value.trim() === '')) {
+          isValid = false;
+        }
+      }
+
+      if (!isValid) {
+        // Scroll to first error and show feedback
+        const firstError = invalidFields[0];
+        if (firstError) {
+          // For radio/checkbox groups, scroll to the group
+          if (firstError.type === 'radio' || firstError.type === 'checkbox') {
+            const group = firstError.closest('.radio-group, .checkbox-group');
+            if (group) {
+              group.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          } else {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstError.focus();
+          }
+        }
+      }
+
+      return isValid;
+    }
+
+    // Chips
+    function initChips(containerId, hiddenInputId) {
+      const container = document.getElementById(containerId);
+      const hiddenInput = document.getElementById(hiddenInputId);
+      if (!container || !hiddenInput) return;
+
+      // Special handling for event types with "All Events" option
+      if (containerId === 'eventTypesChips') {
+        const allEventsChip = container.querySelector('.chip-all-events');
+        const regularChips = container.querySelectorAll('.chip:not(.chip-all-events)');
+        
+        // Get all event type values (excluding "All Events")
+        const allEventTypes = Array.from(regularChips).map(c => c.dataset.value);
+        
+        // Handle "All Events" chip click
+        if (allEventsChip) {
+          allEventsChip.addEventListener('click', () => {
+            const isSelected = allEventsChip.classList.contains('selected');
+            
+            if (isSelected) {
+              // Deselect "All Events" and all regular chips
+              allEventsChip.classList.remove('selected');
+              regularChips.forEach(chip => chip.classList.remove('selected'));
+              hiddenInput.value = '';
+            } else {
+              // Select "All Events" and all regular chips
+              allEventsChip.classList.add('selected');
+              regularChips.forEach(chip => chip.classList.add('selected'));
+              hiddenInput.value = allEventTypes.join(',');
+            }
+            
+            updateEventTypesPreview();
+          });
+        }
+        
+        // Handle regular chip clicks
+        regularChips.forEach(chip => {
+          chip.addEventListener('click', () => {
+            const isSelected = chip.classList.contains('selected');
+            
+            if (isSelected) {
+              // Deselecting a chip - also deselect "All Events" if it was selected
+              chip.classList.remove('selected');
+              if (allEventsChip) {
+                allEventsChip.classList.remove('selected');
+              }
+            } else {
+              // Selecting a chip
+              chip.classList.add('selected');
+              
+              // Check if all regular chips are now selected
+              const allSelected = Array.from(regularChips).every(c => c.classList.contains('selected'));
+              if (allSelected && allEventsChip) {
+                allEventsChip.classList.add('selected');
+              }
+            }
+            
+            // Update hidden input with selected values (excluding "All Events")
+            const selected = Array.from(regularChips)
+              .filter(c => c.classList.contains('selected'))
+              .map(c => c.dataset.value);
+            hiddenInput.value = selected.join(',');
+            
+            updateEventTypesPreview();
+          });
+        });
+      } else {
+        // Standard chip handling for other containers (e.g., days available)
+        container.querySelectorAll('.chip').forEach(chip => {
+          chip.addEventListener('click', () => {
+            chip.classList.toggle('selected');
+            const selected = Array.from(container.querySelectorAll('.chip.selected')).map(c => c.dataset.value);
+            hiddenInput.value = selected.join(',');
+          });
+        });
+      }
+    }
+
+    initChips('eventTypesChips', 'eventTypes');
+    initChips('daysAvailableChips', 'daysAvailable');
+
+    // Live Preview Updates
+    function updatePreview() {
+      const businessName = document.getElementById('businessName');
+      const tagline = document.getElementById('tagline');
+      const description = document.getElementById('description');
+      
+      const previewName = document.getElementById('previewName');
+      const previewTagline = document.getElementById('previewTagline');
+      const previewDescription = document.getElementById('previewDescription');
+
+      if (businessName && previewName) {
+        const nameValue = businessName.value.trim();
+        if (nameValue) {
+          previewName.textContent = nameValue;
+          previewName.classList.remove('preview-placeholder');
+        } else {
+          previewName.textContent = 'Your Business Name';
+          previewName.classList.add('preview-placeholder');
+        }
+      }
+
+      if (tagline && previewTagline) {
+        const taglineValue = tagline.value.trim();
+        if (taglineValue) {
+          previewTagline.textContent = taglineValue;
+          previewTagline.classList.remove('preview-placeholder');
+        } else {
+          previewTagline.textContent = 'Your short tagline will appear here';
+          previewTagline.classList.add('preview-placeholder');
+        }
+      }
+
+      if (description && previewDescription) {
+        const descValue = description.value.trim();
+        if (descValue) {
+          previewDescription.textContent = descValue;
+          previewDescription.classList.remove('preview-placeholder');
+        } else {
+          previewDescription.textContent = 'Your full business description will appear here. This preview updates as you type.';
+          previewDescription.classList.add('preview-placeholder');
+        }
+      }
+    }
+
+    // Attach real-time preview listeners
+    const businessNameInput = document.getElementById('businessName');
+    const taglineInput = document.getElementById('tagline');
+    const descriptionInput = document.getElementById('description');
+
+    if (businessNameInput) {
+      businessNameInput.addEventListener('input', updatePreview);
+      businessNameInput.addEventListener('paste', () => setTimeout(updatePreview, 10));
+    }
+    if (taglineInput) {
+      taglineInput.addEventListener('input', updatePreview);
+      taglineInput.addEventListener('paste', () => setTimeout(updatePreview, 10));
+    }
+    if (descriptionInput) {
+      descriptionInput.addEventListener('input', updatePreview);
+      descriptionInput.addEventListener('paste', () => setTimeout(updatePreview, 10));
+    }
+
+    // Initial preview update
+    updatePreview();
+
+    // Update previews for other steps
+    function updateServicesPreview() {
+      const container = document.getElementById('previewServicesList');
+      if (!container) return;
+      
+      const serviceCards = document.querySelectorAll('.service-card');
+      if (serviceCards.length === 0) {
+        container.innerHTML = '<div class="preview-item"><div class="preview-item-title preview-placeholder">Your services will appear here</div><div class="preview-item-text preview-placeholder">Add services to see them in the preview</div></div>';
+        return;
+      }
+      
+      let html = '';
+      serviceCards.forEach((card, index) => {
+        const name = card.querySelector('input[name^="serviceName"]')?.value || '';
+        const category = card.querySelector('select[name^="serviceCategory"]')?.value || '';
+        const price = card.querySelector('input[name^="basePrice"]')?.value || '';
+        const priceStruct = card.querySelector('input[name^="priceStructure"]:checked')?.value || '';
+        
+        if (name || category) {
+          html += `<div class="preview-item">
+            <div class="preview-item-title">${name || 'Unnamed Service'}</div>
+            <div class="preview-item-text">${category || 'No category'}${price ? ` • $${price}${priceStruct === 'starting' ? ' starting' : ''}` : ''}</div>
+          </div>`;
+        }
+      });
+      
+      container.innerHTML = html || '<div class="preview-item"><div class="preview-item-title preview-placeholder">Your services will appear here</div></div>';
+    }
+
+    function updateEventTypesPreview() {
+      const container = document.getElementById('previewEventTypes');
+      if (!container) return;
+      
+      const allEventsChip = document.querySelector('#eventTypesChips .chip-all-events');
+      const regularChips = document.querySelectorAll('#eventTypesChips .chip:not(.chip-all-events)');
+      const isAllEventsSelected = allEventsChip && allEventsChip.classList.contains('selected');
+      
+      if (isAllEventsSelected) {
+        // Show "All Events" badge prominently
+        container.innerHTML = '<span class="preview-badge" style="background:var(--gradient-brand);color:#fff;font-weight:700;padding:8px 16px;">All Events</span>';
+        return;
+      }
+      
+      const selected = Array.from(regularChips).filter(chip => chip.classList.contains('selected'));
+      if (selected.length === 0) {
+        container.innerHTML = '<div class="preview-placeholder" style="padding:12px;text-align:center;">Select event types to see them here</div>';
+        return;
+      }
+      
+      let html = '';
+      selected.forEach(chip => {
+        const value = chip.dataset.value;
+        html += `<span class="preview-badge">${value}</span>`;
+      });
+      container.innerHTML = html;
+    }
+
+    function updateAvailabilityPreview() {
+      const daysEl = document.getElementById('previewDays');
+      const windowEl = document.getElementById('previewWindow');
+      const leadTimeEl = document.getElementById('previewLeadTime');
+      
+      if (daysEl) {
+        const selected = document.querySelectorAll('#daysAvailableChips .chip.selected');
+        if (selected.length > 0) {
+          const days = Array.from(selected).map(c => c.dataset.value).join(', ');
+          daysEl.textContent = days;
+          daysEl.classList.remove('preview-placeholder');
+        } else {
+          daysEl.textContent = 'Select days to see them here';
+          daysEl.classList.add('preview-placeholder');
+        }
+      }
+      
+      if (windowEl) {
+        const window = document.getElementById('availabilityWindow')?.value || '';
+        if (window) {
+          windowEl.textContent = window.charAt(0).toUpperCase() + window.slice(1).replace('-', ' ');
+          windowEl.classList.remove('preview-placeholder');
+        } else {
+          windowEl.textContent = 'Not specified';
+          windowEl.classList.add('preview-placeholder');
+        }
+      }
+      
+      if (leadTimeEl) {
+        const leadTime = document.getElementById('leadTime')?.value || '';
+        if (leadTime) {
+          leadTimeEl.textContent = `${leadTime} days`;
+          leadTimeEl.classList.remove('preview-placeholder');
+        } else {
+          leadTimeEl.textContent = 'Not specified';
+          leadTimeEl.classList.add('preview-placeholder');
+        }
+      }
+    }
+
+    function updateLocationPreview() {
+      const contactEl = document.getElementById('previewContact');
+      const locationEl = document.getElementById('previewLocationText');
+      const websiteEl = document.getElementById('previewWebsite');
+      
+      if (contactEl) {
+        const email = document.getElementById('email')?.value || '';
+        const phone = document.getElementById('phone')?.value || '';
+        if (email || phone) {
+          contactEl.textContent = `${email ? email : ''}${email && phone ? ' • ' : ''}${phone ? phone : ''}`;
+          contactEl.classList.remove('preview-placeholder');
+        } else {
+          contactEl.textContent = 'Email and phone will appear here';
+          contactEl.classList.add('preview-placeholder');
+        }
+      }
+      
+      if (locationEl) {
+        const city = document.getElementById('city')?.value || '';
+        const state = document.getElementById('state')?.value || '';
+        if (city || state) {
+          locationEl.textContent = `${city}${city && state ? ', ' : ''}${state}`;
+          locationEl.classList.remove('preview-placeholder');
+        } else {
+          locationEl.textContent = 'City and state will appear here';
+          locationEl.classList.add('preview-placeholder');
+        }
+      }
+      
+      if (websiteEl) {
+        const website = document.getElementById('website')?.value || '';
+        if (website) {
+          websiteEl.textContent = website;
+          websiteEl.classList.remove('preview-placeholder');
+        } else {
+          websiteEl.textContent = 'Not provided';
+          websiteEl.classList.add('preview-placeholder');
+        }
+      }
+    }
+
+    function updateBookingPreview() {
+      const bookingTypeEl = document.getElementById('previewBookingType');
+      const depositEl = document.getElementById('previewDeposit');
+      const paymentMethodsEl = document.getElementById('previewPaymentMethods');
+      
+      if (bookingTypeEl) {
+        const bookingType = document.querySelector('input[name="bookingType"]:checked')?.value || '';
+        if (bookingType) {
+          bookingTypeEl.textContent = bookingType === 'instant' ? 'Instant Book' : 'Request to Book';
+          bookingTypeEl.classList.remove('preview-placeholder');
+        } else {
+          bookingTypeEl.textContent = 'Not selected';
+          bookingTypeEl.classList.add('preview-placeholder');
+        }
+      }
+      
+      if (depositEl) {
+        const deposit = document.querySelector('input[name="depositRequired"]:checked')?.value || '';
+        const depositAmount = document.getElementById('depositAmount')?.value || '';
+        if (deposit) {
+          depositEl.textContent = deposit === 'yes' ? (depositAmount ? `Yes - ${depositAmount}` : 'Yes') : 'No';
+          depositEl.classList.remove('preview-placeholder');
+        } else {
+          depositEl.textContent = 'Not specified';
+          depositEl.classList.add('preview-placeholder');
+        }
+      }
+      
+      if (paymentMethodsEl) {
+        const methods = Array.from(document.querySelectorAll('input[name="paymentMethods[]"]:checked')).map(c => c.value);
+        if (methods.length > 0) {
+          paymentMethodsEl.textContent = methods.map(m => m.charAt(0).toUpperCase() + m.slice(1)).join(', ');
+          paymentMethodsEl.classList.remove('preview-placeholder');
+        } else {
+          paymentMethodsEl.textContent = 'Not selected';
+          paymentMethodsEl.classList.add('preview-placeholder');
+        }
+      }
+    }
+
+    function updateSocialPreview() {
+      const container = document.getElementById('previewSocialLinks');
+      if (!container) return;
+      
+      const links = [];
+      const instagram = document.getElementById('instagram')?.value;
+      const facebook = document.getElementById('facebook')?.value;
+      const tiktok = document.getElementById('tiktok')?.value;
+      const youtube = document.getElementById('youtube')?.value;
+      const google = document.getElementById('googleBusiness')?.value;
+      
+      if (instagram) links.push('Instagram');
+      if (facebook) links.push('Facebook');
+      if (tiktok) links.push('TikTok');
+      if (youtube) links.push('YouTube/Vimeo');
+      if (google) links.push('Google Business');
+      
+      if (links.length > 0) {
+        container.textContent = links.join(', ');
+        container.classList.remove('preview-placeholder');
+      } else {
+        container.textContent = 'No social links added';
+        container.classList.add('preview-placeholder');
+      }
+    }
+
+    function updateMessagingPreview() {
+      const contactMethodEl = document.getElementById('previewContactMethod');
+      const responseTimeEl = document.getElementById('previewResponseTime');
+      
+      if (contactMethodEl) {
+        const method = document.querySelector('input[name="preferredContact"]:checked')?.value || '';
+        if (method) {
+          contactMethodEl.textContent = method === 'platform' ? 'Platform Messaging' : method.charAt(0).toUpperCase() + method.slice(1);
+          contactMethodEl.classList.remove('preview-placeholder');
+        } else {
+          contactMethodEl.textContent = 'Not selected';
+          contactMethodEl.classList.add('preview-placeholder');
+        }
+      }
+      
+      if (responseTimeEl) {
+        const time = document.getElementById('responseTime')?.value || '';
+        if (time) {
+          responseTimeEl.textContent = time.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+          responseTimeEl.classList.remove('preview-placeholder');
+        } else {
+          responseTimeEl.textContent = 'Not specified';
+          responseTimeEl.classList.add('preview-placeholder');
+        }
+      }
+    }
+
+    // Attach event listeners for all previews
+    function attachPreviewListeners() {
+      // Services preview
+      document.querySelectorAll('#services-container input, #services-container select, #services-container textarea').forEach(field => {
+        field.addEventListener('input', updateServicesPreview);
+        field.addEventListener('change', updateServicesPreview);
+      });
+      
+      // Event types preview
+      document.querySelectorAll('#eventTypesChips .chip').forEach(chip => {
+        chip.addEventListener('click', () => setTimeout(updateEventTypesPreview, 100));
+      });
+      
+      // Availability preview
+      document.getElementById('availabilityWindow')?.addEventListener('change', updateAvailabilityPreview);
+      document.getElementById('leadTime')?.addEventListener('input', updateAvailabilityPreview);
+      document.querySelectorAll('#daysAvailableChips .chip').forEach(chip => {
+        chip.addEventListener('click', () => setTimeout(updateAvailabilityPreview, 100));
+      });
+      
+      // Location preview
+      document.getElementById('email')?.addEventListener('input', updateLocationPreview);
+      document.getElementById('phone')?.addEventListener('input', updateLocationPreview);
+      document.getElementById('website')?.addEventListener('input', updateLocationPreview);
+      document.getElementById('city')?.addEventListener('input', updateLocationPreview);
+      document.getElementById('state')?.addEventListener('input', updateLocationPreview);
+      
+      // Booking preview
+      document.querySelectorAll('input[name="bookingType"]').forEach(radio => {
+        radio.addEventListener('change', updateBookingPreview);
+      });
+      document.querySelectorAll('input[name="depositRequired"]').forEach(radio => {
+        radio.addEventListener('change', updateBookingPreview);
+      });
+      document.getElementById('depositAmount')?.addEventListener('input', updateBookingPreview);
+      document.querySelectorAll('input[name="paymentMethods[]"]').forEach(checkbox => {
+        checkbox.addEventListener('change', updateBookingPreview);
+      });
+      
+      // Social preview
+      ['instagram', 'facebook', 'tiktok', 'youtube', 'googleBusiness'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', updateSocialPreview);
+      });
+      
+      // Messaging preview
+      document.querySelectorAll('input[name="preferredContact"]').forEach(radio => {
+        radio.addEventListener('change', updateMessagingPreview);
+      });
+      document.getElementById('responseTime')?.addEventListener('change', updateMessagingPreview);
+    }
+
+    // Initialize all previews
+    attachPreviewListeners();
+    updateServicesPreview();
+    updateEventTypesPreview();
+    updateAvailabilityPreview();
+    updateLocationPreview();
+    updateBookingPreview();
+    updateSocialPreview();
+    updateMessagingPreview();
+
+    // Price options
+    document.querySelectorAll('.price-options').forEach(options => {
+      options.querySelectorAll('.price-option').forEach(option => {
+        option.addEventListener('click', () => {
+          const radio = option.querySelector('input[type="radio"]');
+          if (radio) {
+            options.querySelectorAll('.price-option').forEach(o => o.classList.remove('selected'));
+            option.classList.add('selected');
+            radio.checked = true;
+          }
+        });
+      });
+    });
+
+    // Radio groups
+    document.querySelectorAll('.radio-group').forEach(group => {
+      group.addEventListener('click', () => {
+        const radio = group.querySelector('input[type="radio"]');
+        if (radio) {
+          document.querySelectorAll(`input[name="${radio.name}"]`).forEach(r => {
+            r.closest('.radio-group')?.classList.remove('selected');
+          });
+          group.classList.add('selected');
+        }
+      });
+    });
+
+    // Conditional fields
+    document.querySelectorAll('input[name="travelFee"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        document.getElementById('travelFeeDetails').style.display = radio.value === 'yes' ? 'block' : 'none';
+      });
+    });
+
+    document.querySelectorAll('input[name="depositRequired"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        document.getElementById('depositDetails').style.display = radio.value === 'yes' ? 'block' : 'none';
+      });
+    });
+
+    document.getElementById('cancellationPolicy')?.addEventListener('change', function() {
+      document.getElementById('cancellationCustom').style.display = this.value === 'custom' ? 'block' : 'none';
+    });
+
+    document.querySelectorAll('input[name="licensedInsured"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        document.getElementById('proofUpload').style.display = radio.value === 'yes' ? 'block' : 'none';
+      });
+    });
+
+    // Add service
+    function addService() {
+      const container = document.getElementById('services-container');
+      const template = container.querySelector('.service-card').cloneNode(true);
+      template.dataset.service = serviceCount;
+      template.querySelector('.service-title').textContent = `Service #${serviceCount + 1}`;
+
+      template.querySelectorAll('input, select, textarea').forEach(input => {
+        if (input.name) {
+          input.name = input.name.replace(/\[(\d+)\]/, `[${serviceCount}]`);
+          if (input.type === 'radio' || input.type === 'checkbox') {
+            input.checked = false;
+          } else {
+            input.value = '';
+          }
+        }
+      });
+
+      template.querySelectorAll('.price-option').forEach(opt => opt.classList.remove('selected'));
+      const addonContainer = template.querySelector('.addons-container');
+      if (addonContainer) {
+        addonContainer.dataset.service = serviceCount;
+        addonContainer.innerHTML = '';
+      }
+      addonCounts[serviceCount] = 0;
+
+      container.appendChild(template);
+      
+      // Attach preview listeners to new service inputs
+      template.querySelectorAll('input, select, textarea').forEach(field => {
+        field.addEventListener('input', updateServicesPreview);
+        field.addEventListener('change', updateServicesPreview);
+      });
+      
+      // Update preview
+      updateServicesPreview();
+      serviceCount++;
+    }
+
+    // Add addon
+    function addAddon(serviceIndex) {
+      if (!addonCounts[serviceIndex]) addonCounts[serviceIndex] = 0;
+      const serviceCard = document.querySelector(`[data-service="${serviceIndex}"]`);
+      const container = serviceCard?.querySelector('.addons-container');
+      if (!container) return;
+
+      const addon = document.createElement('div');
+      addon.className = 'addon-item';
+      addon.innerHTML = `
+        <input type="text" name="addonName[${serviceIndex}][]" placeholder="Add-on name" required>
+        <input type="number" name="addonPrice[${serviceIndex}][]" placeholder="Price" min="0" step="0.01" required>
+        <button type="button" class="btn-remove" onclick="this.parentElement.remove()">Remove</button>
+      `;
+      container.appendChild(addon);
+      addonCounts[serviceIndex]++;
+    }
+
+    // Form submission - only on final submit button
+    document.getElementById('vendorOnboardingForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // Validate final step
+      if (!validateStep(10)) {
+        return;
+      }
+      
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
+      
+      // Collect all form data including arrays
+      const vendorData = {
+        // Step 1: Business Info
+        businessName: document.getElementById('businessName')?.value || '',
+        tagline: document.getElementById('tagline')?.value || '',
+        description: document.getElementById('description')?.value || '',
+        
+        // Step 2: Services
+        services: [],
+        
+        // Step 3: Event Types
+        eventTypes: document.getElementById('eventTypes')?.value?.split(',') || [],
+        
+        // Step 4: Availability
+        daysAvailable: document.getElementById('daysAvailable')?.value?.split(',') || [],
+        availabilityWindow: document.getElementById('availabilityWindow')?.value || '',
+        leadTime: document.getElementById('leadTime')?.value || '',
+        blackoutDates: document.getElementById('blackoutDates')?.value || '',
+        calendarAccess: Array.from(document.querySelectorAll('input[name="calendarAccess[]"]:checked')).map(c => c.value),
+        
+        // Step 5: Location & Contact
+        email: document.getElementById('email')?.value || '',
+        phone: document.getElementById('phone')?.value || '',
+        website: document.getElementById('website')?.value || '',
+        city: document.getElementById('city')?.value || '',
+        state: document.getElementById('state')?.value || '',
+        primaryLocation: document.getElementById('primaryLocation')?.value || '',
+        areasServed: document.getElementById('areasServed')?.value || '',
+        travelRadius: document.getElementById('travelRadius')?.value || '',
+        travelRadiusUnit: document.getElementById('travelRadiusUnit')?.value || '',
+        travelFee: document.querySelector('input[name="travelFee"]:checked')?.value || '',
+        travelFeeAmount: document.getElementById('travelFeeAmount')?.value || '',
+        travelOut: document.querySelector('input[name="travelOut"]:checked')?.value || '',
+        
+        // Step 6: Booking & Payment
+        bookingType: document.querySelector('input[name="bookingType"]:checked')?.value || '',
+        depositRequired: document.querySelector('input[name="depositRequired"]:checked')?.value || '',
+        depositAmount: document.getElementById('depositAmount')?.value || '',
+        cancellationPolicy: document.getElementById('cancellationPolicy')?.value || '',
+        cancellationCustomText: document.getElementById('cancellationCustomText')?.value || '',
+        reschedulingPolicy: document.getElementById('reschedulingPolicy')?.value || '',
+        paymentMethods: Array.from(document.querySelectorAll('input[name="paymentMethods[]"]:checked')).map(c => c.value),
+        
+        // Step 7: Media (file names only - can't store files in localStorage)
+        hasLogo: document.getElementById('logoUpload')?.files?.length > 0,
+        hasCoverImage: document.getElementById('coverUpload')?.files?.length > 0,
+        hasGalleryImages: document.getElementById('galleryUpload')?.files?.length > 0,
+        promoVideo: document.getElementById('promoVideo')?.value || '',
+        
+        // Step 8: Social Links
+        instagram: document.getElementById('instagram')?.value || '',
+        facebook: document.getElementById('facebook')?.value || '',
+        tiktok: document.getElementById('tiktok')?.value || '',
+        youtube: document.getElementById('youtube')?.value || '',
+        googleBusiness: document.getElementById('googleBusiness')?.value || '',
+        
+        // Step 9: Messaging
+        preferredContact: document.querySelector('input[name="preferredContact"]:checked')?.value || '',
+        responseTime: document.getElementById('responseTime')?.value || '',
+        
+        // Step 10: Legal
+        termsAgreement: document.getElementById('termsAgreement')?.checked || false,
+        licensedInsured: document.querySelector('input[name="licensedInsured"]:checked')?.value || '',
+        hasProof: document.getElementById('proofFile')?.files?.length > 0,
+        
+        // Metadata
+        isPreview: true,
+        submittedAt: new Date().toISOString()
+      };
+      
+      // Collect services data
+      document.querySelectorAll('.service-card').forEach((card, index) => {
+        const service = {
+          name: card.querySelector('input[name^="serviceName"]')?.value || '',
+          category: card.querySelector('select[name^="serviceCategory"]')?.value || '',
+          subcategory: card.querySelector('input[name^="serviceSubcategory"]')?.value || '',
+          description: card.querySelector('textarea[name^="serviceDescription"]')?.value || '',
+          priceStructure: card.querySelector('input[name^="priceStructure"]:checked')?.value || '',
+          basePrice: card.querySelector('input[name^="basePrice"]')?.value || '',
+          whatsIncluded: card.querySelector('textarea[name^="whatsIncluded"]')?.value || '',
+          minBookingAmount: card.querySelector('input[name^="minBookingAmount"]')?.value || '',
+          minEventSize: card.querySelector('input[name^="minEventSize"]')?.value || '',
+          maxEventSize: card.querySelector('input[name^="maxEventSize"]')?.value || '',
+          maxCapacity: card.querySelector('input[name^="maxCapacity"]')?.value || '',
+          venueType: card.querySelector('input[name^="venueType"]:checked')?.value || ''
+        };
+        if (service.name || service.category) {
+          vendorData.services.push(service);
+        }
+      });
+      
+      // Store vendor data in localStorage
+      localStorage.setItem('vendorPreviewData', JSON.stringify(vendorData));
+      
+      // Navigate to vendor detail page with preview flag
+      window.location.href = 'vendor-detail.html?preview=true';
+    });
+    
+    // Prevent form submission on Enter key in inputs (except on last step)
+    document.querySelectorAll('#vendorOnboardingForm input, #vendorOnboardingForm textarea, #vendorOnboardingForm select').forEach(field => {
+      field.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && step < 10) {
+          e.preventDefault();
+          // Trigger Next button click if on a step with Next button
+          const nextBtn = document.getElementById(`next-${step}`);
+          if (nextBtn) {
+            nextBtn.click();
+          }
+        }
+      });
+    });
+
+    // Pre-fill data from vendor intake (if available)
+    function prefillIntakeData() {
+      try {
+        const intakeDataStr = localStorage.getItem('vendorIntakeData');
+        if (intakeDataStr) {
+          const intakeData = JSON.parse(intakeDataStr);
+          
+          // Pre-fill matching fields in Step 1
+          if (intakeData.company) {
+            const businessNameField = document.getElementById('businessName');
+            if (businessNameField && !businessNameField.value) {
+              businessNameField.value = intakeData.company;
+            }
+          }
+          
+          if (intakeData.email) {
+            const emailField = document.getElementById('email');
+            if (emailField && !emailField.value) {
+              emailField.value = intakeData.email;
+            }
+          }
+          
+          if (intakeData.phone) {
+            const phoneField = document.getElementById('phone');
+            if (phoneField && !phoneField.value) {
+              phoneField.value = intakeData.phone;
+            }
+          }
+          
+          // Update preview after pre-filling
+          updatePreview();
+          
+          // Clear intake data after pre-filling (optional - you may want to keep it)
+          // localStorage.removeItem('vendorIntakeData');
+        }
+      } catch (e) {
+        console.error('Error pre-filling intake data:', e);
+      }
+    }
+
+    // Initialize - ensure step 1 is visible immediately
+    (function init() {
+      const step1 = document.getElementById('step-1');
+      if (step1) {
+        // Add classes immediately for initial load
+        step1.classList.add('show', 'ready');
+      }
+      // Initialize step state
+      step = 1;
+      showStep(1);
+      
+      // Pre-fill intake data
+      prefillIntakeData();
+    })();
+  </script>
+</body>
+</html>

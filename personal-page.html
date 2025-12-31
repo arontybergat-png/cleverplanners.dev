@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CleverPlanners – My Plan</title>
+  <style>
+    :root{
+      --ink:#1e293b; --muted:#6b7280; --cream:#fbf6ed; --panel:#f4ecdc; --brand:#111827; --accent1:#ff7ab6; --accent2:#89f7d3; --ring:#e5dcc7; --radius:20px; --shadow:0 10px 30px rgba(16,24,40,.08);
+      --ok:#16a34a; --warn:#f59e0b; --soft:#faf7f1;
+      --bg:#fbf6ed;--text:#1e293b;--card:#fff;
+      --ok-bg:#d1fae5;--ok-text:#065f46;--maybe-bg:#fef3c7;--maybe-text:#92400e;
+      --budget-green:#16a34a; --budget-yellow:#f59e0b; --budget-red:#dc2626;
+    }
+    *{box-sizing:border-box}
+    html:focus-within{scroll-behavior:smooth}
+    @media (prefers-reduced-motion: reduce){ html:focus-within{scroll-behavior:auto} }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;margin:0;background:var(--cream);color:var(--ink)}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    :focus-visible{outline:2px solid var(--ring); outline-offset:2px; border-radius:10px}
+
+    /* Header */
+    header{
+      position:sticky;
+      top:0;
+      z-index:100;
+      background:rgba(255,255,255,0.95);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      border-bottom:1px solid rgba(240,234,219,0.5);
+    }
+    .nav{
+      height:56px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      max-width:1400px;
+      margin:0 auto;
+      padding:0 22px;
+    }
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:800;
+      font-size:1.5rem;
+      color:var(--brand);
+      letter-spacing:-0.02em;
+      text-decoration:none;
+      transition:opacity 0.2s;
+    }
+    .logo:hover{
+      opacity:0.9;
+    }
+    .brand-badge{
+      width:28px;
+      height:28px;
+      border-radius:999px;
+      background:#0b1320;
+      color:#fff;
+      display:grid;
+      place-items:center;
+      font-weight:700;
+      font-size:0.75rem;
+    }
+    .header-actions{
+      display:flex;
+      align-items:center;
+      gap:16px;
+    }
+    .user-menu{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 16px;
+      background:var(--soft);
+      border-radius:8px;
+      cursor:pointer;
+      transition:all 0.3s;
+    }
+    .user-menu:hover{
+      background:var(--ring);
+    }
+    .user-avatar{
+      width:32px;
+      height:32px;
+      border-radius:50%;
+      background:var(--brand);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+    }
+
+    /* Page Header */
+    .page-header{
+      background:var(--card);
+      border-bottom:1px solid var(--ring);
+      padding:40px 0;
+    }
+    .page-header-inner{
+      max-width:1400px;
+      margin:0 auto;
+      padding:0 22px;
+    }
+    .page-title{
+      font-size:2.5rem;
+      font-weight:800;
+      color:var(--ink);
+      margin-bottom:8px;
+    }
+    .page-subtitle{
+      font-size:1.1rem;
+      color:var(--muted);
+    }
+
+    /* Main Content */
+    .main-content{
+      max-width:1400px;
+      margin:0 auto;
+      padding:40px 22px;
+      display:grid;
+      grid-template-columns:1fr 350px;
+      gap:40px;
+    }
+
+    /* Budget Tracker */
+    .budget-section{
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:32px;
+      box-shadow:var(--shadow);
+      margin-bottom:40px;
+    }
+    .budget-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:24px;
+    }
+    .budget-title{
+      font-size:1.5rem;
+      font-weight:700;
+      color:var(--ink);
+    }
+    .budget-circular{
+      position:relative;
+      width:140px;
+      height:140px;
+      margin:0 auto 20px;
+    }
+    .budget-circle-bg{
+      fill:none;
+      stroke:var(--ring);
+      stroke-width:12;
+    }
+    .budget-circle-fill{
+      fill:none;
+      stroke-width:12;
+      stroke-linecap:round;
+      transform:rotate(-90deg);
+      transform-origin:50% 50%;
+      transition:stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1),stroke 0.3s ease;
+    }
+    .budget-circle-fill.ok{stroke:var(--budget-green)}
+    .budget-circle-fill.warn{stroke:var(--budget-yellow)}
+    .budget-circle-fill.over{stroke:var(--budget-red)}
+    .budget-center{
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      text-align:center;
+    }
+    .budget-percent{
+      font-size:2rem;
+      font-weight:800;
+      line-height:1;
+      color:var(--ink);
+    }
+    .budget-label{
+      font-size:0.75rem;
+      color:var(--muted);
+      margin-top:4px;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+    }
+    .budget-stats{
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+    }
+    .budget-stat{
+      flex:1;
+      text-align:center;
+      padding:16px;
+      background:var(--soft);
+      border-radius:8px;
+    }
+    .budget-stat-label{
+      font-size:0.85rem;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+    .budget-stat-value{
+      font-size:1.5rem;
+      font-weight:700;
+      color:var(--ink);
+    }
+
+    /* Plan Sections */
+    .plan-section{
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:32px;
+      box-shadow:var(--shadow);
+      margin-bottom:40px;
+    }
+    .section-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:24px;
+    }
+    .section-title{
+      font-size:1.5rem;
+      font-weight:700;
+      color:var(--ink);
+    }
+    .section-action{
+      color:var(--brand);
+      font-weight:600;
+      font-size:0.95rem;
+      cursor:pointer;
+    }
+    .section-action:hover{
+      text-decoration:underline;
+    }
+    .vendors-list{
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+    }
+    .vendor-item{
+      display:flex;
+      gap:20px;
+      padding:20px;
+      background:var(--soft);
+      border-radius:8px;
+      transition:all 0.3s;
+    }
+    .vendor-item:hover{
+      background:var(--ring);
+      transform:translateX(4px);
+    }
+    .vendor-item-image{
+      width:120px;
+      height:120px;
+      border-radius:8px;
+      background:var(--ring);
+      flex-shrink:0;
+    }
+    .vendor-item-info{
+      flex:1;
+    }
+    .vendor-item-name{
+      font-size:1.2rem;
+      font-weight:600;
+      color:var(--ink);
+      margin-bottom:6px;
+    }
+    .vendor-item-category{
+      font-size:0.9rem;
+      color:var(--muted);
+      margin-bottom:12px;
+    }
+    .vendor-item-meta{
+      display:flex;
+      gap:16px;
+      font-size:0.9rem;
+      color:var(--muted);
+    }
+    .vendor-item-actions{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      align-items:flex-end;
+    }
+    .btn-small{
+      padding:8px 16px;
+      border-radius:6px;
+      font-size:0.9rem;
+      font-weight:600;
+      cursor:pointer;
+      border:none;
+      transition:all 0.3s;
+    }
+    .btn-view{
+      background:var(--brand);
+      color:#fff;
+    }
+    .btn-view:hover{
+      background:#0a0f1a;
+    }
+    .btn-remove{
+      background:transparent;
+      color:var(--muted);
+      border:1px solid var(--ring);
+    }
+    .btn-remove:hover{
+      background:#fee2e2;
+      color:#991b1b;
+      border-color:#991b1b;
+    }
+
+    /* Event Info */
+    .event-info-card{
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:24px;
+      box-shadow:var(--shadow);
+      margin-bottom:24px;
+    }
+    .info-row{
+      display:flex;
+      justify-content:space-between;
+      padding:12px 0;
+      border-bottom:1px solid var(--ring);
+    }
+    .info-row:last-child{
+      border-bottom:none;
+    }
+    .info-label{
+      color:var(--muted);
+      font-size:0.95rem;
+    }
+    .info-value{
+      font-weight:600;
+      color:var(--ink);
+      font-size:0.95rem;
+    }
+
+    /* Quick Actions */
+    .quick-actions{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .btn-action{
+      padding:14px 20px;
+      border-radius:8px;
+      font-weight:600;
+      text-align:center;
+      cursor:pointer;
+      transition:all 0.3s;
+      border:none;
+    }
+    .btn-primary{
+      background:var(--brand);
+      color:#fff;
+    }
+    .btn-primary:hover{
+      background:#0a0f1a;
+      transform:translateY(-2px);
+      box-shadow:0 4px 12px rgba(17,24,39,0.2);
+    }
+    .btn-secondary{
+      background:var(--card);
+      color:var(--ink);
+      border:2px solid var(--ring);
+    }
+    .btn-secondary:hover{
+      background:var(--soft);
+      border-color:var(--brand);
+    }
+
+    .empty-state{
+      text-align:center;
+      padding:60px 20px;
+      color:var(--muted);
+    }
+    .empty-state-icon{
+      font-size:4rem;
+      margin-bottom:16px;
+    }
+    .empty-state-title{
+      font-size:1.5rem;
+      font-weight:600;
+      color:var(--ink);
+      margin-bottom:8px;
+    }
+
+    @media (max-width:1024px){
+      .main-content{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <a href="index.html" class="logo">
+        <span class="brand-badge">CP</span>
+        CleverPlanners
+      </a>
+      <div class="header-actions">
+        <a href="vendors.html" style="color:var(--muted);font-weight:500">Search Vendors</a>
+        <div class="user-menu" id="userMenu">
+          <div class="user-avatar" id="userAvatar">JD</div>
+          <span id="userName">John Doe</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-header">
+    <div class="page-header-inner">
+      <h1 class="page-title">My Event Plan</h1>
+      <p class="page-subtitle">Manage your vendors, track your budget, and plan your perfect event</p>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="main-content-left">
+      <!-- Budget Tracker -->
+      <div class="budget-section">
+        <div class="budget-header">
+          <h2 class="budget-title">Budget Tracker</h2>
+          <a href="#" class="section-action">Adjust Budget</a>
+        </div>
+        <div class="budget-circular">
+          <svg width="140" height="140">
+            <circle class="budget-circle-bg" cx="70" cy="70" r="60"></circle>
+            <circle class="budget-circle-fill ok" id="budgetCircle" cx="70" cy="70" r="60" stroke-dasharray="377" stroke-dashoffset="188"></circle>
+          </svg>
+          <div class="budget-center">
+            <div class="budget-percent" id="budgetPercent">50%</div>
+            <div class="budget-label">Used</div>
+          </div>
+        </div>
+        <div class="budget-stats">
+          <div class="budget-stat">
+            <div class="budget-stat-label">Spent</div>
+            <div class="budget-stat-value" id="budgetSpent">$15,000</div>
+          </div>
+          <div class="budget-stat">
+            <div class="budget-stat-label">Budget</div>
+            <div class="budget-stat-value" id="budgetTotal">$30,000</div>
+          </div>
+          <div class="budget-stat">
+            <div class="budget-stat-label">Remaining</div>
+            <div class="budget-stat-value" id="budgetRemaining">$15,000</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Saved Vendors -->
+      <div class="plan-section">
+        <div class="section-header">
+          <h2 class="section-title">Saved Vendors</h2>
+          <a href="vendors.html" class="section-action">+ Add More</a>
+        </div>
+        <div class="vendors-list" id="vendorsList">
+          <!-- Vendors will be loaded here -->
+        </div>
+        <div class="empty-state" id="emptyState" style="display:none">
+          <div class="empty-state-icon">📋</div>
+          <div class="empty-state-title">No vendors yet</div>
+          <p>Start building your plan by adding vendors from search results</p>
+          <a href="vendors.html" class="btn-action btn-primary" style="display:inline-block;margin-top:20px">Browse Vendors</a>
+        </div>
+      </div>
+    </div>
+
+    <aside class="main-content-right">
+      <!-- Event Information -->
+      <div class="event-info-card">
+        <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:20px;color:var(--ink)">Event Details</h3>
+        <div class="info-row">
+          <span class="info-label">Event Type</span>
+          <span class="info-value" id="eventType">Wedding</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Date</span>
+          <span class="info-value" id="eventDate">June 15, 2024</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Location</span>
+          <span class="info-value" id="eventLocation">New York, NY</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Guests</span>
+          <span class="info-value" id="eventGuests">150</span>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="event-info-card">
+        <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:20px;color:var(--ink)">Quick Actions</h3>
+        <div class="quick-actions">
+          <a href="plan.html" class="btn-action btn-primary">Continue Planning</a>
+          <a href="results.html" class="btn-action btn-secondary">View Recommendations</a>
+          <a href="settings.html" class="btn-action btn-secondary">Account Settings</a>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    // Check if user is logged in
+    const isLoggedIn = localStorage.getItem('userLoggedIn') === 'true';
+    if (!isLoggedIn) {
+      window.location.href = 'login.html?return=personal-page.html';
+    }
+
+    // Load user info
+    const userName = localStorage.getItem('userName') || 'User';
+    const userEmail = localStorage.getItem('userEmail') || '';
+    document.getElementById('userName').textContent = userName;
+    document.getElementById('userAvatar').textContent = userName.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
+
+    // Load plan data
+    function loadPlan() {
+      const plan = JSON.parse(localStorage.getItem('userPlan') || '[]');
+      const vendorsList = document.getElementById('vendorsList');
+      const emptyState = document.getElementById('emptyState');
+
+      if (plan.length === 0) {
+        vendorsList.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      vendorsList.innerHTML = plan.map((vendor, index) => `
+        <div class="vendor-item">
+          <div class="vendor-item-image"></div>
+          <div class="vendor-item-info">
+            <div class="vendor-item-name">${vendor.name || 'Vendor Name'}</div>
+            <div class="vendor-item-category">${vendor.category || 'Category'}</div>
+            <div class="vendor-item-meta">
+              <span>📍 ${vendor.location || 'Location'}</span>
+              <span>💰 ${vendor.price || 'Price'}</span>
+            </div>
+          </div>
+          <div class="vendor-item-actions">
+            <a href="vendor-detail.html?id=${vendor.id || index}" class="btn-small btn-view">View Details</a>
+            <button class="btn-small btn-remove" onclick="removeVendor(${index})">Remove</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function removeVendor(index) {
+      if (confirm('Remove this vendor from your plan?')) {
+        const plan = JSON.parse(localStorage.getItem('userPlan') || '[]');
+        plan.splice(index, 1);
+        localStorage.setItem('userPlan', JSON.stringify(plan));
+        loadPlan();
+        updateBudget();
+      }
+    }
+
+    // Load event details
+    function loadEventDetails() {
+      const eventData = JSON.parse(localStorage.getItem('eventData') || '{}');
+      document.getElementById('eventType').textContent = eventData.eventType || 'Not set';
+      document.getElementById('eventDate').textContent = eventData.date || 'Not set';
+      document.getElementById('eventLocation').textContent = eventData.location || 'Not set';
+      document.getElementById('eventGuests').textContent = eventData.guests || 'Not set';
+    }
+
+    // Budget calculation
+    function updateBudget() {
+      const plan = JSON.parse(localStorage.getItem('userPlan') || '[]');
+      const budget = parseFloat(localStorage.getItem('budget') || '30000');
+      
+      // Calculate spent (mock calculation)
+      const spent = plan.length * 5000; // Mock: $5000 per vendor
+      const remaining = Math.max(0, budget - spent);
+      const percent = Math.min(100, (spent / budget) * 100);
+
+      document.getElementById('budgetSpent').textContent = '$' + spent.toLocaleString();
+      document.getElementById('budgetTotal').textContent = '$' + budget.toLocaleString();
+      document.getElementById('budgetRemaining').textContent = '$' + remaining.toLocaleString();
+      document.getElementById('budgetPercent').textContent = Math.round(percent) + '%';
+
+      // Update circle
+      const circle = document.getElementById('budgetCircle');
+      const circumference = 2 * Math.PI * 60;
+      const offset = circumference - (percent / 100) * circumference;
+      circle.style.strokeDashoffset = offset;
+
+      // Update color
+      circle.className = 'budget-circle-fill';
+      if (percent > 90) {
+        circle.classList.add('over');
+      } else if (percent > 70) {
+        circle.classList.add('warn');
+      } else {
+        circle.classList.add('ok');
+      }
+    }
+
+    // Initialize
+    loadPlan();
+    loadEventDetails();
+    updateBudget();
+
+    // User menu
+    document.getElementById('userMenu').addEventListener('click', () => {
+      if (confirm('Log out?')) {
+        localStorage.removeItem('userLoggedIn');
+        window.location.href = 'index.html';
+      }
+    });
+  </script>
+</body>
+</html>
+
+
+
+

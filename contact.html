@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us | CleverPlanners</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1e293b;
+      --muted: #6b7280;
+      --cream: #fbf6ed;
+      --brand: #111827;
+      --ring: #e5dcc7;
+      --radius: 20px;
+      --shadow: 0 10px 30px rgba(16,24,40,.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 1rem;
+    }
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+    .quick-contact {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .quick-contact-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      background: #fff;
+      border: 1px solid var(--ring);
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--ink);
+      font-weight: 500;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,.05);
+    }
+    .quick-contact-item:hover {
+      border-color: var(--brand);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,.1);
+    }
+    .quick-contact-item .icon {
+      font-size: 1.3rem;
+    }
+    .contact-form {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--ring);
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--ink);
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--ring);
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: border-color 0.2s ease;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--brand);
+    }
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+    .other-subject-field {
+      display: none;
+      margin-top: 1rem;
+    }
+    .other-subject-field.show {
+      display: block;
+    }
+    .btn {
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+    .btn:hover {
+      background: #0a0f1a;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .footer-links {
+      text-align: center;
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--ring);
+    }
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin: 0 1rem;
+      transition: color 0.2s ease;
+    }
+    .footer-links a:hover {
+      color: var(--ink);
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 2rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .back-link:hover {
+      color: var(--ink);
+    }
+    @media (max-width: 600px) {
+      .quick-contact {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .quick-contact-item {
+        justify-content: center;
+      }
+      .footer-links a {
+        display: block;
+        margin: 0.5rem 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Contact Us</h1>
+      <p class="subtitle">We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+      
+      <div class="quick-contact">
+        <a href="https://wa.me/1234567890" target="_blank" class="quick-contact-item">
+          <span class="icon">💬</span>
+          <span>WhatsApp</span>
+        </a>
+        <a href="mailto:support@cleverplanners.com" class="quick-contact-item">
+          <span class="icon">✉️</span>
+          <span>Email</span>
+        </a>
+      </div>
+    </header>
+    
+    <form class="contact-form" id="contactForm">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="subject">Subject</label>
+        <select id="subject" name="subject" required>
+          <option value="">Select a subject</option>
+          <option value="General Inquiry">General Inquiry</option>
+          <option value="Vendor Issue">Vendor Issue</option>
+          <option value="Account Support">Account Support</option>
+          <option value="Billing Question">Billing Question</option>
+          <option value="Feature Request">Feature Request</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      
+      <div class="form-group other-subject-field" id="otherSubjectField">
+        <label for="otherSubject">Please specify</label>
+        <input type="text" id="otherSubject" name="otherSubject" placeholder="Enter your subject">
+      </div>
+      
+      <div class="form-group">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" required></textarea>
+      </div>
+      
+      <button type="submit" class="btn">Send Message</button>
+    </form>
+    
+    <div class="footer-links">
+      <a href="faq.html">FAQ</a>
+      <a href="feedback.html">Feedback</a>
+    </div>
+    
+    <a href="index.html" class="back-link">← Back to Home</a>
+  </div>
+  
+  <script>
+    // Handle subject dropdown change
+    document.getElementById('subject').addEventListener('change', function() {
+      const otherField = document.getElementById('otherSubjectField');
+      if (this.value === 'Other') {
+        otherField.classList.add('show');
+        document.getElementById('otherSubject').required = true;
+      } else {
+        otherField.classList.remove('show');
+        document.getElementById('otherSubject').required = false;
+        document.getElementById('otherSubject').value = '';
+      }
+    });
+
+    // Handle form submission
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Get subject value
+      let subject = document.getElementById('subject').value;
+      if (subject === 'Other') {
+        const otherSubject = document.getElementById('otherSubject').value.trim();
+        if (otherSubject) {
+          subject = otherSubject;
+        }
+      }
+      
+      alert('Thank you for your message! We\'ll get back to you soon.');
+      this.reset();
+      document.getElementById('otherSubjectField').classList.remove('show');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CleverPlanners | Plan Smarter. Spend Less.</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Kalam:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <style>
+    :root {
+      --gradient1: #7b2ff7;
+      --gradient2: #00c6ff;
+      --gradient3: #00ffd1;
+      --canva-purple: #6C5CE7;
+      --canva-teal: #00D2FF;
+      --canva-light-blue: #00E5CC;
+      --text-dark: #222;
+      --text-light: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(180deg, #6C5CE7 0%, #5A4FCF 25%, #00D2FF 75%, #00E5CC 100%);
+      background-attachment: fixed;
+      color: var(--text-dark);
+      overflow-x: hidden;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      z-index: 100;
+      background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      border-bottom: none;
+      transition: all 0.3s ease;
+    }
+
+    header.scrolled {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .logo {
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      color: var(--text-light);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: opacity 0.2s;
+      text-decoration: none;
+    }
+
+    .logo:hover {
+      opacity: 0.9;
+    }
+
+    nav a {
+      margin-left: 1.5rem;
+      text-decoration: none;
+      font-weight: 500;
+      color: var(--text-light);
+      transition: opacity 0.3s ease;
+      font-size: 0.95rem;
+      letter-spacing: -0.01em;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    nav a:hover { 
+      opacity: 0.8; 
+      text-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .btn-header {
+      padding: 0.5rem 1.2rem;
+      border-radius: 25px;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.3);
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .btn-header:hover {
+      background: rgba(255,255,255,0.3);
+      border-color: rgba(255,255,255,0.4);
+      transform: translateY(-1px);
+    }
+
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 0 1.5rem;
+      position: relative;
+      color: var(--text-light);
+      overflow: hidden;
+      background: linear-gradient(180deg, #6C5CE7 0%, #5A4FCF 25%, #00D2FF 75%, #00E5CC 100%);
+      background-size: 200% 200%;
+      animation: gradientShift 15s ease infinite;
+    }
+
+    .hero-video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      transform: translate(-50%, -50%);
+      object-fit: cover;
+      z-index: 0;
+      opacity: 0.5;
+      filter: blur(0.3px) brightness(1.1) contrast(1.05);
+      transition: opacity 0.8s ease;
+      will-change: opacity;
+    }
+
+    .hero-video-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(108,92,231,0.55) 0%, rgba(90,79,207,0.45) 25%, rgba(0,210,255,0.35) 75%, rgba(0,229,204,0.45) 100%);
+      z-index: 1;
+      pointer-events: none;
+      mix-blend-mode: multiply;
+    }
+
+    .hero-video-overlay::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 30% 40%, rgba(108,92,231,0.25) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 60%, rgba(0,210,255,0.25) 0%, transparent 50%);
+      z-index: 1;
+      animation: overlayPulse 8s ease-in-out infinite;
+    }
+
+    @keyframes overlayPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(80px);
+      animation: pulse 8s ease-in-out infinite, drift 20s ease-in-out infinite;
+      z-index: 2;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      right: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(0,210,255,0.2) 0%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(80px);
+      animation: pulse 10s ease-in-out infinite reverse, drift 25s ease-in-out infinite reverse;
+      z-index: 2;
+    }
+
+    .hero-bg-layer {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(0,229,204,0.12) 0%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(60px);
+      animation: pulse 12s ease-in-out infinite, drift 18s ease-in-out infinite;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.3); opacity: 0.9; }
+    }
+
+    @keyframes drift {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(30px, -30px) rotate(120deg); }
+      66% { transform: translate(-20px, 20px) rotate(240deg); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+    }
+
+    .hero-content h1 {
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.2s forwards;
+    }
+
+    .hero-content p {
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.4s forwards;
+    }
+
+    .hero-content .btn-primary {
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.6s forwards, buttonPulse 3s ease-in-out 2.5s infinite;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes buttonPulse {
+      0%, 100% { 
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.1) inset;
+      }
+      50% { 
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.1) inset, 0 0 30px rgba(255,255,255,0.3);
+      }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.8rem, 8.5vw, 6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.03em;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      text-shadow: 0 4px 30px rgba(0,0,0,0.2), 0 0 40px rgba(255,255,255,0.1);
+      text-align: center;
+      background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,0.9) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 10px rgba(0,0,0,0.1));
+    }
+    
+    .hero h1 br {
+      display: block;
+      content: "";
+      margin-top: 0.15em;
+    }
+
+    .hero h1 .event-word {
+      display: inline-block;
+      position: relative;
+      background: linear-gradient(135deg, #ffffff 0%, #00D2FF 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 20px rgba(255,255,255,0.4)) drop-shadow(0 4px 20px rgba(0,0,0,0.15));
+      white-space: nowrap;
+    }
+
+    .hero p {
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      max-width: 750px;
+      margin: 0 auto 3.5rem;
+      color: rgba(255,255,255,0.98);
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      line-height: 1.7;
+      text-shadow: 0 3px 15px rgba(0,0,0,0.15);
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      text-decoration: none;
+      padding: 1.5rem 3.5rem;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      color: #6C5CE7;
+      border: 3px solid rgba(255,255,255,0.5);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.25), 0 0 0 2px rgba(255,255,255,0.2) inset, 0 0 60px rgba(255,255,255,0.3);
+      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-shadow: none;
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.02em;
+      z-index: 4;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary::after {
+      content: '→';
+      font-size: 1.3rem;
+      transition: transform 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-8px) scale(1.08);
+      background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.98) 100%);
+      border-color: rgba(255,255,255,0.8);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35), 0 0 0 3px rgba(255,255,255,0.3) inset, 0 0 80px rgba(255,255,255,0.4);
+      color: #5A4FCF;
+    }
+
+    .btn-primary:hover::after {
+      transform: translateX(6px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(-4px) scale(1.05);
+    }
+
+    @keyframes buttonShimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    .btn-primary {
+      background-size: 200% 100%;
+      animation: buttonShimmer 3s ease-in-out infinite;
+    }
+
+    .floating-icons {
+      position: absolute;
+      bottom: 8%;
+      left: 0;
+      right: 0;
+      display: flex;
+      gap: 4rem;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      opacity: 0.85;
+      z-index: 2;
+    }
+
+    .floating-icons a {
+      position: relative;
+      display: inline-block;
+      text-decoration: none;
+      cursor: pointer;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.25));
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      will-change: transform;
+      opacity: 0;
+      animation: fadeInScale 0.8s ease-out 0.8s forwards, float 6s ease-in-out 1.6s infinite;
+      border: none;
+      background: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .floating-icons span {
+      position: relative;
+      display: inline-block;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.25));
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      will-change: transform;
+      opacity: 0;
+      animation: fadeInScale 0.8s ease-out 0.8s forwards, float 6s ease-in-out 1.6s infinite;
+    }
+
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.5) translateY(20px);
+      }
+      to {
+        opacity: 0.9;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .floating-icons a::before,
+    .floating-icons span::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80px;
+      height: 80px;
+      background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(20px);
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .floating-icons a:hover::before,
+    .floating-icons span:hover::before {
+      opacity: 1;
+    }
+
+    .floating-icons a:nth-child(1),
+    .floating-icons span:nth-child(1) { 
+      font-size: 2.2rem; 
+      animation: fadeInScale 0.8s ease-out 0.8s forwards, float 6s ease-in-out 1.6s infinite;
+    }
+    .floating-icons a:nth-child(2),
+    .floating-icons span:nth-child(2) { 
+      font-size: 1.9rem; 
+      animation: fadeInScale 0.8s ease-out 0.85s forwards, float 6s ease-in-out 1.65s infinite;
+    }
+    .floating-icons a:nth-child(3),
+    .floating-icons span:nth-child(3) { 
+      font-size: 2.1rem; 
+      animation: fadeInScale 0.8s ease-out 0.9s forwards, float 6s ease-in-out 1.7s infinite;
+    }
+    .floating-icons a:nth-child(4),
+    .floating-icons span:nth-child(4) { 
+      font-size: 2rem; 
+      animation: fadeInScale 0.8s ease-out 0.88s forwards, float 6s ease-in-out 1.68s infinite;
+    }
+    .floating-icons a:nth-child(5),
+    .floating-icons span:nth-child(5) { 
+      font-size: 1.8rem; 
+      animation: fadeInScale 0.8s ease-out 0.92s forwards, float 6s ease-in-out 1.72s infinite;
+    }
+    .floating-icons a:nth-child(6),
+    .floating-icons span:nth-child(6) { 
+      font-size: 2.1rem; 
+      animation: fadeInScale 0.8s ease-out 0.9s forwards, float 6s ease-in-out 1.7s infinite;
+    }
+
+    .floating-icons a:hover,
+    .floating-icons span:hover {
+      transform: translateY(-8px) scale(1.05) rotate(3deg);
+      filter: drop-shadow(0 12px 24px rgba(0,0,0,0.3));
+    }
+
+    @keyframes float {
+      0%, 100% { 
+        transform: translateY(0) rotate(0deg) scale(1); 
+      }
+      25% { 
+        transform: translateY(-8px) rotate(2deg) scale(1); 
+      }
+      50% { 
+        transform: translateY(-12px) rotate(0deg) scale(1); 
+      }
+      75% { 
+        transform: translateY(-8px) rotate(-2deg) scale(1); 
+      }
+    }
+
+    section.budget-timeline-section {
+      background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+      color: #333;
+      padding: 0;
+      margin: 0;
+      position: relative;
+      overflow: visible;
+      min-height: 100vh;
+      margin-top: 0;
+    }
+    
+    section.budget-timeline-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(108,92,231,0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(0,210,255,0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    section.budget-timeline-section > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Ensure seamless transition from hero */
+    .hero + section.budget-timeline-section {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    .checklist-animation-container {
+      position: relative;
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .checklist-layout {
+      display: flex;
+      justify-content: center;
+      align-items: start;
+      position: relative;
+      min-height: auto;
+      width: 100%;
+    }
+
+
+    /* Checklist Box */
+    .checklist-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 2.25rem 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+      border: 1px solid rgba(229, 220, 199, 0.4);
+      opacity: 0;
+      transform: scale(0.95);
+      will-change: transform, opacity;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    .checklist-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      animation: slideIn 0.8s ease-out;
+    }
+    
+    @keyframes slideIn {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    .checklist-section {
+      margin-bottom: 0;
+    }
+
+    .checklist-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .checklist-section-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.7;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.875rem 0;
+      font-size: 0.95rem;
+      color: var(--ink);
+      position: relative;
+      opacity: 1;
+      transform: translateX(0);
+      will-change: transform, opacity;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border-bottom: 1px solid rgba(229, 220, 199, 0.3);
+    }
+
+    .checklist-item:last-child {
+      border-bottom: none;
+    }
+
+    .checklist-item::before {
+      content: '';
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 2px solid var(--ring);
+      background: transparent;
+      flex-shrink: 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .checklist-item.crossed {
+      opacity: 0.65;
+      animation: crossOut 0.5s ease-out, itemPulse 0.4s ease-out 0.1s;
+    }
+    
+    @keyframes itemPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
+    .checklist-item.crossed::before {
+      content: '✓';
+      background: #10b981;
+      border-color: #10b981;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      animation: checkMark 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+    }
+
+    .checklist-item.crossed .checklist-item-text {
+      text-decoration: line-through;
+      text-decoration-color: #ef4444;
+      text-decoration-thickness: 1.5px;
+      color: var(--muted);
+    }
+    
+    @keyframes crossOut {
+      0% { transform: translateX(0) scale(1); }
+      50% { transform: translateX(8px) scale(0.98); }
+      100% { transform: translateX(0) scale(1); }
+    }
+    
+    @keyframes checkMark {
+      0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+      50% { transform: scale(1.2) rotate(10deg); }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    /* Budget Bar */
+    .budget-bar-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: rgba(229, 220, 199, 0.3);
+      border-radius: 3px;
+      overflow: hidden;
+      opacity: 0;
+      will-change: opacity;
+    }
+
+    .budget-bar-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0%;
+      background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+      border-radius: 3px;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), background 0.4s ease;
+      will-change: width, background;
+      box-shadow: 0 0 8px rgba(16,185,129,0.2);
+    }
+    
+    .budget-bar-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+      border-radius: 3px;
+      animation: shimmer 2.5s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .budget-bar-fill.warning {
+      background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
+      box-shadow: 0 0 10px rgba(245,158,11,0.3);
+    }
+
+    .budget-bar-fill.danger {
+      background: linear-gradient(90deg, #ef4444 0%, #f87171 100%);
+      box-shadow: 0 0 12px rgba(239,68,68,0.4);
+      animation: dangerPulse 0.5s ease-out;
+    }
+    
+    @keyframes dangerPulse {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.15); }
+    }
+
+    .budget-bar-container.shaking {
+      animation: violent-shake 0.5s ease-in-out;
+    }
+
+    @keyframes violent-shake {
+      0%, 100% { transform: translateX(0) rotate(0deg); }
+      10% { transform: translateX(-10px) rotate(-1deg); }
+      20% { transform: translateX(10px) rotate(1deg); }
+      30% { transform: translateX(-8px) rotate(-0.8deg); }
+      40% { transform: translateX(8px) rotate(0.8deg); }
+      50% { transform: translateX(-6px) rotate(-0.5deg); }
+      60% { transform: translateX(6px) rotate(0.5deg); }
+      70% { transform: translateX(-4px) rotate(-0.3deg); }
+      80% { transform: translateX(4px) rotate(0.3deg); }
+      90% { transform: translateX(-2px) rotate(-0.1deg); }
+    }
+
+    /* Over Budget Text */
+    .over-budget-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      font-size: 6rem;
+      font-weight: 900;
+      color: #ef4444;
+      font-family: 'Inter', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      opacity: 0;
+      text-shadow: 
+        0 4px 12px rgba(239,68,68,0.5),
+        0 0 30px rgba(239,68,68,0.4),
+        0 0 60px rgba(239,68,68,0.3);
+      z-index: 30;
+      pointer-events: none;
+      animation: textGlow 2s ease-in-out infinite;
+    }
+    
+    @keyframes textGlow {
+      0%, 100% { 
+        text-shadow: 
+          0 4px 12px rgba(239,68,68,0.5),
+          0 0 30px rgba(239,68,68,0.4),
+          0 0 60px rgba(239,68,68,0.3);
+      }
+      50% { 
+        text-shadow: 
+          0 4px 12px rgba(239,68,68,0.7),
+          0 0 40px rgba(239,68,68,0.6),
+          0 0 80px rgba(239,68,68,0.5);
+      }
+    }
+
+    .checklist-layout.shaking {
+      animation: violent-shake 0.5s ease-in-out;
+    }
+
+    /* Light Sweep Effect */
+    .final-cta {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .final-cta::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255,255,255,0.7) 20%, 
+        rgba(255,255,255,0.9) 50%, 
+        rgba(255,255,255,0.7) 80%, 
+        transparent 100%);
+      transform: skewX(-15deg);
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .final-cta.light-sweep::before {
+      animation: lightSweep 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes lightSweep {
+      0% {
+        left: -100%;
+        opacity: 0;
+      }
+      15% {
+        opacity: 1;
+      }
+      85% {
+        opacity: 1;
+      }
+      100% {
+        left: 100%;
+        opacity: 0;
+      }
+    }
+
+    .final-cta.light-sweep {
+      animation: backgroundGlow 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes backgroundGlow {
+      0% {
+        filter: brightness(1);
+      }
+      50% {
+        filter: brightness(0.75);
+      }
+      100% {
+        filter: brightness(1);
+      }
+    }
+
+    /* Final Reveal */
+    .final-reveal {
+      text-align: center;
+      opacity: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 200;
+      width: 100%;
+      max-width: 600px;
+      padding: 0 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .final-reveal-text {
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      letter-spacing: -0.02em;
+      margin-bottom: 2rem;
+      line-height: 1.3;
+      white-space: nowrap;
+    }
+    
+    .final-reveal-text .gradient-text {
+      background: linear-gradient(135deg, #6C5CE7 0%, #00D2FF 50%, #00E5CC 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+    }
+    
+    .final-cta {
+      display: inline-block;
+      padding: 1.2rem 3rem;
+      background: linear-gradient(135deg, #6C5CE7 0%, #00D2FF 50%, #00E5CC 100%);
+      background-size: 200% 200%;
+      color: white;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 1.15rem;
+      box-shadow: 0 8px 32px rgba(108,92,231,0.4), 0 0 0 0 rgba(108,92,231,0.5);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      opacity: 0;
+      transform: translateY(20px) scale(0.9);
+      letter-spacing: -0.01em;
+      position: relative;
+      overflow: hidden;
+      animation: gradientShift 3s ease infinite;
+    }
+    
+    .final-cta::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+    
+    .final-cta:hover::before {
+      left: 100%;
+    }
+    
+    .final-cta:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0 16px 48px rgba(108,92,231,0.5), 0 0 0 8px rgba(108,92,231,0.1);
+      animation: gradientShift 1.5s ease infinite, pulseGlow 2s ease infinite;
+    }
+    
+    .final-cta.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      animation: gradientShift 3s ease infinite, buttonPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 16px 48px rgba(108,92,231,0.5), 0 0 0 8px rgba(108,92,231,0.1); }
+      50% { box-shadow: 0 16px 48px rgba(108,92,231,0.6), 0 0 0 12px rgba(108,92,231,0.15); }
+    }
+    
+    @keyframes buttonPop {
+      0% { transform: translateY(0) scale(0.8); }
+      50% { transform: translateY(-10px) scale(1.1); }
+      100% { transform: translateY(0) scale(1); }
+    }
+
+    @media (max-width: 768px) {
+      section.budget-timeline-section {
+        padding: 0;
+        margin: 0;
+        min-height: auto;
+      }
+
+      .checklist-animation-container {
+        padding: 2rem 1rem;
+      }
+
+      .checklist-layout {
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+        min-height: auto;
+      }
+
+      .vendor-icons-column {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+      }
+
+      .vendor-icon-item {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .vendor-icon-item.right {
+        transform: translateY(50px);
+      }
+
+      .vendor-icon-item {
+        transform: translateY(50px);
+      }
+
+      .checklist-box {
+        padding: 1.5rem;
+      }
+
+      .over-budget-overlay {
+        font-size: 3rem;
+      }
+
+      .final-reveal-text {
+        font-size: 1.8rem;
+        white-space: normal;
+      }
+
+    }
+
+    footer {
+      background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+      color: #555;
+      text-align: center;
+      padding: 3rem 2rem;
+      font-size: 0.9rem;
+      border-top: 1px solid rgba(0,0,0,0.05);
+      position: relative;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(108,92,231,0.2), transparent);
+    }
+
+    footer a {
+      color: #555;
+      text-decoration: none;
+      margin: 0 0.5rem;
+      font-weight: 500;
+      transition: color 0.3s ease;
+      position: relative;
+    }
+
+    footer a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #6C5CE7;
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+      }
+
+    footer a:hover { 
+      color: #6C5CE7;
+      }
+
+    footer a:hover::after {
+      transform: scaleX(1);
+      }
+
+
+    /* Mobile Menu for index.html */
+    .mobile-menu-toggle-index{
+      display:none;
+      background:none;
+      border:none;
+      width:32px;
+      height:32px;
+      cursor:pointer;
+      padding:0;
+      flex-direction:column;
+      justify-content:space-around;
+      align-items:center;
+    }
+    .mobile-menu-toggle-index span{
+      width:24px;
+      height:2px;
+      background:var(--text-light);
+      border-radius:2px;
+      transition:all 0.3s ease;
+    }
+    .mobile-menu-toggle-index.active span:nth-child(1){
+      transform:rotate(45deg) translate(8px, 8px);
+    }
+    .mobile-menu-toggle-index.active span:nth-child(2){
+      opacity:0;
+    }
+    .mobile-menu-toggle-index.active span:nth-child(3){
+      transform:rotate(-45deg) translate(7px, -7px);
+    }
+    .mobile-menu-overlay-index{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.6);
+      z-index:999;
+      opacity:0;
+      transition:opacity 0.3s ease;
+    }
+    .mobile-menu-overlay-index.show{
+      display:block;
+      opacity:1;
+    }
+    .mobile-menu-drawer-index{
+      position:fixed;
+      top:0;
+      right:-100%;
+      width:280px;
+      max-width:85vw;
+      height:100vh;
+      background:#fff;
+      z-index:1000;
+      box-shadow:-4px 0 20px rgba(0,0,0,0.2);
+      transition:right 0.3s ease;
+      overflow-y:auto;
+      padding:20px 0;
+    }
+    .mobile-menu-drawer-index.open{
+      right:0;
+    }
+    .mobile-menu-nav-index{
+      display:flex;
+      flex-direction:column;
+      gap:0;
+      padding:0;
+    }
+    .mobile-menu-nav-index a{
+      display:block;
+      padding:16px 24px;
+      color:var(--text-dark);
+      font-weight:600;
+      font-size:1rem;
+      text-decoration:none;
+      border-bottom:1px solid rgba(0,0,0,0.1);
+      transition:background 0.2s;
+    }
+    .mobile-menu-nav-index a:hover{
+      background:rgba(0,0,0,0.05);
+    }
+    .mobile-menu-actions-index{
+      padding:16px 24px;
+      border-top:1px solid rgba(0,0,0,0.1);
+      margin-top:8px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .mobile-menu-actions-index .btn-header{
+      width:100%;
+      text-align:center;
+      padding:12px 16px;
+      font-size:0.9rem;
+      color:var(--text-dark);
+      background:rgba(108,92,231,0.1);
+      border-color:rgba(108,92,231,0.3);
+    }
+
+    @media (max-width: 768px) {
+      header{
+        padding:0.75rem 1rem;
+      }
+      .logo{
+        font-size:1.3rem;
+      }
+      nav{
+        display:none;
+      }
+      .btn-header{
+        display:none;
+      }
+      .mobile-menu-toggle-index{
+        display:flex;
+      }
+      .hero h1 { 
+        font-size: clamp(2.2rem, 6vw, 3rem);
+        gap: 0.05em;
+      }
+      .hero p { font-size: 1rem; }
+      .floating-icons {
+        gap: 1.5rem;
+        bottom: 3%;
+      }
+      .floating-icons a,
+      .floating-icons span {
+        font-size: 1.4rem !important;
+      }
+      .hero-video {
+        opacity: 0.35;
+        filter: blur(0.5px) brightness(1.05) contrast(1.1);
+      }
+      .hero-video-overlay {
+        background: linear-gradient(180deg, rgba(108,92,231,0.65) 0%, rgba(90,79,207,0.55) 25%, rgba(0,210,255,0.45) 75%, rgba(0,229,204,0.55) 100%);
+        mix-blend-mode: multiply;
+      }
+      .btn-primary{
+        padding:14px 28px;
+        font-size:1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header id="mainHeader">
+    <button class="mobile-menu-toggle-index" id="mobileMenuToggleIndex" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <a href="index.html" class="logo">CleverPlanners</a>
+    <nav>
+      <a href="vendors.html">Vendors</a>
+      <a href="plan.html">Event Planner</a>
+      <a href="checklists.html">Checklists</a>
+      <a href="contact.html">Contact</a>
+      <a href="login.html">Login</a>
+      <a href="login.html" class="btn-header">Sign Up</a>
+    </nav>
+    <div class="mobile-menu-overlay-index" id="mobileMenuOverlayIndex"></div>
+    <div class="mobile-menu-drawer-index" id="mobileMenuDrawerIndex">
+      <nav class="mobile-menu-nav-index">
+        <a href="vendors.html">Vendors</a>
+        <a href="plan.html">Event Planner</a>
+        <a href="checklists.html">Checklists</a>
+        <a href="contact.html">Contact</a>
+        <a href="login.html">Login</a>
+      </nav>
+      <div class="mobile-menu-actions-index">
+        <a href="login.html" class="btn-header">Sign Up</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <video class="hero-video" autoplay muted loop playsinline>
+      <!-- 3D Animation Video Background - Similar to Dribbble examples -->
+      <!-- Best sources for 3D abstract animations: -->
+      <!-- 1. Pexels: https://www.pexels.com/videos/ (search "abstract 3d", "particles", "geometric shapes") -->
+      <!-- 2. Pixabay: https://pixabay.com/videos/ (search "3d animation", "abstract background") -->
+      <!-- 3. Coverr: https://coverr.co/ (curated abstract backgrounds) -->
+      <!-- 4. Motion Array: https://motionarray.com/ (premium, requires subscription) -->
+      <!-- 5. Envato Elements: https://elements.envato.com/ (premium 3D animations) -->
+      
+      <!-- Current: Abstract particles/flowing colors - Replace with your preferred 3D animation -->
+      <source src="https://videos.pexels.com/video-files/3045163/3045163-hd_1920_1080_30fps.mp4" type="video/mp4">
+      
+      <!-- Alternative 3D animation options (uncomment to use): -->
+      <!-- Abstract geometric shapes: -->
+      <!-- <source src="https://videos.pexels.com/video-files/2491284/2491284-hd_1920_1080_25fps.mp4" type="video/mp4"> -->
+      <!-- Flowing particles: -->
+      <!-- <source src="https://videos.pexels.com/video-files/3045163/3045163-hd_1920_1080_30fps.mp4" type="video/mp4"> -->
+      
+      <!-- For best results, download and host locally: -->
+      <!-- <source src="assets/videos/3d-hero-background.mp4" type="video/mp4"> -->
+    </video>
+    <div class="hero-video-overlay"></div>
+    <div class="hero-bg-layer"></div>
+    <div class="hero-content" data-aos="fade-up">
+      <h1>Plan Your Upcoming <span class="event-word">event</span><br>in Minutes</h1>
+      <p>Connect with top vendors, compare quotes, and manage everything in one place. Clever planning made simple.</p>
+      <a href="plan.html" class="btn-primary">Start Planning Free</a>
+      </div>
+
+    <div class="floating-icons">
+      <a href="plan.html"><span>💍</span></a>
+      <a href="plan.html"><span>🍽️</span></a>
+      <a href="plan.html"><span>🎶</span></a>
+      <a href="plan.html"><span>🏛️</span></a>
+      <a href="plan.html"><span>🌸</span></a>
+      <a href="plan.html"><span>📸</span></a>
+    </div>
+  </section>
+
+  <section class="budget-timeline-section" id="budgetTimelineSection">
+    <div class="checklist-animation-container">
+      <div class="checklist-layout" id="checklistLayout">
+        <!-- Center Checklist -->
+        <div class="checklist-box" id="checklistBox">
+          <div class="checklist-section">
+            <div class="checklist-section-title">THINGS TO BOOK:</div>
+            <div class="checklist-item" data-item="venue">
+              <span class="checklist-item-text">Reserve Venue</span>
+            </div>
+            <div class="checklist-item" data-item="caterer">
+              <span class="checklist-item-text">Hire Caterer</span>
+            </div>
+            <div class="checklist-item" data-item="photographer">
+              <span class="checklist-item-text">Schedule Photographer</span>
+            </div>
+            <div class="checklist-item" data-item="entertainment">
+              <span class="checklist-item-text">Book Entertainment</span>
+            </div>
+            <div class="checklist-item" data-item="rentals">
+              <span class="checklist-item-text">Arrange Rentals</span>
+            </div>
+            <div class="checklist-item" data-item="florals">
+              <span class="checklist-item-text">Order Florals</span>
+            </div>
+            <div class="checklist-item" data-item="centerpieces">
+              <span class="checklist-item-text">Design Centerpieces</span>
+            </div>
+            <div class="checklist-item" data-item="videographer">
+              <span class="checklist-item-text">Hire Videographer</span>
+            </div>
+            <div class="checklist-item" data-item="coordinator">
+              <span class="checklist-item-text">Secure Coordinator</span>
+            </div>
+            <div class="checklist-item" data-item="transportation">
+              <span class="checklist-item-text">Arrange Transportation</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Over Budget Overlay -->
+        <div class="over-budget-overlay" id="overBudgetOverlay">OVER BUDGET.</div>
+
+        <!-- Budget Bar -->
+        <div class="budget-bar-container" id="budgetBarContainer">
+          <div class="budget-bar-fill" id="budgetBarFill"></div>
+        </div>
+      </div>
+
+      <!-- Final Reveal -->
+      <div class="final-reveal" id="finalReveal">
+        <div class="final-reveal-text">Let's plan something more <span class="gradient-text">clever</span></div>
+        <a href="plan.html" class="final-cta" id="finalCTA">Start Here — It's completely free!</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>
+      <a href="about.html">About</a> •
+      <a href="contact.html">Contact</a> •
+      <a href="vendor-intake.html">For Vendors</a> •
+      <a href="privacy.html">Privacy</a> •
+      <a href="terms.html">Terms</a>
+    </p>
+    <p>© CleverPlanners — Your event, made simple.</p>
+  </footer>
+
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init({ duration: 1000, once: true });
+    window.addEventListener('scroll', () => {
+      const header = document.getElementById('mainHeader');
+      if (window.scrollY > 50) header.classList.add('scrolled');
+      else header.classList.remove('scrolled');
+    });
+
+    // Hero video background handling for 3D animations
+    (function() {
+      const heroVideo = document.querySelector('.hero-video');
+      if (!heroVideo) return;
+
+      // Smooth fade-in when video loads
+      heroVideo.addEventListener('loadeddata', () => {
+        heroVideo.style.opacity = '0';
+        requestAnimationFrame(() => {
+          heroVideo.style.transition = 'opacity 1.2s ease-out';
+          heroVideo.style.opacity = '0.5';
+        });
+        try {
+          heroVideo.play().catch(err => {
+          });
+        } catch (e) {
+        }
+      });
+
+      // Handle video loading errors gracefully
+      heroVideo.addEventListener('error', () => {
+        heroVideo.style.opacity = '0';
+      });
+
+      // Ensure video plays on user interaction (for browsers that block autoplay)
+      const playVideo = () => {
+        if (heroVideo && heroVideo.paused) {
+          heroVideo.play().catch(() => {});
+        }
+      };
+      
+      document.addEventListener('click', playVideo, { once: true });
+      document.addEventListener('touchstart', playVideo, { once: true });
+      
+      // Preload video for smoother experience
+      heroVideo.load();
+    })();
+
+
+    // Checklist Overspending Animation with ScrollTrigger Pin
+    (function() {
+      gsap.registerPlugin(ScrollTrigger);
+
+      const section = document.getElementById('budgetTimelineSection');
+      const checklistLayout = document.getElementById('checklistLayout');
+      const checklistBox = document.getElementById('checklistBox');
+      const budgetBarContainer = document.getElementById('budgetBarContainer');
+      const budgetBarFill = document.getElementById('budgetBarFill');
+      const overBudgetOverlay = document.getElementById('overBudgetOverlay');
+      const finalReveal = document.getElementById('finalReveal');
+      const finalCTA = document.getElementById('finalCTA');
+
+      if (!section || !checklistLayout) return;
+
+      // Get all elements
+      const checklistItems = document.querySelectorAll('.checklist-item');
+
+      // Get checklist items in order (top to bottom)
+      const checklistItemsOrdered = Array.from(checklistItems);
+
+      // Checklist sequence - items appear in order with progress bar updates
+      const checklistSequence = [
+        { checklist: 'venue', checklistIndex: 0, bar: 15 },
+        { checklist: 'caterer', checklistIndex: 1, bar: 30 },
+        { checklist: 'photographer', checklistIndex: 2, bar: 45 },
+        { checklist: 'entertainment', checklistIndex: 3, bar: 60 },
+        { checklist: 'rentals', checklistIndex: 4, bar: 75 },
+        { checklist: 'florals', checklistIndex: 5, bar: 100 } // Reaches 100% here
+      ];
+
+      // Trigger light sweep effect on CTA
+      function triggerLightSweep() {
+        const ctaButton = document.getElementById('finalCTA');
+        if (!ctaButton) return;
+        
+        // Add light sweep class to trigger animation
+        ctaButton.classList.add('light-sweep');
+        
+        // Remove class after animation completes
+        setTimeout(() => {
+          ctaButton.classList.remove('light-sweep');
+        }, 600);
+      }
+
+      // Reset function
+      function resetAnimation() {
+        // Pause and reset timeline
+        mainTL.pause();
+        mainTL.progress(0);
+        
+        // Reset all elements to initial state
+        gsap.set(checklistBox, { opacity: 0, scale: 0.95 });
+        gsap.set(checklistItems, { opacity: 1, x: 0 });
+        gsap.set(budgetBarContainer, { opacity: 0 });
+        gsap.set(budgetBarFill, { width: '0%', background: 'linear-gradient(90deg, #10b981 0%, #34d399 100%)' });
+        gsap.set(overBudgetOverlay, { opacity: 0, scale: 0 });
+        gsap.set(finalReveal, { opacity: 0, y: 50, scale: 0.9 });
+        if (finalCTA) {
+          gsap.set(finalCTA, { opacity: 0, y: 20, scale: 0.9 });
+          finalCTA.classList.remove('visible');
+        }
+        
+        // Remove classes
+        checklistItems.forEach(item => item.classList.remove('crossed'));
+        
+        // Reset budget bar classes
+        budgetBarFill.classList.remove('warning', 'danger');
+        
+        // Remove light sweep class and shake classes
+        if (finalCTA) {
+          finalCTA.classList.remove('light-sweep');
+        }
+        checklistLayout.classList.remove('shaking');
+        budgetBarContainer.classList.remove('shaking');
+      }
+
+      // Build the main animation timeline (paused initially)
+      const mainTL = gsap.timeline({ paused: true });
+
+      // 1. Checklist box appears with bounce effect
+      mainTL.to(checklistBox, {
+        opacity: 1,
+        scale: 1,
+        duration: 0.4,
+        ease: 'back.out(1.7)'
+      })
+      .to(budgetBarContainer, {
+        opacity: 1,
+        duration: 0.3,
+        ease: 'power2.out'
+      }, '-=0.2');
+
+      // 2. Animate checklist items - cross them off one by one
+      checklistSequence.forEach((item, index) => {
+        const checklistEl = document.querySelector(`[data-item="${item.checklist}"]`);
+
+        // Cross out the checklist item (top to bottom order)
+        if (checklistEl) {
+          mainTL.to(checklistEl, {
+            x: 5,
+            duration: 0.15,
+            ease: 'power2.out'
+          }, index * 0.5) // Each item appears 0.5s after the previous
+          .call(() => {
+            checklistEl.classList.add('crossed');
+          })
+          .to(checklistEl, {
+            x: 0,
+            duration: 0.25,
+            ease: 'power2.in'
+          });
+
+          // Update budget bar - only turn red when reaching 100% (6th item)
+          const isOverBudget = item.bar >= 100;
+          const barColor = isOverBudget
+            ? 'linear-gradient(90deg, #ef4444 0%, #f87171 100%)'
+            : 'linear-gradient(90deg, #10b981 0%, #34d399 100%)';
+          
+          // Update class for styling - only add danger when over budget
+          if (isOverBudget) {
+            budgetBarFill.classList.add('danger');
+            budgetBarFill.classList.remove('warning');
+          } else {
+            budgetBarFill.classList.remove('warning', 'danger');
+          }
+          
+          mainTL.to(budgetBarFill, {
+            width: item.bar + '%',
+            background: barColor,
+            duration: 0.4,
+            ease: 'power2.out'
+          }, '-=0.4');
+        }
+      });
+
+      // 3. Over Budget moment - shake and reveal
+      mainTL.call(() => {
+        checklistLayout.classList.add('shaking');
+        budgetBarContainer.classList.add('shaking');
+        setTimeout(() => {
+          checklistLayout.classList.remove('shaking');
+          budgetBarContainer.classList.remove('shaking');
+        }, 500);
+      }, '+=0.1') // Pause after last item (faster)
+      .to(overBudgetOverlay, {
+        opacity: 1,
+        scale: 1.3,
+        rotation: -2,
+        duration: 0.4,
+        ease: 'back.out(2.5)'
+      }, '-=0.2')
+      .to(overBudgetOverlay, {
+        scale: 1,
+        rotation: 0,
+        duration: 0.4,
+        ease: 'elastic.out(1, 0.5)'
+      });
+
+      // 4. Collapse and fade out (let confetti fall first)
+      mainTL.to([checklistBox, budgetBarContainer, overBudgetOverlay], {
+        opacity: 0,
+        y: 30,
+        scale: 0.95,
+        duration: 0.5,
+        stagger: 0.05,
+        ease: 'power3.in'
+      }, '+=0.05'); // Wait for confetti to start falling (faster)
+
+      // 5. Final reveal
+      mainTL.to(finalReveal, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.6,
+        ease: 'back.out(1.5)'
+      }, '-=0.2')
+      // 6. CTA appears with light sweep
+      .to(finalCTA, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.5,
+        ease: 'back.out(1.4)',
+        onStart: () => {
+          // Trigger light sweep when CTA appears
+          triggerLightSweep();
+        },
+        onComplete: () => {
+          if (finalCTA) finalCTA.classList.add('visible');
+        }
+      }, '-=0.3');
+
+      // ScrollTrigger to detect when section enters viewport and play animation
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top 70%', // Start animation when section becomes visible
+        end: 'bottom top',
+        onEnter: () => {
+          resetAnimation();
+          mainTL.restart();
+        },
+        onEnterBack: () => {
+          resetAnimation();
+          mainTL.restart();
+        },
+        onLeave: () => {
+          // Reset when leaving so it can replay when re-entering
+          resetAnimation();
+        },
+        onLeaveBack: () => {
+          // Reset when leaving so it can replay when re-entering
+          resetAnimation();
+        }
+      });
+    })();
+
+    // Mobile menu toggle for index.html
+    const mobileMenuToggleIndex = document.getElementById('mobileMenuToggleIndex');
+    const mobileMenuDrawerIndex = document.getElementById('mobileMenuDrawerIndex');
+    const mobileMenuOverlayIndex = document.getElementById('mobileMenuOverlayIndex');
+    
+    if (mobileMenuToggleIndex && mobileMenuDrawerIndex && mobileMenuOverlayIndex) {
+      mobileMenuToggleIndex.addEventListener('click', () => {
+        const isOpen = mobileMenuDrawerIndex.classList.contains('open');
+        if (isOpen) {
+          mobileMenuDrawerIndex.classList.remove('open');
+          mobileMenuOverlayIndex.classList.remove('show');
+          mobileMenuToggleIndex.classList.remove('active');
+          document.body.style.overflow = '';
+        } else {
+          mobileMenuDrawerIndex.classList.add('open');
+          mobileMenuOverlayIndex.classList.add('show');
+          mobileMenuToggleIndex.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      });
+      
+      mobileMenuOverlayIndex.addEventListener('click', () => {
+        mobileMenuDrawerIndex.classList.remove('open');
+        mobileMenuOverlayIndex.classList.remove('show');
+        mobileMenuToggleIndex.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+      
+      mobileMenuDrawerIndex.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          mobileMenuDrawerIndex.classList.remove('open');
+          mobileMenuOverlayIndex.classList.remove('show');
+          mobileMenuToggleIndex.classList.remove('active');
+          document.body.style.overflow = '';
+        });
+      });
+    }
+  </script>
+</body>
+</html>

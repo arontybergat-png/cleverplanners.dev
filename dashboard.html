@@ -1,0 +1,2218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CleverPlanners – Dashboard</title>
+  <style>
+    :root{
+      --ink:#1e293b; --muted:#6b7280; --cream:#fbf6ed; --panel:#f4ecdc; --brand:#111827; --accent1:#ff7ab6; --accent2:#89f7d3; --ring:#e5dcc7; --radius:20px; --shadow:0 10px 30px rgba(16,24,40,.08);
+      --ok:#16a34a; --warn:#f59e0b; --soft:#faf7f1;
+      --bg:#fbf6ed;--text:#1e293b;--card:#fff;
+      --ok-bg:#d1fae5;--ok-text:#065f46;--maybe-bg:#fef3c7;--maybe-text:#92400e;
+      --grad-1:#7cf1d6;--grad-2:#b8a8ff;--grad-3:#ff7ab6;
+    }
+    *{box-sizing:border-box}
+    html:focus-within{scroll-behavior:smooth}
+    @media (prefers-reduced-motion: reduce){ html:focus-within{scroll-behavior:auto} }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;margin:0;background:var(--cream);color:var(--ink)}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    :focus-visible{outline:2px solid var(--ring); outline-offset:2px; border-radius:10px}
+
+    .dashboard-header{
+      position:sticky;
+      top:0;
+      z-index:60;
+      background:#fff;
+      border-bottom:1px solid #f0eadb;
+      padding:28px 0;
+      box-shadow:0 2px 8px rgba(0,0,0,.03);
+    }
+    .dashboard-header-inner{
+      max-width:1100px;
+      margin:0 auto;
+      padding:0 22px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+    }
+    .logo{
+      position:fixed;
+      top:0;
+      left:0;
+      font-weight:800;
+      font-size:1.5rem;
+      letter-spacing:-0.02em;
+      color:var(--brand);
+      text-decoration:none;
+      transition:opacity 0.2s;
+      padding:20px 24px;
+      z-index:100;
+      background:#fff;
+      margin:0;
+    }
+    .logo:hover{opacity:0.9}
+    .dashboard-title{
+      font-size:clamp(1.5rem,4vw,2rem);
+      font-weight:800;
+      color:var(--ink);
+      margin:0;
+      letter-spacing:-0.02em;
+      text-align:center;
+    }
+    
+    /* Profile Icon */
+    .profile-container{
+      position:fixed;
+      top:20px;
+      right:24px;
+      z-index:100;
+    }
+    .profile-icon{
+      width:40px;
+      height:40px;
+      border-radius:50%;
+      background:linear-gradient(135deg, var(--grad-2) 0%, var(--grad-3) 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-weight:700;
+      font-size:1.1rem;
+      cursor:pointer;
+      border:2px solid #fff;
+      box-shadow:0 2px 8px rgba(0,0,0,.1);
+      transition:all 0.2s ease;
+    }
+    .profile-icon:hover{
+      transform:scale(1.05);
+      box-shadow:0 4px 12px rgba(0,0,0,.15);
+    }
+    .profile-dropdown{
+      position:absolute;
+      top:calc(100% + 8px);
+      right:0;
+      background:var(--card);
+      border:1px solid var(--ring);
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      min-width:160px;
+      padding:8px;
+      display:none;
+      z-index:101;
+    }
+    .profile-dropdown.open{
+      display:block;
+      animation:fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn{
+      from{opacity:0;transform:translateY(-4px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+    .profile-dropdown-item{
+      display:block;
+      width:100%;
+      padding:10px 14px;
+      border:none;
+      background:transparent;
+      color:var(--ink);
+      font-weight:600;
+      font-size:0.9rem;
+      text-align:left;
+      cursor:pointer;
+      border-radius:8px;
+      transition:all 0.2s ease;
+      text-decoration:none;
+    }
+    .profile-dropdown-item:hover{
+      background:var(--soft);
+      color:var(--ink);
+    }
+    .profile-dropdown-item:active{
+      background:var(--ring);
+    }
+
+    .dashboard-tabs{
+      display:flex;
+      gap:0;
+      background:transparent;
+      border-bottom:1px solid var(--ring);
+      max-width:1100px;
+      margin:0 auto;
+      padding:0 22px;
+      overflow-x:auto;
+      scrollbar-width:none;
+    }
+    .dashboard-tabs::-webkit-scrollbar{display:none}
+    .dashboard-tab{
+      padding:14px 20px;
+      border:none;
+      background:transparent;
+      color:var(--muted);
+      font-weight:600;
+      font-size:0.95rem;
+      border-radius:0;
+      cursor:pointer;
+      transition:all 0.2s ease;
+      position:relative;
+      white-space:nowrap;
+      border-bottom:2px solid transparent;
+      margin-bottom:-1px;
+    }
+    .dashboard-tab:hover{
+      color:var(--ink);
+    }
+    .dashboard-tab.active{
+      color:var(--ink);
+      border-bottom-color:var(--brand);
+      font-weight:700;
+    }
+
+    .dashboard-content{
+      max-width:1100px;
+      margin:0 auto;
+      padding:28px 22px 40px;
+    }
+    .dashboard-panel{
+      display:none;
+    }
+    .dashboard-panel.active{
+      display:block;
+    }
+
+    /* Section Headers */
+    .section-header{
+      margin-bottom:24px;
+    }
+    .section-title{
+      font-size:1.5rem;
+      font-weight:700;
+      color:var(--ink);
+      margin:0 0 8px 0;
+      letter-spacing:-0.01em;
+    }
+    .section-subtitle{
+      font-size:0.95rem;
+      color:var(--muted);
+      margin:0;
+    }
+
+    /* Accordion Sections - Match plan.html style */
+    .category-accordion{
+      border:1px solid var(--ring);
+      border-radius:12px;
+      background:var(--card);
+      margin-bottom:20px;
+      overflow:hidden;
+      transition:all 0.2s ease;
+    }
+    .category-accordion.open{
+      border-color:#d4cbb2;
+      box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    }
+    .category-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:16px 20px;
+      cursor:pointer;
+      background:#fff;
+      transition:background 0.2s ease;
+      user-select:none;
+    }
+    .category-header:hover{
+      background:var(--soft);
+    }
+    .category-title{
+      font-size:1.05rem;
+      font-weight:600;
+      color:var(--ink);
+      margin:0;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .category-count{
+      font-size:0.9rem;
+      color:var(--muted);
+      font-weight:500;
+    }
+    .category-toggle{
+      font-size:0.9rem;
+      color:var(--muted);
+      transition:transform 0.2s ease;
+      flex-shrink:0;
+      margin-left:12px;
+    }
+    .category-accordion.open .category-toggle{
+      transform:rotate(180deg);
+    }
+    .category-body{
+      display:none;
+    }
+    .category-accordion.open .category-body{
+      display:block;
+    }
+    .category-content{
+      padding:0 20px 20px 20px;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:16px;
+    }
+    @media (min-width: 900px) {
+      .category-content{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (min-width: 1200px) {
+      .category-content{grid-template-columns:repeat(3,1fr)}
+    }
+
+    /* Vendor Cards - Match results.html vendor-block style */
+    .vendor-card{
+      border:1px solid var(--ring);
+      border-radius:var(--radius);
+      padding:18px;
+      background:#fff;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      position:relative;
+      box-shadow:var(--shadow);
+      transition:all 0.2s ease;
+    }
+    .vendor-card:hover{
+      transform:translateY(-2px);
+      box-shadow:0 12px 32px rgba(16,24,40,.12);
+      border-color:#d4cbb2;
+    }
+    .vendor-name{
+      font-weight:800;
+      font-size:1.1rem;
+      color:var(--ink);
+      margin:0 0 8px 0;
+    }
+    .vendor-card-header{
+      display:flex;
+      align-items:start;
+      gap:12px;
+      margin-bottom:8px;
+    }
+    .vendor-icon{
+      width:40px;
+      height:40px;
+      border-radius:10px;
+      background:var(--soft);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+      flex-shrink:0;
+      border:1px solid var(--ring);
+    }
+    .vendor-info{
+      flex:1;
+      min-width:0;
+    }
+    .vendor-price{
+      font-size:0.95rem;
+      color:var(--muted);
+      font-weight:500;
+    }
+    .vendor-status-tags{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:4px;
+    }
+    .status-tag{
+      padding:4px 8px;
+      border-radius:8px;
+      font-size:0.8rem;
+      font-weight:600;
+      display:inline-block;
+    }
+    .status-tag.reach-out{
+      background:var(--maybe-bg);
+      color:var(--maybe-text);
+    }
+    .status-tag.quote-received{
+      background:var(--ok-bg);
+      color:var(--ok-text);
+    }
+    .status-tag.booked{
+      background:var(--brand);
+      color:#fff;
+    }
+    .vendor-actions{
+      display:flex;
+      gap:8px;
+      margin-top:8px;
+    }
+    
+    /* Media Carousel - Exact match from results.html */
+    .media{
+      position:relative;
+      height:120px;
+      border-radius:10px;
+      overflow:hidden;
+      margin-bottom:12px;
+      margin-top:0;
+      background:linear-gradient(135deg,var(--soft) 0%,#fff 100%);
+    }
+    .media-link{
+      display:block;
+      width:100%;
+      height:100%;
+    }
+    .media-swatch{
+      position:absolute;
+      inset:0;
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
+    }
+    .media-overlay{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      pointer-events:none;
+    }
+    .media-overlay span{
+      background:rgba(255,255,255,.85);
+      color:var(--ink);
+      font-weight:700;
+      letter-spacing:.02em;
+      padding:6px 12px;
+      border-radius:999px;
+      box-shadow:0 2px 8px rgba(0,0,0,.12);
+      backdrop-filter:blur(4px);
+    }
+    .media-btn{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      background:rgba(0,0,0,.5);
+      color:#fff;
+      border:none;
+      width:28px;
+      height:28px;
+      border-radius:999px;
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      opacity:0;
+      transition:opacity .15s;
+      pointer-events:none;
+    }
+    .media-btn:hover{
+      opacity:.8;
+    }
+    .media-prev{
+      left:6px;
+    }
+    .media-next{
+      right:6px;
+    }
+    .vendor-card:hover .media-btn,.vendor-card:focus-within .media-btn{
+      opacity:.85;
+      pointer-events:auto;
+    }
+    
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:12px;
+      padding:12px 14px;
+      border:1px solid var(--ring);
+      background:#fff;
+      cursor:pointer;
+      font-weight:600;
+      font-size:0.92rem;
+      transition:all 0.2s ease;
+      position:relative;
+      overflow:hidden;
+      flex:1;
+      justify-content:center;
+    }
+    .btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 4px 12px rgba(0,0,0,0.1);
+      border-color:#d4cbb2;
+      background:var(--soft);
+    }
+    .btn:active{
+      transform:translateY(0);
+      box-shadow:0 2px 6px rgba(0,0,0,0.08);
+    }
+    .btn-primary{
+      background:var(--brand);
+      color:#fff;
+      border-color:transparent;
+      box-shadow:0 2px 8px rgba(17,24,39,0.15);
+    }
+    .btn-primary:hover{
+      background:#0a0f1a;
+      box-shadow:0 4px 16px rgba(17,24,39,0.25);
+      transform:translateY(-2px);
+      border-color:transparent;
+    }
+    .btn-primary:active{
+      transform:translateY(0);
+      box-shadow:0 2px 8px rgba(17,24,39,0.15);
+    }
+    .btn-secondary{
+      background:#fff;
+      color:var(--ink);
+      border:1px solid var(--ring);
+    }
+    .btn-secondary:hover{
+      background:var(--soft);
+      border-color:#d4cbb2;
+    }
+
+    /* Messages Tab - Vendor Cards */
+    .messages-vendor-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+      gap:16px;
+      margin-top:20px;
+    }
+    @media (min-width: 900px) {
+      .messages-vendor-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (min-width: 1200px) {
+      .messages-vendor-grid{grid-template-columns:repeat(3,1fr)}
+    }
+    .messages-vendor-card{
+      background:var(--card);
+      border:1px solid var(--ring);
+      border-radius:var(--radius);
+      padding:20px;
+      box-shadow:var(--shadow);
+      transition:all 0.2s ease;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .messages-vendor-card:hover{
+      transform:translateY(-2px);
+      box-shadow:0 12px 32px rgba(16,24,40,.12);
+      border-color:#d4cbb2;
+    }
+    .messages-vendor-header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .messages-vendor-info{
+      flex:1;
+    }
+    .messages-vendor-name{
+      font-weight:700;
+      color:var(--ink);
+      font-size:1.1rem;
+      margin-bottom:6px;
+    }
+    .messages-vendor-category{
+      font-size:0.9rem;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+    .messages-vendor-tag{
+      display:inline-block;
+      background:var(--ok-bg);
+      color:var(--ok-text);
+      font-size:0.75rem;
+      font-weight:600;
+      padding:4px 10px;
+      border-radius:6px;
+      margin-top:4px;
+    }
+    .messages-vendor-badge{
+      background:var(--brand);
+      color:#fff;
+      font-size:0.75rem;
+      font-weight:700;
+      padding:4px 10px;
+      border-radius:999px;
+      flex-shrink:0;
+    }
+    .messages-vendor-actions{
+      margin-top:auto;
+      padding-top:12px;
+      border-top:1px solid var(--ring);
+    }
+    .messages-vendor-cta{
+      width:100%;
+      background:var(--brand);
+      color:#fff;
+      border:none;
+      border-radius:12px;
+      padding:12px 20px;
+      font-weight:600;
+      font-size:0.95rem;
+      cursor:pointer;
+      transition:all 0.2s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+    }
+    .messages-vendor-cta:hover{
+      background:#0a0f1a;
+      transform:translateY(-1px);
+      box-shadow:0 4px 12px rgba(17,24,39,0.2);
+    }
+    .messages-vendor-cta::after{
+      content:'→';
+      font-size:1.1rem;
+    }
+    
+    /* Full Messaging Page */
+    .messaging-page{
+      display:none;
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      bottom:0;
+      background:var(--cream);
+      z-index:200;
+      flex-direction:column;
+    }
+    .messaging-page.open{
+      display:flex;
+    }
+    .messaging-header{
+      background:#fff;
+      border-bottom:1px solid var(--ring);
+      padding:16px 20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      box-shadow:0 2px 8px rgba(0,0,0,.03);
+    }
+    .messaging-header-info{
+      flex:1;
+    }
+    .messaging-vendor-name{
+      font-weight:700;
+      color:var(--ink);
+      font-size:1.1rem;
+      margin-bottom:4px;
+    }
+    .messaging-vendor-category{
+      font-size:0.9rem;
+      color:var(--muted);
+      margin-bottom:4px;
+    }
+    .messaging-response-time{
+      font-size:0.85rem;
+      color:var(--muted);
+      font-style:italic;
+    }
+    .messaging-close{
+      background:none;
+      border:none;
+      font-size:1.5rem;
+      color:var(--muted);
+      cursor:pointer;
+      padding:8px;
+      line-height:1;
+      transition:color 0.2s ease;
+    }
+    .messaging-close:hover{
+      color:var(--ink);
+    }
+    .messaging-thread{
+      flex:1;
+      overflow-y:auto;
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+    .messaging-bubble{
+      background:var(--soft);
+      border-radius:16px;
+      padding:12px 16px;
+      max-width:75%;
+      line-height:1.6;
+      color:var(--ink);
+      border:1px solid var(--ring);
+      word-wrap:break-word;
+    }
+    .messaging-bubble.user{
+      background:var(--brand);
+      color:#fff;
+      margin-left:auto;
+      border-color:var(--brand);
+    }
+    .messaging-bubble-time{
+      font-size:0.75rem;
+      color:var(--muted);
+      margin-top:6px;
+      opacity:0.7;
+    }
+    .messaging-bubble.user .messaging-bubble-time{
+      color:rgba(255,255,255,0.8);
+    }
+    .messaging-input-area{
+      background:#fff;
+      border-top:1px solid var(--ring);
+      padding:16px 20px;
+    }
+    .prefilled-messages{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-bottom:12px;
+    }
+    .prefilled-message-btn{
+      background:var(--soft);
+      border:1px solid var(--ring);
+      border-radius:8px;
+      padding:6px 12px;
+      font-size:0.85rem;
+      color:var(--ink);
+      cursor:pointer;
+      transition:all 0.2s ease;
+    }
+    .prefilled-message-btn:hover{
+      background:var(--ring);
+      border-color:#d4cbb2;
+    }
+    .messaging-input-wrapper{
+      display:flex;
+      gap:12px;
+      align-items:flex-end;
+    }
+    .messaging-input{
+      flex:1;
+      border:1px solid var(--ring);
+      border-radius:12px;
+      padding:12px 16px;
+      font-family:inherit;
+      font-size:0.95rem;
+      resize:none;
+      min-height:50px;
+      max-height:120px;
+      outline:none;
+      transition:border-color 0.2s ease;
+    }
+    .messaging-input:focus{
+      border-color:var(--brand);
+    }
+    .messaging-send{
+      background:var(--brand);
+      color:#fff;
+      border:none;
+      border-radius:12px;
+      padding:12px 24px;
+      font-weight:600;
+      cursor:pointer;
+      transition:all 0.2s ease;
+    }
+    .messaging-send:hover{
+      background:#0a0f1a;
+      transform:translateY(-1px);
+    }
+    .messaging-send:disabled{
+      opacity:0.5;
+      cursor:not-allowed;
+      transform:none;
+    }
+    .quote-card{
+      background:var(--ok-bg);
+      border:1px solid var(--ring);
+      border-radius:12px;
+      padding:16px;
+      margin-top:12px;
+    }
+    .quote-label{
+      font-size:0.75rem;
+      font-weight:700;
+      color:var(--ok-text);
+      margin-bottom:8px;
+    }
+    .quote-amount{
+      font-size:1.3rem;
+      font-weight:700;
+      color:var(--ink);
+      margin-bottom:8px;
+    }
+    .quote-actions{
+      display:flex;
+      gap:8px;
+      margin-top:12px;
+    }
+    .btn-approve{
+      background:var(--ok);
+      color:#fff;
+      border-color:var(--ok);
+    }
+    .btn-approve:hover{
+      background:#15803d;
+      border-color:#15803d;
+    }
+    .btn-decline{
+      background:transparent;
+      color:var(--muted);
+      border:1px solid var(--ring);
+    }
+    .btn-decline:hover{
+      background:var(--soft);
+      border-color:#d4cbb2;
+    }
+
+    /* Bookings Tab */
+    .booking-card{
+      background:var(--card);
+      border:1px solid var(--ring);
+      border-radius:var(--radius);
+      padding:18px;
+      margin-bottom:20px;
+      box-shadow:var(--shadow);
+      transition:all 0.2s ease;
+    }
+    .booking-card:hover{
+      transform:translateY(-2px);
+      box-shadow:0 12px 32px rgba(16,24,40,.12);
+      border-color:#d4cbb2;
+    }
+    .booking-header{
+      display:flex;
+      align-items:start;
+      justify-content:space-between;
+      margin-bottom:16px;
+    }
+    .booking-status{
+      display:inline-block;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:0.75rem;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+    .booking-status.pending{
+      background:var(--maybe-bg);
+      color:var(--maybe-text);
+    }
+    .booking-status.accepted{
+      background:var(--ok-bg);
+      color:var(--ok-text);
+    }
+    .payment-progress{
+      margin-top:20px;
+      padding-top:20px;
+      border-top:1px solid var(--ring);
+    }
+    .payment-progress-title{
+      font-size:0.9rem;
+      font-weight:600;
+      color:var(--muted);
+      margin-bottom:12px;
+    }
+    .payment-step{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:12px;
+    }
+    .payment-step.completed{
+      color:var(--ink);
+    }
+    .payment-step.pending{
+      color:var(--muted);
+    }
+    .payment-checkbox{
+      width:20px;
+      height:20px;
+      border-radius:4px;
+      border:2px solid var(--ring);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+    }
+    .payment-step.completed .payment-checkbox{
+      background:var(--ok);
+      border-color:var(--ok);
+      color:#fff;
+    }
+    .payment-step.completed .payment-checkbox::after{
+      content:'✓';
+      font-size:12px;
+    }
+    .payment-label{
+      flex:1;
+      font-weight:500;
+    }
+
+    /* Checklist Tab */
+    .checklist-toggle{
+      display:flex;
+      gap:8px;
+      background:var(--soft);
+      padding:6px;
+      border-radius:12px;
+      margin-bottom:24px;
+      max-width:400px;
+    }
+    .checklist-toggle-btn{
+      flex:1;
+      padding:10px 16px;
+      border:none;
+      background:transparent;
+      color:var(--muted);
+      font-weight:600;
+      font-size:0.9rem;
+      border-radius:8px;
+      cursor:pointer;
+      transition:all 0.2s ease;
+    }
+    .checklist-toggle-btn.active{
+      background:#fff;
+      color:var(--ink);
+      box-shadow:0 2px 4px rgba(0,0,0,.05);
+    }
+    .checklist-section{
+      background:var(--card);
+      border:1px solid var(--ring);
+      border-radius:var(--radius);
+      padding:18px;
+      margin-bottom:20px;
+      box-shadow:var(--shadow);
+    }
+    .checklist-item{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px 0;
+      border-bottom:1px solid var(--ring);
+    }
+    .checklist-item:last-child{
+      border-bottom:none;
+    }
+    .checklist-checkbox{
+      width:20px;
+      height:20px;
+      border-radius:4px;
+      border:2px solid var(--ring);
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+      transition:all 0.2s ease;
+    }
+    .checklist-checkbox:hover{
+      border-color:#d4cbb2;
+    }
+    .checklist-item.completed .checklist-checkbox{
+      background:var(--brand);
+      border-color:var(--brand);
+      color:#fff;
+    }
+    .checklist-item.completed .checklist-checkbox::after{
+      content:'✓';
+      font-size:12px;
+    }
+    .checklist-text{
+      flex:1;
+      font-size:0.95rem;
+      font-weight:500;
+      transition:all 0.2s ease;
+    }
+    .checklist-item.completed .checklist-text{
+      text-decoration:line-through;
+      color:var(--muted);
+    }
+    #checklistContent{
+      transition:opacity 0.2s ease;
+    }
+
+    /* Modal */
+    .modal-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.25);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .2s;
+      z-index:1000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+    .modal-overlay.open{
+      opacity:1;
+      pointer-events:auto;
+    }
+    .modal{
+      background:var(--card);
+      border-left:1px solid var(--ring);
+      box-shadow:-8px 0 24px rgba(0,0,0,.08);
+      border-radius:var(--radius);
+      padding:32px;
+      max-width:600px;
+      width:100%;
+      max-height:90vh;
+      overflow-y:auto;
+    }
+    .modal-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:24px;
+      padding-bottom:20px;
+      border-bottom:1px solid var(--ring);
+    }
+    .modal-title{
+      font-size:1.5rem;
+      font-weight:700;
+      margin:0;
+    }
+    .modal-close{
+      background:none;
+      border:none;
+      font-size:1.5rem;
+      color:var(--muted);
+      cursor:pointer;
+      padding:0;
+      width:32px;
+      height:32px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:8px;
+      transition:all 0.2s ease;
+    }
+    .modal-close:hover{
+      background:var(--soft);
+      color:var(--ink);
+    }
+
+    /* Empty States */
+    .empty-state{
+      text-align:center;
+      padding:60px 20px;
+      color:var(--muted);
+    }
+    .empty-state-icon{
+      font-size:48px;
+      margin-bottom:16px;
+      opacity:0.5;
+    }
+    .empty-state-text{
+      font-size:0.95rem;
+      margin-bottom:8px;
+    }
+    .empty-state-link{
+      color:var(--brand);
+      font-weight:600;
+    }
+    .empty-state-link:hover{
+      text-decoration:underline;
+    }
+
+    @media (max-width:900px){
+      .dashboard-header-inner{
+        padding:0 16px;
+      }
+      .logo{
+        font-size:1.3rem;
+        padding:16px 20px;
+      }
+      .dashboard-title{
+        font-size:clamp(1.3rem,4vw,1.8rem);
+      }
+      .profile-container{
+        top:16px;
+        right:16px;
+      }
+      .dashboard-content{
+        padding:20px 16px;
+      }
+      .stats-grid{
+        grid-template-columns:1fr;
+        gap:16px;
+      }
+      .section-card{
+        padding:20px;
+      }
+      .btn{
+        padding:12px 20px;
+        font-size:0.9rem;
+        width:100%;
+      }
+      .profile-icon{
+        width:36px;
+        height:36px;
+        font-size:1rem;
+      }
+      .dashboard-tabs{
+        padding:0 16px;
+      }
+      .dashboard-tab{
+        white-space:nowrap;
+        font-size:0.85rem;
+        padding:12px 16px;
+      }
+      .dashboard-content{
+        padding:24px 16px 40px;
+      }
+      .category-content{
+        grid-template-columns:1fr;
+        padding:0 16px 20px;
+      }
+      .vendor-card{
+        padding:14px;
+      }
+      .vendor-actions{
+        flex-direction:column;
+      }
+      .btn{
+        width:100%;
+      }
+      .message-bubble{
+        max-width:95%;
+      }
+      .quote-actions{
+        flex-direction:column;
+      }
+      .checklist-section{
+        padding:16px;
+      }
+    }
+    @media (max-width:480px){
+      .dashboard-header{padding:20px 0}
+      .dashboard-header-inner{padding:0 16px}
+      .logo{
+        font-size:1.2rem;
+        padding:14px 18px;
+      }
+      .dashboard-title{font-size:1.3rem}
+      .profile-container{
+        top:14px;
+        right:12px;
+      }
+      .profile-icon{
+        width:32px;
+        height:32px;
+        font-size:0.9rem;
+      }
+      .profile-dropdown{
+        min-width:140px;
+        right:-8px;
+      }
+      .dashboard-tabs{padding:0 16px}
+      .dashboard-tab{padding:10px 12px;font-size:0.8rem}
+      .dashboard-content{padding:20px 12px 32px}
+      .category-header{padding:14px 16px}
+      .category-content{padding:0 12px 16px}
+      .vendor-card{padding:12px}
+      .vendor-name{font-size:1rem}
+      .checklist-section{padding:14px}
+    }
+  </style>
+</head>
+<body>
+  <header class="dashboard-header">
+    <div class="dashboard-header-inner">
+      <a href="dashboard.html" class="logo">CleverPlanners</a>
+      <h1 class="dashboard-title" id="dashboardTitle">Event – Dashboard</h1>
+    </div>
+    <div class="profile-container">
+      <div class="profile-icon" id="profileIcon" aria-label="User profile" role="button" tabindex="0">A</div>
+      <div class="profile-dropdown" id="profileDropdown">
+        <button class="profile-dropdown-item" id="settingsBtn">Settings</button>
+        <button class="profile-dropdown-item" id="logoutBtn">Log Out</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="dashboard-tabs">
+    <button class="dashboard-tab active" data-tab="vendors">My <span id="eventTypeTab">Event</span></button>
+    <button class="dashboard-tab" data-tab="messages">Messages & Quotes</button>
+    <button class="dashboard-tab" data-tab="bookings">Bookings</button>
+    <button class="dashboard-tab" data-tab="checklist">Checklist</button>
+  </div>
+
+  <div class="dashboard-content">
+    <!-- Vendors Tab -->
+    <div class="dashboard-panel active" id="panel-vendors">
+      <div id="vendorsContent"></div>
+    </div>
+
+    <!-- Messages Tab -->
+    <div class="dashboard-panel" id="panel-messages">
+      <div id="messagesContent"></div>
+    </div>
+
+    <!-- Full Messaging Page -->
+    <div class="messaging-page" id="messagingPage">
+      <div class="messaging-header">
+        <div class="messaging-header-info">
+          <div class="messaging-vendor-name" id="messagingVendorName">Vendor Name</div>
+          <div class="messaging-vendor-category" id="messagingVendorCategory">Category</div>
+          <div class="messaging-response-time" id="messagingResponseTime">Typically responds within 1 hour</div>
+        </div>
+        <button class="messaging-close" id="messagingClose">&times;</button>
+      </div>
+      <div class="messaging-thread" id="messagingThread"></div>
+      <div class="messaging-input-area">
+        <div class="prefilled-messages" id="prefilledMessages"></div>
+        <div class="messaging-input-wrapper">
+          <textarea class="messaging-input" id="messagingInput" placeholder="Type your message..." rows="1"></textarea>
+          <button class="messaging-send" id="messagingSend">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bookings Tab -->
+    <div class="dashboard-panel" id="panel-bookings">
+      <div id="bookingsContent"></div>
+    </div>
+
+    <!-- Checklist Tab -->
+    <div class="dashboard-panel" id="panel-checklist">
+      <div class="checklist-toggle">
+        <button class="checklist-toggle-btn active" data-mode="personal">Personal Checklist</button>
+        <button class="checklist-toggle-btn" data-mode="full">Full Event Checklist</button>
+      </div>
+      <div id="checklistContent"></div>
+    </div>
+  </div>
+
+  <!-- Vendor Details Modal -->
+  <div class="modal-overlay" id="vendorModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalVendorName">Vendor Name</h2>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- Contract Modal -->
+  <div class="modal-overlay" id="contractModal">
+    <div class="modal" style="max-width:700px;">
+      <div class="modal-header">
+        <h2 class="modal-title" id="contractTitle">Service Contract</h2>
+        <button class="modal-close" id="closeContractModal">&times;</button>
+      </div>
+      <div id="contractContent">
+        <div style="margin-bottom:24px;">
+          <p style="color:var(--muted);margin-bottom:16px;">Contract ID: <strong id="contractId"></strong></p>
+          <div style="background:var(--soft);padding:20px;border-radius:12px;margin-bottom:20px;">
+            <h3 style="font-size:1.1rem;margin-bottom:12px;">Contract Terms</h3>
+            <div id="contractTerms" style="line-height:1.8;color:var(--ink);"></div>
+          </div>
+          <div style="background:var(--soft);padding:20px;border-radius:12px;margin-bottom:20px;">
+            <h3 style="font-size:1.1rem;margin-bottom:12px;">Payment Schedule</h3>
+            <div id="contractPayment" style="line-height:1.8;color:var(--ink);"></div>
+          </div>
+          <div id="contractSignature" style="margin-top:24px;padding-top:24px;border-top:1px solid var(--ring);"></div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:24px;">
+          <button class="btn btn-primary" id="signContractBtn" style="flex:1;">Sign Contract</button>
+          <button class="btn btn-secondary" id="closeContractBtn" style="flex:1;">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+
+    // Media backgrounds for carousel - Match results.html
+    const MEDIA_BACKGROUNDS = [
+      // Soft silver/blue (default)
+      'linear-gradient(135deg,#f5f7fb 0%, #e8edf5 60%, #f9fbff 100%)',
+      // Gold foil
+      'linear-gradient(135deg, #f7e6b5 0%, #e8c266 35%, #f7e6b5 55%, #b88a2a 100%)',
+      // Brushed silver
+      'repeating-linear-gradient(90deg,#f5f7fa 0 6px,#e7eaef 6px 12px,#d9dde4 12px 18px)',
+      // Pearl
+      'radial-gradient(circle at 30% 20%,#fff 0%,#f1f4f8 30%,#e9eef6 55%,#fefefe 100%)',
+      // Soft linen
+      'repeating-linear-gradient(0deg, #f8f3ed 0 8px, #f0e8dd 8px 16px), linear-gradient(90deg,#fff,#f4eee6)',
+      // Marble
+      'linear-gradient(120deg,#fbfbfb 0%,#ececec 40%,#ffffff 60%,#e7e7e7 100%)',
+      // Midnight gradient
+      'linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#334155 100%)'
+    ];
+
+    // Load event data
+    let eventType = 'Event';
+    let selectedVendors = [];
+    let eventChecklist = [];
+
+    function loadEventData() {
+      try {
+        const saved = sessionStorage.getItem('cleverplanners_results_data');
+        if (saved) {
+          const data = JSON.parse(saved);
+          eventType = data.eventType || 'Event';
+          $('#dashboardTitle').textContent = `${eventType} – Dashboard`;
+          $('#eventTypeTab').textContent = eventType;
+        } else {
+          $('#dashboardTitle').textContent = 'Event – Dashboard';
+        }
+
+        // Load selected vendors from localStorage
+        // SINGLE SOURCE OF TRUTH: Only use 'userPlan' (same key that results.html writes to)
+        const rawVendors = JSON.parse(localStorage.getItem('userPlan') || '[]');
+        
+        // Filter and validate vendor data - only include vendors with required fields
+        // CRITICAL: Only store vendors that were actually selected in results.html - nothing else
+        selectedVendors = rawVendors.filter(vendor => {
+          if (!vendor || !vendor.id) return false;
+          // Normalize category field name (handle both 'category' and 'cat' for safety)
+          if (vendor.category && !vendor.cat) {
+            vendor.cat = vendor.category;
+          }
+          // Only include vendors with all required fields: id, cat, name, price
+          return vendor.cat && vendor.name && typeof vendor.price === 'number';
+        });
+
+        // Load checklist based on event type
+        loadChecklist();
+      } catch (e) {
+        console.error('Error loading event data:', e);
+      }
+    }
+
+    // Tab switching
+    $$('.dashboard-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabName = tab.dataset.tab;
+        $$('.dashboard-tab').forEach(t => t.classList.remove('active'));
+        $$('.dashboard-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        $(`#panel-${tabName}`).classList.add('active');
+        
+        // Load content for active tab
+        if (tabName === 'vendors') renderVendors();
+        else if (tabName === 'messages') renderMessages();
+        else if (tabName === 'bookings') renderBookings();
+        else if (tabName === 'checklist') renderChecklist();
+      });
+    });
+
+    // Category icons mapping
+    const categoryIcons = {
+      'Hall': '🏛️',
+      'Catering': '🍽️',
+      'Photography': '📸',
+      'Music': '🎵',
+      'Entertainment': '🎤',
+      'Florals': '🌸',
+      'Transportation': '🚗',
+      'Other': '📋'
+    };
+
+    // Create media carousel element - Exact match from results.html
+    function createMediaCarousel(id){
+      const mediaDiv = document.createElement('div');
+      mediaDiv.className = 'media';
+      mediaDiv.dataset.vid = id;
+      mediaDiv.dataset.idx = '0';
+      
+      const link = document.createElement('a');
+      link.href = '#';
+      link.className = 'media-link';
+      link.dataset.link = id;
+      link.title = 'View vendor';
+      
+      const swatch = document.createElement('div');
+      swatch.className = 'media-swatch';
+      swatch.style.background = MEDIA_BACKGROUNDS[0];
+      
+      link.appendChild(swatch);
+      
+      const prevBtn = document.createElement('button');
+      prevBtn.className = 'media-btn media-prev';
+      prevBtn.type = 'button';
+      prevBtn.setAttribute('aria-label', 'Previous');
+      prevBtn.textContent = '‹';
+      
+      const nextBtn = document.createElement('button');
+      nextBtn.className = 'media-btn media-next';
+      nextBtn.type = 'button';
+      nextBtn.setAttribute('aria-label', 'Next');
+      nextBtn.textContent = '›';
+      
+      mediaDiv.appendChild(link);
+      mediaDiv.appendChild(prevBtn);
+      mediaDiv.appendChild(nextBtn);
+      
+      return mediaDiv;
+    }
+
+    // Render vendors by category - Only displays vendors selected in results.html
+    // SINGLE SOURCE OF TRUTH: Build UI purely from localStorage.userPlan
+    function renderVendors() {
+      const container = $('#vendorsContent');
+      if (!container) return;
+
+      // CRITICAL: Read directly from localStorage.userPlan (same key that results.html writes to)
+      // Do NOT use selectedVendors variable - read fresh from localStorage every time
+      // This ensures we ONLY show vendors that were actually selected, nothing else
+      const rawVendors = JSON.parse(localStorage.getItem('userPlan') || '[]');
+      
+      // Filter and validate - only include vendors with required fields
+      const filteredVendors = rawVendors.filter(vendor => {
+        if (!vendor || !vendor.id) return false;
+        // Normalize category field name (handle both 'category' and 'cat' for safety)
+        if (vendor.category && !vendor.cat) {
+          vendor.cat = vendor.category;
+        }
+        // Only include vendors with all required fields: id, cat, name, price
+        return vendor.cat && vendor.name && typeof vendor.price === 'number';
+      });
+
+      // If no vendors selected, show empty state immediately
+      // No categories should appear at all when empty
+      if (filteredVendors.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <div class="empty-state-text">You haven't picked any vendors yet.</div>
+            <a href="results.html" class="empty-state-link">Browse vendors →</a>
+          </div>
+        `;
+        return;
+      }
+
+      // Group filtered vendors by category
+      // ONLY categories with selected vendors will appear - all others are completely hidden
+      const vendorsByCategory = {};
+      filteredVendors.forEach(vendor => {
+        const cat = vendor.cat || 'Other';
+        if (!vendorsByCategory[cat]) vendorsByCategory[cat] = [];
+        vendorsByCategory[cat].push(vendor);
+      });
+
+      container.innerHTML = '';
+      
+      // Add section header
+      const header = document.createElement('div');
+      header.className = 'section-header';
+      header.innerHTML = `
+        <h2 class="section-title">My Vendors</h2>
+        <p class="section-subtitle">${filteredVendors.length} vendor${filteredVendors.length !== 1 ? 's' : ''} selected</p>
+      `;
+      container.appendChild(header);
+      
+      // CRITICAL: Only render categories that have selected vendors
+      // All other categories are completely hidden (not rendered at all)
+      Object.entries(vendorsByCategory).forEach(([category, vendors], index) => {
+        const accordion = document.createElement('div');
+        // Only the first category is expanded by default
+        accordion.className = index === 0 ? 'category-accordion open' : 'category-accordion';
+        accordion.innerHTML = `
+          <div class="category-header">
+            <div>
+              <h3 class="category-title">${category} <span class="category-count">(${vendors.length})</span></h3>
+            </div>
+            <span class="category-toggle">▼</span>
+          </div>
+          <div class="category-body">
+            <div class="category-content">
+              ${vendors.map(v => createVendorCard(v)).join('')}
+            </div>
+          </div>
+        `;
+        container.appendChild(accordion);
+
+        // Accordion toggle
+        accordion.querySelector('.category-header').addEventListener('click', () => {
+          accordion.classList.toggle('open');
+        });
+
+        // Add media carousel to each vendor card and set up keyboard navigation
+        vendors.forEach(vendor => {
+          const card = accordion.querySelector(`.vendor-card[data-vendor-id="${vendor.id}"]`);
+          if (card) {
+            const placeholder = card.querySelector('.media-placeholder');
+            if (placeholder) {
+              const media = createMediaCarousel(vendor.id);
+              placeholder.replaceWith(media);
+            }
+            
+            // Add keyboard navigation to card - Exact match from results.html
+            card.setAttribute('tabindex','0');
+            card.setAttribute('role','group');
+            card.addEventListener('keydown', (e)=>{
+              if(e.key!=='ArrowLeft' && e.key!=='ArrowRight') return;
+              const media = card.querySelector('.media');
+              if(!media) return;
+              const idx = Number(media.dataset.idx||0);
+              const count = MEDIA_BACKGROUNDS.length;
+              const delta = e.key==='ArrowRight'?1:-1;
+              const newIdx = (idx + delta + count) % count;
+              media.dataset.idx = newIdx;
+              const swatch = media.querySelector('.media-swatch');
+              if(swatch){
+                swatch.style.background = MEDIA_BACKGROUNDS[newIdx];
+              }
+            });
+          }
+        });
+      });
+
+      // Add carousel navigation event handlers
+      setupCarouselNavigation();
+    }
+
+    function createVendorCard(vendor) {
+      // Get status from localStorage or default
+      const status = localStorage.getItem(`vendor-status-${vendor.id}`) || 'reach-out';
+      const statusLabels = {
+        'reach-out': 'Reach out for quote',
+        'quote-received': 'Quote received',
+        'booked': 'Booked'
+      };
+      const statusClass = status === 'reach-out' ? 'reach-out' : status === 'quote-received' ? 'quote-received' : 'booked';
+
+      return `
+        <div class="vendor-card" data-vendor-id="${vendor.id}">
+          <div class="media-placeholder"></div>
+          <h4 class="vendor-name">${vendor.name}</h4>
+          <div class="vendor-card-header">
+            <div class="vendor-info">
+              <div class="vendor-price">From ${formatCurrency(vendor.price)}</div>
+            </div>
+          </div>
+          <div class="vendor-status-tags">
+            <span class="status-tag ${statusClass}">${statusLabels[status]}</span>
+          </div>
+          <div class="vendor-actions">
+            <button class="btn btn-primary" onclick="openVendorDetails('${vendor.id}')">View details</button>
+            <a href="vendor-detail.html?id=${vendor.id}" class="btn btn-secondary" style="display:inline-block;text-align:center;">View Full Profile</a>
+            <button class="btn btn-secondary" onclick="openMessage('${vendor.id}', '${vendor.name}')">Message</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(amount || 0);
+    }
+
+    // Setup carousel navigation - Exact match from results.html
+    let carouselNavSetup = false;
+    function setupCarouselNavigation() {
+      // Only set up once
+      if (carouselNavSetup) return;
+      carouselNavSetup = true;
+
+      // Handle media carousel navigation (event delegation) - Exact match from results.html
+      document.addEventListener('click', (e) => {
+        const prev = e.target.closest('.media-prev');
+        const next = e.target.closest('.media-next');
+        if(prev || next){
+          e.preventDefault();
+          e.stopPropagation();
+          try{
+            const media = (prev||next).closest('.media');
+            if(!media) return;
+            const idx = Number(media.dataset.idx||0);
+            const count = MEDIA_BACKGROUNDS.length;
+            const newIdx = (idx + (next?1:-1) + count) % count;
+            media.dataset.idx = newIdx;
+            const swatch = media.querySelector('.media-swatch');
+            if(swatch){
+              swatch.style.background = MEDIA_BACKGROUNDS[newIdx];
+            }
+          }catch(err){
+            console.error('Error navigating media:', err);
+          }
+          return;
+        }
+      });
+    }
+
+    // Render messages - Vendor cards layout
+    function renderMessages() {
+      const container = $('#messagesContent');
+      if (!container) return;
+
+      // Get selected vendors from localStorage (same source as dashboard)
+      const rawVendors = JSON.parse(localStorage.getItem('userPlan') || '[]');
+      const vendors = rawVendors.filter(v => {
+        if (!v || !v.id || !v.name) return false;
+        // Normalize category field
+        if (v.category && !v.cat) v.cat = v.category;
+        return v.cat && typeof v.price === 'number';
+      });
+      
+      if (vendors.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">💬</div>
+            <div class="empty-state-text">No vendors selected yet.</div>
+            <div class="empty-state-text" style="font-size:0.9rem;margin-top:8px;">Select vendors from the results page to start messaging.</div>
+            <a href="results.html" class="empty-state-link" style="margin-top:16px;display:inline-block;">Browse vendors →</a>
+          </div>
+        `;
+        return;
+      }
+
+      // Load messages from localStorage
+      const messages = JSON.parse(localStorage.getItem('vendor-messages') || '[]');
+      
+      // Group messages by vendor
+      const threadsByVendor = {};
+      messages.forEach(msg => {
+        if (!threadsByVendor[msg.vendorId]) {
+          threadsByVendor[msg.vendorId] = [];
+        }
+        threadsByVendor[msg.vendorId].push(msg);
+      });
+
+      // Count unread messages
+      const unreadCounts = {};
+      Object.entries(threadsByVendor).forEach(([vendorId, thread]) => {
+        const unread = thread.filter(m => m.from === 'vendor' && !m.read).length;
+        if (unread > 0) unreadCounts[vendorId] = unread;
+      });
+
+      // Sort vendors alphabetically by name
+      const sortedVendors = [...vendors].sort((a, b) => {
+        const nameA = (a.name || '').toLowerCase();
+        const nameB = (b.name || '').toLowerCase();
+        return nameA.localeCompare(nameB);
+      });
+
+      container.innerHTML = `
+        <div class="messages-vendor-grid">
+          ${sortedVendors.map(vendor => {
+            const thread = threadsByVendor[vendor.id] || [];
+            const hasUnread = unreadCounts[vendor.id] > 0;
+            const unreadCount = unreadCounts[vendor.id] || 0;
+            const hasMessages = thread.length > 0;
+
+            return `
+              <div class="messages-vendor-card">
+                <div class="messages-vendor-header">
+                  <div class="messages-vendor-info">
+                    <div class="messages-vendor-name">${vendor.name}</div>
+                    <div class="messages-vendor-category">${vendor.cat || 'Vendor'}</div>
+                    ${hasMessages ? '<div class="messages-vendor-tag">Using This Vendor</div>' : ''}
+                  </div>
+                  ${hasUnread ? `<div class="messages-vendor-badge">${unreadCount} New</div>` : ''}
+                </div>
+                <div class="messages-vendor-actions">
+                  <button class="messages-vendor-cta" onclick="openFullMessaging('${vendor.id}')">Message</button>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    // Render bookings
+    function renderBookings() {
+      const container = $('#bookingsContent');
+      if (!container) return;
+
+      const bookings = JSON.parse(localStorage.getItem('vendor-bookings') || '[]');
+      
+      if (bookings.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📅</div>
+            <div class="empty-state-text">No bookings yet.</div>
+            <div class="empty-state-text" style="font-size:0.9rem;margin-top:8px;">Approve quotes from vendors to create bookings.</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = bookings.map(booking => {
+        const vendor = selectedVendors.find(v => v.id === booking.vendorId);
+        if (!vendor) return '';
+
+        const paymentSteps = [
+          { key: 'deposit', label: 'Deposit paid' },
+          { key: 'installments', label: 'Installments' },
+          { key: 'paidInFull', label: 'Paid in full' }
+        ];
+
+        return `
+          <div class="booking-card">
+            <div class="booking-header">
+              <div>
+                <span class="booking-status ${booking.status}">${booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}</span>
+                <h3 class="vendor-name" style="margin:12px 0 4px 0;">${vendor.name}</h3>
+                <p class="vendor-price" style="margin:0;">${formatCurrency(booking.totalAmount)}</p>
+              </div>
+            </div>
+            ${booking.status === 'accepted' ? `
+              <div class="payment-progress">
+                <div class="payment-progress-title">Payment Progress</div>
+                ${paymentSteps.map(step => `
+                  <div class="payment-step ${booking.payments?.[step.key] ? 'completed' : 'pending'}">
+                    <div class="payment-checkbox"></div>
+                    <span class="payment-label">${step.label}</span>
+                  </div>
+                `).join('')}
+              </div>
+              <div class="vendor-actions" style="margin-top:24px;">
+                <button class="btn btn-primary" onclick="openContract('${booking.id}')">View Contract</button>
+                <button class="btn btn-secondary" onclick="signContract('${booking.id}')">Sign Digitally</button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Load and render checklist
+    function loadChecklist() {
+      // Event-specific checklists
+      const checklists = {
+        'Wedding': ['Book Venue', 'Hire Caterer', 'Schedule Photographer', 'Book Entertainment', 'Order Florals', 'Hire Videographer', 'Secure Coordinator'],
+        'Bris': ['Book Mohel', 'Schedule Photographer', 'Order Food', 'Arrange Venue', 'Invite Guests'],
+        'Bar Mitzvah': ['Book Venue', 'Hire Caterer', 'Schedule Photographer', 'Book Entertainment', 'Order Centerpieces'],
+        'Default': ['Reserve Venue', 'Hire Caterer', 'Schedule Photographer', 'Book Entertainment', 'Arrange Rentals', 'Order Florals']
+      };
+
+      eventChecklist = checklists[eventType] || checklists['Default'];
+    }
+
+    function renderChecklist() {
+      const container = $('#checklistContent');
+      if (!container) return;
+
+      const mode = $('.checklist-toggle-btn.active')?.dataset.mode || 'personal';
+      
+      let items = eventChecklist;
+      if (mode === 'personal') {
+        // Filter to only show tasks for selected vendor categories
+        const selectedCategories = [...new Set(selectedVendors.map(v => v.cat))];
+        const categoryTasks = {
+          'Photography': ['Schedule Photographer', 'Hire Videographer'],
+          'Music': ['Book Entertainment', 'Book Band'],
+          'Catering': ['Hire Caterer', 'Order Food'],
+          'Hall': ['Reserve Venue', 'Book Venue', 'Arrange Venue']
+        };
+        
+        items = eventChecklist.filter(item => {
+          return selectedCategories.some(cat => {
+            const tasks = categoryTasks[cat] || [];
+            return tasks.some(task => item.includes(task) || task.includes(item.split(' ')[0]));
+          });
+        });
+      }
+
+      const completed = JSON.parse(localStorage.getItem('checklist-completed') || '[]');
+
+      // Add fade transition
+      container.style.opacity = '0';
+      setTimeout(() => {
+        container.innerHTML = `
+          <div class="checklist-section checklist-content">
+            ${items.length > 0 ? items.map((item, idx) => {
+              const isCompleted = completed.includes(item);
+              return `
+                <div class="checklist-item ${isCompleted ? 'completed' : ''}" style="animation-delay:${idx * 0.03}s">
+                  <div class="checklist-checkbox" onclick="toggleChecklistItem('${item}')"></div>
+                  <span class="checklist-text">${item}</span>
+                </div>
+              `;
+            }).join('') : `
+              <div class="empty-state" style="padding:40px 20px;">
+                <div class="empty-state-text">No tasks match your selected vendors.</div>
+                <div class="empty-state-text" style="font-size:0.9rem;margin-top:8px;">Switch to "Full Event Checklist" to see all tasks.</div>
+              </div>
+            `}
+          </div>
+        `;
+        container.style.opacity = '1';
+      }, 150);
+    }
+
+    // Checklist toggle
+    $$('.checklist-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        $$('.checklist-toggle-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderChecklist();
+      });
+    });
+
+    function toggleChecklistItem(item) {
+      const completed = JSON.parse(localStorage.getItem('checklist-completed') || '[]');
+      const index = completed.indexOf(item);
+      if (index > -1) {
+        completed.splice(index, 1);
+      } else {
+        completed.push(item);
+      }
+      localStorage.setItem('checklist-completed', JSON.stringify(completed));
+      renderChecklist();
+    }
+
+    // Modal functions - Quick view modal
+    function openVendorDetails(vendorId) {
+      const vendor = selectedVendors.find(v => v.id === vendorId) ||
+                    JSON.parse(localStorage.getItem('userPlan') || '[]').find(v => v && v.id === vendorId);
+      if (!vendor) return;
+
+      $('#modalVendorName').textContent = vendor.name;
+      $('#modalContent').innerHTML = `
+        <p><strong>Category:</strong> ${vendor.cat || 'Vendor'}</p>
+        <p><strong>Price:</strong> ${formatCurrency(vendor.price)}</p>
+        <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;">
+          <a href="vendor-detail.html?id=${vendor.id}" class="btn btn-primary" style="flex:1;min-width:150px;text-align:center;display:inline-block;">View Full Profile</a>
+          <button class="btn btn-secondary" onclick="openMessage('${vendor.id}', '${vendor.name}')">Message Vendor</button>
+        </div>
+      `;
+      $('#vendorModal').classList.add('open');
+    }
+
+    // Open full messaging page
+    function openFullMessaging(vendorId) {
+      // Get vendor from localStorage (same source as renderMessages)
+      const rawVendors = JSON.parse(localStorage.getItem('userPlan') || '[]');
+      let vendor = rawVendors.find(v => v && v.id === vendorId);
+      
+      // Fallback to selectedVendors if not found
+      if (!vendor) {
+        vendor = selectedVendors.find(v => v.id === vendorId);
+      }
+      
+      if (!vendor) {
+        alert('Vendor not found');
+        return;
+      }
+      
+      // Normalize category field
+      if (vendor.category && !vendor.cat) vendor.cat = vendor.category;
+
+      // Set vendor info in header
+      $('#messagingVendorName').textContent = vendor.name;
+      $('#messagingVendorCategory').textContent = vendor.cat || 'Vendor';
+      
+      // Set response time (can be made dynamic later)
+      const responseTimes = {
+        'Photography': '2 hours',
+        'Music': '4 hours',
+        'Catering': '1 hour',
+        'Hall': '3 hours'
+      };
+      const responseTime = responseTimes[vendor.cat] || '1 hour';
+      $('#messagingResponseTime').textContent = `Typically responds within ${responseTime}`;
+
+      // Store current vendor ID
+      $('#messagingPage').dataset.vendorId = vendorId;
+
+      // Load and render messages
+      renderMessagingThread(vendorId);
+
+      // Generate prefilled messages
+      generatePrefilledMessages(vendor);
+
+      // Open messaging page
+      $('#messagingPage').classList.add('open');
+      
+      // Focus input
+      setTimeout(() => {
+        $('#messagingInput').focus();
+      }, 100);
+    }
+
+    // Render messaging thread
+    function renderMessagingThread(vendorId) {
+      const container = $('#messagingThread');
+      if (!container) return;
+
+      const messages = JSON.parse(localStorage.getItem('vendor-messages') || '[]');
+      const thread = messages
+        .filter(m => m.vendorId === vendorId)
+        .sort((a, b) => a.timestamp - b.timestamp);
+
+      if (thread.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center;padding:40px 20px;color:var(--muted);">
+            <div style="font-size:2rem;margin-bottom:12px;">💬</div>
+            <div>No messages yet. Start the conversation!</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = thread.map(msg => {
+        const date = new Date(msg.timestamp);
+        const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const isUser = msg.from === 'user';
+
+        return `
+          <div class="messaging-bubble ${isUser ? 'user' : ''}">
+            <div>${msg.message}</div>
+            <div class="messaging-bubble-time">${dateStr} at ${timeStr}</div>
+          </div>
+        `;
+      }).join('');
+
+      // Auto-scroll to bottom
+      setTimeout(() => {
+        container.scrollTop = container.scrollHeight;
+      }, 100);
+
+      // Mark messages as read
+      thread.forEach(msg => {
+        if (msg.from === 'vendor' && !msg.read) {
+          msg.read = true;
+        }
+      });
+      localStorage.setItem('vendor-messages', JSON.stringify(messages));
+    }
+
+    // Generate prefilled messages based on event data
+    function generatePrefilledMessages(vendor) {
+      const container = $('#prefilledMessages');
+      if (!container) return;
+
+      // Get event data
+      const eventData = JSON.parse(sessionStorage.getItem('cleverplanners_results_data') || '{}');
+      const eventType = eventData.eventType || 'event';
+      const eventDate = eventData.eventDate ? new Date(eventData.eventDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : null;
+      const eventLocation = eventData.locations && eventData.locations.length > 0 ? eventData.locations[0] : null;
+      const vendorCategory = vendor.cat || 'service';
+
+      // Generate messages based on vendor category
+      const messages = [];
+
+      if (vendorCategory.toLowerCase().includes('venue') || vendorCategory.toLowerCase().includes('hall')) {
+        if (eventDate && eventLocation) {
+          messages.push(`Hi! I'd like to book your venue for a ${eventType} on ${eventDate} in ${eventLocation}. Are you available? Can you please share pricing?`);
+        } else if (eventDate) {
+          messages.push(`Hi! I'd like to book your venue for a ${eventType} on ${eventDate}. Are you available? Can you please share pricing?`);
+        } else {
+          messages.push(`Hi! I'd like to learn more about your venue for my ${eventType}. Could you share pricing and availability?`);
+        }
+      } else if (vendorCategory.toLowerCase().includes('photo')) {
+        if (eventDate && eventLocation) {
+          messages.push(`Hi! I'm planning a ${eventType} on ${eventDate} in ${eventLocation}. Could you share your photography packages?`);
+        } else if (eventDate) {
+          messages.push(`Hi! I'm planning a ${eventType} on ${eventDate}. Could you share your photography packages?`);
+        } else {
+          messages.push(`Hi! I'm planning a ${eventType}. Could you share your photography packages and availability?`);
+        }
+      } else if (vendorCategory.toLowerCase().includes('cater')) {
+        if (eventDate) {
+          messages.push(`Hi! I'm planning a ${eventType} on ${eventDate}. Could you share your catering menu and pricing?`);
+        } else {
+          messages.push(`Hi! I'm planning a ${eventType}. Could you share your catering menu, pricing, and availability?`);
+        }
+      } else if (vendorCategory.toLowerCase().includes('music') || vendorCategory.toLowerCase().includes('entertain')) {
+        if (eventDate) {
+          messages.push(`Hi! I'm planning a ${eventType} on ${eventDate}. Could you share your entertainment packages and pricing?`);
+        } else {
+          messages.push(`Hi! I'm planning a ${eventType}. Could you share your entertainment packages and availability?`);
+        }
+      } else {
+        // Generic message
+        if (eventDate && eventLocation) {
+          messages.push(`Hi! I'm planning a ${eventType} on ${eventDate} in ${eventLocation}. Could you share your services and pricing?`);
+        } else if (eventDate) {
+          messages.push(`Hi! I'm planning a ${eventType} on ${eventDate}. Could you share your services and pricing?`);
+        } else {
+          messages.push(`Hi! I'm planning a ${eventType}. Could you share your services, pricing, and availability?`);
+        }
+      }
+
+      container.innerHTML = messages.map((msg, idx) => 
+        `<button class="prefilled-message-btn" onclick="insertPrefilledMessage(${idx})" data-message="${msg.replace(/"/g, '&quot;')}">${msg.length > 60 ? msg.substring(0, 60) + '...' : msg}</button>`
+      ).join('');
+
+      // Store messages for insertion
+      container.dataset.messages = JSON.stringify(messages);
+    }
+
+    // Insert prefilled message into input
+    function insertPrefilledMessage(index) {
+      const container = $('#prefilledMessages');
+      const messages = JSON.parse(container.dataset.messages || '[]');
+      if (messages[index]) {
+        const input = $('#messagingInput');
+        input.value = messages[index];
+        input.focus();
+        // Auto-resize textarea
+        input.style.height = 'auto';
+        input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+      }
+    }
+
+    // Send message
+    function sendMessage() {
+      const vendorId = $('#messagingPage').dataset.vendorId;
+      const input = $('#messagingInput');
+      const message = input.value.trim();
+
+      if (!message || !vendorId) return;
+
+      const vendor = selectedVendors.find(v => v.id === vendorId) || 
+                    JSON.parse(localStorage.getItem('userPlan') || '[]').find(v => v && v.id === vendorId);
+      
+      if (!vendor) return;
+
+      const messages = JSON.parse(localStorage.getItem('vendor-messages') || '[]');
+      messages.push({
+        id: Date.now().toString(),
+        vendorId,
+        vendorName: vendor.name,
+        message,
+        timestamp: Date.now(),
+        from: 'user',
+        read: true
+      });
+      localStorage.setItem('vendor-messages', JSON.stringify(messages));
+
+      // Clear input
+      input.value = '';
+      input.style.height = 'auto';
+
+      // Re-render thread
+      renderMessagingThread(vendorId);
+
+      // Update main messages list
+      renderMessages();
+    }
+
+    // Close messaging page
+    function closeMessaging() {
+      $('#messagingPage').classList.remove('open');
+      $('#messagingInput').value = '';
+      $('#messagingInput').style.height = 'auto';
+    }
+
+    // Legacy function for compatibility
+    function openMessage(vendorId, vendorName) {
+      openFullMessaging(vendorId);
+    }
+
+    function approveQuote(messageId) {
+      if (confirm('Approve this quote?')) {
+        const messages = JSON.parse(localStorage.getItem('vendor-messages') || '[]');
+        const msg = messages.find(m => m.id === messageId);
+        if (msg && msg.quote) {
+          const bookings = JSON.parse(localStorage.getItem('vendor-bookings') || '[]');
+          bookings.push({
+            id: Date.now().toString(),
+            vendorId: msg.vendorId,
+            status: 'accepted',
+            totalAmount: msg.quote.amount,
+            payments: { deposit: false, installments: false, paidInFull: false }
+          });
+          localStorage.setItem('vendor-bookings', JSON.stringify(bookings));
+          alert('Quote approved! Booking created.');
+          renderBookings();
+        }
+      }
+    }
+
+    function declineQuote(messageId) {
+      if (confirm('Decline this quote?')) {
+        alert('Quote declined.');
+      }
+    }
+
+    function openContract(bookingId) {
+      const bookings = JSON.parse(localStorage.getItem('vendor-bookings') || '[]');
+      const booking = bookings.find(b => b.id === bookingId);
+      if (!booking) {
+        alert('Contract not found');
+        return;
+      }
+
+      const vendor = selectedVendors.find(v => v.id === booking.vendorId) || 
+                    JSON.parse(localStorage.getItem('userPlan') || '[]').find(v => v && v.id === booking.vendorId);
+      
+      if (!vendor) {
+        alert('Vendor information not found');
+        return;
+      }
+
+      // Set contract title
+      $('#contractTitle').textContent = `Service Contract - ${vendor.name}`;
+      $('#contractId').textContent = bookingId;
+
+      // Set contract terms
+      const terms = `
+        <p><strong>Vendor:</strong> ${vendor.name}</p>
+        <p><strong>Service:</strong> ${vendor.cat || 'Event Service'}</p>
+        <p><strong>Total Amount:</strong> ${formatCurrency(booking.totalAmount || vendor.price)}</p>
+        <p><strong>Event Date:</strong> ${booking.eventDate || 'To be determined'}</p>
+        <p><strong>Contract Date:</strong> ${new Date(booking.timestamp || Date.now()).toLocaleDateString()}</p>
+      `;
+      $('#contractTerms').innerHTML = terms;
+
+      // Set payment schedule
+      const paymentSteps = booking.paymentSteps || [];
+      let paymentHtml = '<p>No payment schedule defined.</p>';
+      if (paymentSteps.length > 0) {
+        paymentHtml = paymentSteps.map(step => `
+          <p><strong>${step.label}:</strong> ${step.completed ? '✓ Paid' : 'Pending'} - ${formatCurrency(step.amount || 0)}</p>
+        `).join('');
+      }
+      $('#contractPayment').innerHTML = paymentHtml;
+
+      // Set signature status
+      const signed = booking.contractSigned || false;
+      if (signed) {
+        $('#contractSignature').innerHTML = `
+          <div style="background:var(--ok-bg);padding:16px;border-radius:12px;color:var(--ok-text);">
+            <strong>✓ Contract Signed</strong>
+            <p style="margin:8px 0 0 0;font-size:0.9rem;">Signed on ${new Date(booking.contractSignedDate || Date.now()).toLocaleDateString()}</p>
+          </div>
+        `;
+        $('#signContractBtn').style.display = 'none';
+      } else {
+        $('#contractSignature').innerHTML = '<p style="color:var(--muted);">This contract has not been signed yet.</p>';
+        $('#signContractBtn').style.display = 'block';
+        $('#signContractBtn').onclick = () => signContract(bookingId);
+      }
+
+      // Open modal
+      $('#contractModal').classList.add('open');
+    }
+
+    function signContract(bookingId) {
+      if (!confirm('Are you sure you want to sign this contract digitally? This action cannot be undone.')) {
+        return;
+      }
+
+      const bookings = JSON.parse(localStorage.getItem('vendor-bookings') || '[]');
+      const bookingIndex = bookings.findIndex(b => b.id === bookingId);
+      
+      if (bookingIndex === -1) {
+        alert('Contract not found');
+        return;
+      }
+
+      // Mark as signed
+      bookings[bookingIndex].contractSigned = true;
+      bookings[bookingIndex].contractSignedDate = Date.now();
+      localStorage.setItem('vendor-bookings', JSON.stringify(bookings));
+
+      // Update UI
+      alert('Contract signed successfully!');
+      $('#contractModal').classList.remove('open');
+      
+      // Refresh bookings display
+      renderBookings();
+    }
+
+    $('#closeModal').addEventListener('click', () => {
+      $('#vendorModal').classList.remove('open');
+    });
+
+    $('#vendorModal').addEventListener('click', (e) => {
+      if (e.target === $('#vendorModal')) {
+        $('#vendorModal').classList.remove('open');
+      }
+    });
+
+    // Contract modal handlers
+    $('#closeContractModal')?.addEventListener('click', () => {
+      $('#contractModal').classList.remove('open');
+    });
+
+    $('#closeContractBtn')?.addEventListener('click', () => {
+      $('#contractModal').classList.remove('open');
+    });
+
+    $('#contractModal')?.addEventListener('click', (e) => {
+      if (e.target === $('#contractModal')) {
+        $('#contractModal').classList.remove('open');
+      }
+    });
+
+    // Initialize
+    // Profile dropdown functionality
+    const profileIcon = $('#profileIcon');
+    const profileDropdown = $('#profileDropdown');
+    
+    if (profileIcon && profileDropdown) {
+      // Toggle dropdown on icon click
+      profileIcon.addEventListener('click', (e) => {
+        e.stopPropagation();
+        profileDropdown.classList.toggle('open');
+      });
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!profileIcon.contains(e.target) && !profileDropdown.contains(e.target)) {
+          profileDropdown.classList.remove('open');
+        }
+      });
+      
+      // Close dropdown on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && profileDropdown.classList.contains('open')) {
+          profileDropdown.classList.remove('open');
+        }
+      });
+      
+      // Handle Settings button click
+      $('#settingsBtn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        profileDropdown.classList.remove('open');
+        window.location.href = 'settings.html';
+      });
+      
+      // Handle Log Out button click
+      $('#logoutBtn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        profileDropdown.classList.remove('open');
+        // Logout functionality will be added later
+      });
+    }
+
+    // Messaging page event handlers
+    $('#messagingClose')?.addEventListener('click', closeMessaging);
+    $('#messagingSend')?.addEventListener('click', sendMessage);
+    
+    // Send on Enter (but allow Shift+Enter for new line)
+    $('#messagingInput')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // Auto-resize textarea
+    $('#messagingInput')?.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+
+    // Close messaging page on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && $('#messagingPage')?.classList.contains('open')) {
+        closeMessaging();
+      }
+    });
+
+    loadEventData();
+    renderVendors();
+  </script>
+</body>
+</html>
+

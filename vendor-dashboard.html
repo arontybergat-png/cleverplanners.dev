@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CleverPlanners – Vendor Dashboard</title>
+  <style>
+    :root{
+      --ink:#1e293b; --muted:#6b7280; --cream:#fbf6ed; --panel:#f4ecdc; --brand:#111827; --accent1:#ff7ab6; --accent2:#89f7d3; --ring:#e5dcc7; --radius:20px; --shadow:0 10px 30px rgba(16,24,40,.08);
+      --ok:#16a34a; --warn:#f59e0b; --soft:#faf7f1;
+      --bg:#fbf6ed;--text:#1e293b;--card:#fff;
+    }
+    *{box-sizing:border-box}
+    html:focus-within{scroll-behavior:smooth}
+    @media (prefers-reduced-motion: reduce){ html:focus-within{scroll-behavior:auto} }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;margin:0;background:var(--cream);color:var(--ink)}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    :focus-visible{outline:2px solid var(--ring); outline-offset:2px; border-radius:10px}
+
+    /* Header */
+    header{
+      position:sticky;
+      top:0;
+      z-index:100;
+      background:rgba(255,255,255,0.95);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      border-bottom:1px solid rgba(240,234,219,0.5);
+    }
+    .nav{
+      height:56px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      max-width:1400px;
+      margin:0 auto;
+      padding:0 22px;
+    }
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:800;
+      font-size:1.5rem;
+      color:var(--brand);
+      letter-spacing:-0.02em;
+      text-decoration:none;
+      transition:opacity 0.2s;
+    }
+    .logo:hover{
+      opacity:0.9;
+    }
+    .brand-badge{
+      width:28px;
+      height:28px;
+      border-radius:999px;
+      background:#0b1320;
+      color:#fff;
+      display:grid;
+      place-items:center;
+      font-weight:700;
+      font-size:0.75rem;
+    }
+    .header-actions{
+      display:flex;
+      align-items:center;
+      gap:16px;
+    }
+    .btn-header{
+      padding:8px 16px;
+      border-radius:6px;
+      font-weight:600;
+      font-size:0.9rem;
+      cursor:pointer;
+      transition:all 0.3s;
+      border:none;
+    }
+    .btn-view-profile{
+      background:var(--card);
+      color:var(--ink);
+      border:2px solid var(--ring);
+    }
+    .btn-view-profile:hover{
+      background:var(--soft);
+      border-color:var(--brand);
+    }
+
+    /* Dashboard Content */
+    .dashboard-container{
+      max-width:1400px;
+      margin:0 auto;
+      padding:40px 22px;
+    }
+    .dashboard-header{
+      margin-bottom:40px;
+    }
+    .dashboard-title{
+      font-size:2.5rem;
+      font-weight:800;
+      color:var(--ink);
+      margin-bottom:8px;
+    }
+    .dashboard-subtitle{
+      font-size:1.1rem;
+      color:var(--muted);
+    }
+
+    /* Stats Grid */
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
+      gap:24px;
+      margin-bottom:40px;
+    }
+    .stat-card{
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:24px;
+      box-shadow:var(--shadow);
+    }
+    .stat-label{
+      font-size:0.9rem;
+      color:var(--muted);
+      margin-bottom:8px;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      font-weight:600;
+    }
+    .stat-value{
+      font-size:2rem;
+      font-weight:800;
+      color:var(--ink);
+      margin-bottom:8px;
+    }
+    .stat-change{
+      font-size:0.85rem;
+      color:var(--ok);
+      display:flex;
+      align-items:center;
+      gap:4px;
+    }
+    .stat-change.negative{
+      color:#dc2626;
+    }
+
+    /* Main Content Grid */
+    .dashboard-grid{
+      display:grid;
+      grid-template-columns:2fr 1fr;
+      gap:40px;
+    }
+    .dashboard-section{
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:32px;
+      box-shadow:var(--shadow);
+      margin-bottom:24px;
+    }
+    .section-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:24px;
+    }
+    .section-title{
+      font-size:1.5rem;
+      font-weight:700;
+      color:var(--ink);
+    }
+    .section-action{
+      color:var(--brand);
+      font-weight:600;
+      font-size:0.95rem;
+      cursor:pointer;
+    }
+    .section-action:hover{
+      text-decoration:underline;
+    }
+
+    /* Inquiries List */
+    .inquiries-list{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+    .inquiry-item{
+      padding:20px;
+      background:var(--soft);
+      border-radius:8px;
+      border-left:4px solid var(--brand);
+      transition:all 0.3s;
+    }
+    .inquiry-item:hover{
+      background:var(--ring);
+      transform:translateX(4px);
+    }
+    .inquiry-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:start;
+      margin-bottom:12px;
+    }
+    .inquiry-name{
+      font-weight:600;
+      color:var(--ink);
+      font-size:1.1rem;
+    }
+    .inquiry-date{
+      color:var(--muted);
+      font-size:0.9rem;
+    }
+    .inquiry-details{
+      color:var(--muted);
+      font-size:0.95rem;
+      margin-bottom:12px;
+      line-height:1.6;
+    }
+    .inquiry-actions{
+      display:flex;
+      gap:8px;
+    }
+    .btn-small{
+      padding:8px 16px;
+      border-radius:6px;
+      font-size:0.9rem;
+      font-weight:600;
+      cursor:pointer;
+      border:none;
+      transition:all 0.3s;
+    }
+    .btn-primary-small{
+      background:var(--brand);
+      color:#fff;
+    }
+    .btn-primary-small:hover{
+      background:#0a0f1a;
+    }
+    .btn-secondary-small{
+      background:transparent;
+      color:var(--muted);
+      border:1px solid var(--ring);
+    }
+    .btn-secondary-small:hover{
+      background:var(--soft);
+      border-color:var(--brand);
+    }
+
+    /* Profile Completion */
+    .profile-completion{
+      background:var(--soft);
+      border-radius:8px;
+      padding:20px;
+      margin-bottom:24px;
+    }
+    .completion-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:12px;
+    }
+    .completion-label{
+      font-weight:600;
+      color:var(--ink);
+    }
+    .completion-percent{
+      font-size:1.2rem;
+      font-weight:700;
+      color:var(--brand);
+    }
+    .completion-bar{
+      height:8px;
+      background:var(--ring);
+      border-radius:999px;
+      overflow:hidden;
+    }
+    .completion-fill{
+      height:100%;
+      background:var(--brand);
+      transition:width 0.3s;
+    }
+
+    /* Quick Actions */
+    .quick-actions{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .btn-action{
+      padding:14px 20px;
+      border-radius:8px;
+      font-weight:600;
+      text-align:center;
+      cursor:pointer;
+      transition:all 0.3s;
+      border:none;
+      display:block;
+    }
+    .btn-primary{
+      background:var(--brand);
+      color:#fff;
+    }
+    .btn-primary:hover{
+      background:#0a0f1a;
+      transform:translateY(-2px);
+      box-shadow:0 4px 12px rgba(17,24,39,0.2);
+    }
+    .btn-secondary{
+      background:var(--card);
+      color:var(--ink);
+      border:2px solid var(--ring);
+    }
+    .btn-secondary:hover{
+      background:var(--soft);
+      border-color:var(--brand);
+    }
+
+    @media (max-width:1024px){
+      .dashboard-grid{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <a href="index.html" class="logo">
+        <span class="brand-badge">CP</span>
+        CleverPlanners
+      </a>
+      <div class="header-actions">
+        <a href="vendor-detail.html?id=1" class="btn-header btn-view-profile">View Public Profile</a>
+        <a href="vendor-settings.html" class="btn-header btn-view-profile">Settings</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+      <h1 class="dashboard-title">Vendor Dashboard</h1>
+      <p class="dashboard-subtitle">Manage your business profile and track inquiries</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Profile Views</div>
+        <div class="stat-value">1,247</div>
+        <div class="stat-change">↑ 12% from last month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Inquiries</div>
+        <div class="stat-value">23</div>
+        <div class="stat-change">↑ 5 new this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Favorites</div>
+        <div class="stat-value">89</div>
+        <div class="stat-change">↑ 8 this month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Response Rate</div>
+        <div class="stat-value">98%</div>
+        <div class="stat-change">Excellent</div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="dashboard-main">
+        <!-- Profile Completion -->
+        <div class="dashboard-section">
+          <div class="profile-completion">
+            <div class="completion-header">
+              <span class="completion-label">Profile Completion</span>
+              <span class="completion-percent">75%</span>
+            </div>
+            <div class="completion-bar">
+              <div class="completion-fill" style="width:75%"></div>
+            </div>
+            <p style="margin-top:12px;font-size:0.9rem;color:var(--muted)">Complete your profile to get more visibility</p>
+            <a href="vendor-settings.html" class="btn-action btn-primary" style="margin-top:16px;display:inline-block">Complete Profile</a>
+          </div>
+        </div>
+
+        <!-- Recent Inquiries -->
+        <div class="dashboard-section">
+          <div class="section-header">
+            <h2 class="section-title">Recent Inquiries</h2>
+            <a href="#" class="section-action">View All</a>
+          </div>
+          <div class="inquiries-list" id="inquiriesList">
+            <div class="inquiry-item">
+              <div class="inquiry-header">
+                <div class="inquiry-name">Sarah M.</div>
+                <div class="inquiry-date">2 hours ago</div>
+              </div>
+              <div class="inquiry-details">
+                Interested in booking for June 15, 2024. Event: Wedding, 150 guests. Looking for full service package.
+              </div>
+              <div class="inquiry-actions">
+                <button class="btn-small btn-primary-small">Respond</button>
+                <button class="btn-small btn-secondary-small">View Details</button>
+              </div>
+            </div>
+            <div class="inquiry-item">
+              <div class="inquiry-header">
+                <div class="inquiry-name">David L.</div>
+                <div class="inquiry-date">1 day ago</div>
+              </div>
+              <div class="inquiry-details">
+                Bar mitzvah event on July 20, 2024. 100 guests. Need catering coordination.
+              </div>
+              <div class="inquiry-actions">
+                <button class="btn-small btn-primary-small">Respond</button>
+                <button class="btn-small btn-secondary-small">View Details</button>
+              </div>
+            </div>
+            <div class="inquiry-item">
+              <div class="inquiry-header">
+                <div class="inquiry-name">Rachel K.</div>
+                <div class="inquiry-date">3 days ago</div>
+              </div>
+              <div class="inquiry-details">
+                Wedding inquiry for August 10, 2024. 200 guests. Interested in outdoor space.
+              </div>
+              <div class="inquiry-actions">
+                <button class="btn-small btn-primary-small">Respond</button>
+                <button class="btn-small btn-secondary-small">View Details</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="dashboard-sidebar">
+        <!-- Quick Actions -->
+        <div class="dashboard-section">
+          <h2 class="section-title" style="margin-bottom:20px">Quick Actions</h2>
+          <div class="quick-actions">
+            <a href="vendor-settings.html" class="btn-action btn-primary">Edit Profile</a>
+            <a href="vendor-detail.html?id=1" class="btn-action btn-secondary">View Public Profile</a>
+            <a href="#" class="btn-action btn-secondary">Manage Availability</a>
+            <a href="#" class="btn-action btn-secondary">View Analytics</a>
+          </div>
+        </div>
+
+        <!-- Account Status -->
+        <div class="dashboard-section">
+          <h2 class="section-title" style="margin-bottom:20px">Account Status</h2>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--ring)">
+              <span style="color:var(--muted)">Status</span>
+              <span style="font-weight:600;color:var(--ok)">Active</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--ring)">
+              <span style="color:var(--muted)">Verified</span>
+              <span style="font-weight:600;color:var(--ok)">✓ Yes</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:12px 0">
+              <span style="color:var(--muted)">Member Since</span>
+              <span style="font-weight:600">Jan 2024</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // Check if vendor is logged in
+    const isLoggedIn = localStorage.getItem('vendorLoggedIn') === 'true';
+    if (!isLoggedIn) {
+      window.location.href = 'vendor-login.html';
+    }
+
+    // Load dashboard data
+    function loadDashboard() {
+      // In production, fetch from API
+      console.log('Dashboard loaded');
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>
+
+
+
+
