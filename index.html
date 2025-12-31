@@ -1212,8 +1212,133 @@
       }
     }
   </style>
+  
+  <!-- Password Gate Styles -->
+  <style>
+    /* Password Gate - Easy to remove: delete this entire style block and the password-gate script */
+    #password-gate {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, #6C5CE7 0%, #5A4FCF 25%, #00D2FF 75%, #00E5CC 100%);
+      background-attachment: fixed;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    #password-gate.hidden {
+      display: none;
+    }
+
+    .password-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+
+    .password-container h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+
+    .password-container p {
+      font-size: 0.95rem;
+      color: #666;
+      margin-bottom: 24px;
+    }
+
+    .password-input {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+
+    .password-input:focus {
+      outline: none;
+      border-color: #6C5CE7;
+    }
+
+    .password-submit {
+      width: 100%;
+      padding: 14px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      background: #6C5CE7;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .password-submit:hover {
+      background: #5A4FCF;
+    }
+
+    .password-submit:active {
+      transform: scale(0.98);
+    }
+
+    .password-error {
+      color: #dc2626;
+      font-size: 0.9rem;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .password-error.show {
+      display: block;
+    }
+
+    .site-content {
+      display: none;
+    }
+
+    .site-content.authenticated {
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .password-container {
+        padding: 32px 24px;
+      }
+
+      .password-container h2 {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
 </head>
 <body>
+  <!-- Password Gate - Easy to remove: delete this entire div and the password-gate script -->
+  <div id="password-gate">
+    <div class="password-container">
+      <h2>Enter Site</h2>
+      <p>Please enter the password to continue</p>
+      <form id="password-form">
+        <input type="password" class="password-input" id="password-input" placeholder="Password" autocomplete="off" autofocus />
+        <div class="password-error" id="password-error">Incorrect password. Please try again.</div>
+        <button type="submit" class="password-submit">Enter</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="site-content" id="site-content">
   <header id="mainHeader">
     <button class="mobile-menu-toggle-index" id="mobileMenuToggleIndex" aria-label="Toggle menu">
       <span></span>
@@ -1269,7 +1394,7 @@
     <div class="hero-video-overlay"></div>
     <div class="hero-bg-layer"></div>
     <div class="hero-content" data-aos="fade-up">
-      <h1>Plan Your Upcoming <span class="event-word">event</span><br>in Minutes</h1>
+      <h1>Plan Your Upcoming <span class="event-word">Event</span><br>in Minutes</h1>
       <p>Connect with top vendors, compare quotes, and manage everything in one place. Clever planning made simple.</p>
       <a href="plan.html" class="btn-primary">Start Planning Free</a>
       </div>
@@ -1655,5 +1780,75 @@
       });
     }
   </script>
+
+  <!-- Password Gate Script - Easy to remove: delete this entire script block -->
+  <script>
+    (function() {
+      // PASSWORD CONFIGURATION - Change password here or remove entire gate
+      const SITE_PASSWORD = 'preview123';
+      const STORAGE_KEY = 'cleverplanners_auth';
+      
+      const passwordGate = document.getElementById('password-gate');
+      const siteContent = document.getElementById('site-content');
+      const passwordForm = document.getElementById('password-form');
+      const passwordInput = document.getElementById('password-input');
+      const passwordError = document.getElementById('password-error');
+      
+      // Refresh ScrollTrigger after content becomes visible
+      function refreshScrollTrigger() {
+        if (typeof ScrollTrigger !== 'undefined') {
+          // Use requestAnimationFrame to ensure layout has recalculated
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              ScrollTrigger.refresh();
+            });
+          });
+        }
+      }
+      
+      // Check if already authenticated
+      function checkAuth() {
+        const authStatus = localStorage.getItem(STORAGE_KEY);
+        if (authStatus === 'authenticated') {
+          passwordGate.classList.add('hidden');
+          siteContent.classList.add('authenticated');
+          // Refresh ScrollTrigger after content becomes visible
+          refreshScrollTrigger();
+          return true;
+        }
+        return false;
+      }
+      
+      // Handle password submission
+      function handleSubmit(e) {
+        e.preventDefault();
+        const enteredPassword = passwordInput.value.trim();
+        
+        if (enteredPassword === SITE_PASSWORD) {
+          // Store authentication
+          localStorage.setItem(STORAGE_KEY, 'authenticated');
+          // Hide gate and show content
+          passwordGate.classList.add('hidden');
+          siteContent.classList.add('authenticated');
+          passwordError.classList.remove('show');
+          passwordInput.value = '';
+          // Refresh ScrollTrigger after content becomes visible
+          refreshScrollTrigger();
+        } else {
+          // Show error
+          passwordError.classList.add('show');
+          passwordInput.value = '';
+          passwordInput.focus();
+        }
+      }
+      
+      // Initialize
+      if (!checkAuth()) {
+        passwordForm.addEventListener('submit', handleSubmit);
+        passwordInput.focus();
+      }
+    })();
+  </script>
+  </div><!-- End site-content -->
 </body>
 </html>

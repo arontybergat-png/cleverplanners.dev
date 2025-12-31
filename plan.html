@@ -25,9 +25,10 @@
 
     header{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid #f0eadb;margin:0;padding:0}
     .nav{height:68px;display:flex;align-items:center;justify-content:space-between;padding-left:22px;padding-right:22px}
-    .logo{font-size:1.5rem;font-weight:800;color:var(--brand);letter-spacing:-0.02em;transition:opacity 0.2s;margin-left:0;text-decoration:none}
+    /* Logo positioned on left using flexbox order */
+    .logo{font-size:1.5rem;font-weight:800;color:var(--brand);letter-spacing:-0.02em;transition:opacity 0.2s;margin-left:0;text-decoration:none;order:1}
     .logo:hover{opacity:0.9}
-    /* Mobile Menu for plan.html */
+    /* Mobile Menu for plan.html - positioned on right using flexbox order */
     .mobile-menu-toggle-plan{
       display:none;
       background:none;
@@ -39,6 +40,7 @@
       flex-direction:column;
       justify-content:space-around;
       align-items:center;
+      order:2; /* Position menu toggle on the right */
     }
     .mobile-menu-toggle-plan span{
       width:24px;
@@ -240,10 +242,10 @@
     .chip.active{background:var(--soft)}
 
     /* Accordion Category Sections */
-    .checklist-accordion{display:flex;flex-direction:column;gap:12px;margin-top:20px}
-    .accordion-category{border:1px solid var(--ring);border-radius:12px;background:#fff;overflow:hidden;transition:all 0.2s ease}
+    .checklist-accordion{display:flex;flex-direction:column;gap:8px;margin-top:20px;width:100%}
+    .accordion-category{border:1px solid var(--ring);border-radius:12px;background:#fff;overflow:hidden;transition:all 0.2s ease;width:100%}
     .accordion-category.expanded{border-color:#d4cbb2;box-shadow:0 4px 12px rgba(0,0,0,0.08)}
-    .accordion-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;background:#fff;transition:background 0.2s ease;user-select:none}
+    .accordion-header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;cursor:pointer;background:#fff;transition:background 0.2s ease;user-select:none}
     .accordion-header:hover{background:var(--soft)}
     .accordion-header-left{display:flex;align-items:center;gap:12px;flex:1}
     .accordion-icon{font-size:1.5rem;line-height:1;flex-shrink:0;display:inline-block;transform-origin:center}
@@ -257,11 +259,11 @@
     }
     .accordion-chevron{font-size:0.9rem;color:var(--muted);transition:transform 0.2s ease;flex-shrink:0;margin-left:12px}
     .accordion-category.expanded .accordion-chevron{transform:rotate(180deg)}
-    .accordion-content{display:none;padding:0 20px 20px 20px}
+    .accordion-content{display:none;padding:0 20px 16px 20px}
     .accordion-category.expanded .accordion-content{display:block}
     /* Start all categories collapsed by default */
     .accordion-category:not(.expanded) .accordion-content{display:none}
-    .accordion-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:16px}
+    .accordion-cards{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px;width:100%;justify-items:stretch}
     @media (min-width: 900px) {
       .accordion-cards{grid-template-columns:repeat(2,1fr)}
     }
@@ -346,13 +348,46 @@
     }
     
     @media (max-width: 768px) {
+      /* DESKTOP: Keep old rules for tablet/desktop edge cases */
       .navrow{bottom:40px;margin-top:24px;margin-bottom:24px;justify-content:center;flex-wrap:wrap;gap:12px}
       .navrow .btn[data-prev], .navrow .btn.primary, .navrow .btn[id^="next"]{margin-left:0;margin-right:0;flex:1;min-width:120px;max-width:200px}
     }
     
     @media (max-width: 480px) {
+      /* DESKTOP: Keep old rules for very small screens edge cases */
       .navrow{flex-direction:column;align-items:stretch}
       .navrow .btn[data-prev], .navrow .btn.primary, .navrow .btn[id^="next"]{width:100%;max-width:none}
+    }
+    
+    /* NOTE: Mobile-specific fixes below (max-width: 767px) override the above rules */
+    
+    /* Step 5 Desktop: Fixed bottom buttons */
+    @media (min-width: 768px) {
+      #step-5 .navrow {
+        position: fixed !important;
+        bottom: 20px !important;
+        left: 0 !important;
+        right: 0 !important;
+        top: auto !important;
+        transform: none !important;
+        margin: 0 !important;
+        padding: 0 20px !important;
+        width: 100% !important;
+        pointer-events: none !important;
+        z-index: 30 !important;
+        justify-content: space-between !important;
+      }
+      
+      #step-5 .navrow .btn[data-prev] {
+        margin-left: 0 !important;
+        margin-right: auto !important;
+      }
+      
+      #step-5 .navrow .btn.primary,
+      #step-5 .navrow .btn[id^="next"] {
+        margin-left: auto !important;
+        margin-right: 0 !important;
+      }
     }
     
     /* Ensure buttons stay above content but below modals */
@@ -824,9 +859,1269 @@
       }
     }
 
+    /* ============================================
+       MOBILE RESPONSIVE FIXES
+       All changes below are mobile-only and preserve desktop layout
+       ============================================ */
+
+    /* Base mobile adjustments - affects screens < 768px */
+    @media (max-width: 767px) {
+      /* MOBILE: Reduce container padding for better space utilization */
+      .container {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      /* MOBILE: Ensure header doesn't overlap content */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+      }
+
+      /* MOBILE: Show mobile menu toggle and ensure touch-friendly size */
+      .mobile-menu-toggle-plan {
+        display: flex;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+      }
+
+      /* MOBILE: Adjust nav height and padding */
+      .nav {
+        height: 60px;
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      /* MOBILE: Reduce logo size for better fit */
+      .logo {
+        font-size: 1.3rem;
+      }
+
+      /* MOBILE: Adjust progress bar sticky position */
+      .progress {
+        top: 60px;
+      }
+
+      /* MOBILE: Hide progress step text labels to reduce clutter - keep progress bar visible */
+      .steps {
+        display: none;
+        margin-top: 0;
+      }
+
+      /* MOBILE: Adjust progress bar padding since text labels are hidden */
+      .progress {
+        padding: 12px 0;
+      }
+
+      /* MOBILE: Stack grid-2 layouts (2 columns -> 1 column) */
+      .grid-2 {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      /* MOBILE: Stack category grid (5 columns -> 2 columns on small, 1 on very small) */
+      .cat-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      /* MOBILE: Single column category grid on very small screens */
+      @media (max-width: 480px) {
+        .cat-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* MOBILE: Ensure category headings are readable */
+      .cat h3 {
+        font-size: 0.95rem;
+        margin-bottom: 10px;
+        padding-bottom: 6px;
+      }
+
+      /* MOBILE: Make event option boxes (ebox) touch-friendly */
+      .ebox {
+        min-height: 44px;
+        padding: 10px 12px;
+        font-size: 0.9rem;
+      }
+
+      /* MOBILE: Stack results layout (2fr 1fr -> 1fr) */
+      .results-wrap {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      /* MOBILE: Adjust service body grid for smaller screens */
+      .svc-body {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 12px;
+      }
+
+      /* MOBILE: Stack date range grid */
+      #date-range .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      /* MOBILE: Transform navigation buttons into small floating buttons */
+      /* MOBILE: Reset all desktop navrow rules first */
+      .navrow {
+        position: fixed !important;
+        bottom: 20px !important;
+        left: 0 !important;
+        right: 0 !important;
+        margin: 0 !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        padding: 0 16px !important;
+        justify-content: space-between !important;
+        align-items: center !important; /* MOBILE: Perfect vertical center alignment */
+        z-index: 100;
+        pointer-events: none;
+        display: flex !important;
+        flex-direction: row !important; /* MOBILE: Ensure horizontal row */
+        gap: 12px;
+        animation: slideUpFade 0.4s ease-out;
+        width: 100% !important;
+        box-sizing: border-box;
+      }
+
+      /* MOBILE: Reset desktop back-bottom class behavior */
+      .navrow.back-bottom {
+        justify-content: space-between !important; /* MOBILE: Override desktop flex-start */
+      }
+
+      /* MOBILE: Smooth entrance animation for floating buttons */
+      @keyframes slideUpFade {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* MOBILE: Style floating navigation buttons - compact and modern */
+      /* MOBILE: Reset all desktop positioning first */
+      .navrow .btn[data-prev],
+      .navrow .btn.primary,
+      .navrow .btn[id^="next"] {
+        margin: 0 !important; /* MOBILE: Force reset all margins */
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+      }
+
+      /* MOBILE: Apply IDENTICAL base structural styles to BOTH buttons */
+      /* Same height, padding, border-radius, font-size, line-height - perfect alignment */
+      .navrow .btn[data-prev],
+      .navrow .btn.primary,
+      .navrow .btn[id^="next"] {
+        padding: 12px 16px !important;
+        min-width: auto;
+        max-width: none;
+        width: auto;
+        min-height: 48px !important;
+        height: 48px !important; /* MOBILE: Fixed height for perfect alignment */
+        line-height: 1 !important; /* MOBILE: Normalize line-height for perfect baseline alignment */
+        border-radius: 24px !important;
+        font-size: 0.9rem !important;
+        pointer-events: auto;
+        flex: 0 0 auto;
+        white-space: nowrap;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-flex !important; /* MOBILE: Ensure flex display */
+        align-items: center !important; /* MOBILE: Vertical center alignment */
+        justify-content: center !important; /* MOBILE: Horizontal center alignment */
+        box-sizing: border-box !important; /* MOBILE: Consistent box model */
+        transform: none !important; /* MOBILE: Reset any desktop transforms */
+        vertical-align: top !important; /* MOBILE: Consistent vertical alignment */
+        margin: 0 !important; /* MOBILE: Remove all margins */
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        align-self: center !important; /* MOBILE: Force center alignment in flex container */
+      }
+
+      /* MOBILE: Next/Primary button - visual emphasis only (primary action) */
+      .navrow .btn.primary,
+      .navrow .btn[id^="next"] {
+        background: #fff !important; /* MOBILE: Clear white background for prominence */
+        color: var(--brand) !important; /* MOBILE: Brand color text for clarity */
+        border: 1px solid var(--ring) !important; /* MOBILE: Subtle border for definition */
+        border-width: 1px !important; /* MOBILE: Explicit border width */
+        border-style: solid !important; /* MOBILE: Explicit border style */
+        font-weight: 600 !important; /* MOBILE: Bold for prominence */
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1) !important; /* MOBILE: Stronger shadow for emphasis */
+        cursor: pointer;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+      }
+
+      /* MOBILE: Back button - visual emphasis only (secondary action) */
+      .navrow .btn[data-prev] {
+        background: var(--panel) !important; /* MOBILE: Light beige background - more subtle */
+        color: var(--muted) !important; /* MOBILE: Muted gray text - softer contrast */
+        border: 1px solid var(--ring) !important; /* MOBILE: Subtle border */
+        border-width: 1px !important; /* MOBILE: Explicit border width */
+        border-style: solid !important; /* MOBILE: Explicit border style */
+        font-weight: 500 !important; /* MOBILE: Lighter font weight - less emphasis */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important; /* MOBILE: Lighter shadow - less prominent */
+        cursor: pointer;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+      }
+
+      /* MOBILE: Override ghost class on Back button - keep it subtle */
+      .navrow .btn[data-prev].ghost,
+      .navrow .btn.ghost[data-prev] {
+        background: var(--panel) !important; /* MOBILE: Light beige background - subtle */
+        color: var(--muted) !important; /* MOBILE: Muted gray text */
+        border: 1px solid var(--ring) !important; /* MOBILE: Subtle border */
+        font-weight: 500 !important; /* MOBILE: Lighter font weight */
+        opacity: 1 !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important; /* MOBILE: Lighter shadow */
+      }
+
+      /* MOBILE: Back button positioning - left side (flexbox handles spacing) */
+      .navrow .btn[data-prev] {
+        margin-right: auto !important; /* MOBILE: Push to left via flexbox */
+        margin-left: 0 !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        order: 1; /* MOBILE: Ensure proper flex order */
+        transform: none !important; /* MOBILE: Reset any transforms */
+        align-self: center !important; /* MOBILE: Force center alignment in flex container */
+      }
+
+      /* MOBILE: Next/Primary button positioning - right side (flexbox handles spacing) */
+      .navrow .btn.primary,
+      .navrow .btn[id^="next"] {
+        margin-left: auto !important; /* MOBILE: Push to right via flexbox */
+        margin-right: 0 !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        order: 2; /* MOBILE: Ensure proper flex order */
+        transform: none !important; /* MOBILE: Reset any transforms */
+        align-self: center !important; /* MOBILE: Force center alignment in flex container */
+      }
+
+      /* MOBILE: Focus states for accessibility and clarity */
+      .navrow .btn[data-prev]:focus-visible,
+      .navrow .btn.primary:focus-visible,
+      .navrow .btn[id^="next"]:focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.8);
+        outline-offset: 2px;
+      }
+
+      /* MOBILE: Ensure default state - Next button prominent, Back button subtle */
+      /* These rules only set visual properties, not structural (height, padding, etc.) */
+      .navrow .btn.primary:not(:hover):not(:active):not(:disabled),
+      .navrow .btn[id^="next"]:not(:hover):not(:active):not(:disabled) {
+        background: #fff !important; /* MOBILE: Clear white background for prominence */
+        color: var(--brand) !important; /* MOBILE: Brand color text */
+        border: 1px solid var(--ring) !important; /* MOBILE: Subtle border */
+        border-width: 1px !important;
+        border-style: solid !important;
+        transform: none !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+      }
+
+      /* MOBILE: Back button default state - subtle and calm */
+      .navrow .btn[data-prev]:not(:hover):not(:active):not(:disabled) {
+        background: var(--panel) !important; /* MOBILE: Light beige - subtle */
+        color: var(--muted) !important; /* MOBILE: Muted gray - softer contrast */
+        border: 1px solid var(--ring) !important; /* MOBILE: Subtle border */
+        border-width: 1px !important;
+        border-style: solid !important;
+        transform: none !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important; /* MOBILE: Lighter shadow */
+      }
+
+      /* MOBILE: Next button hover/active states - prominent feedback */
+      .navrow .btn.primary:hover:not(:disabled),
+      .navrow .btn[id^="next"]:hover:not(:disabled),
+      .navrow .btn.primary:active:not(:disabled),
+      .navrow .btn[id^="next"]:active:not(:disabled) {
+        background: var(--brand) !important; /* MOBILE: Darken on hover/press */
+        color: #fff !important; /* MOBILE: White text on hover/press */
+        border-color: var(--brand) !important; /* MOBILE: Match border to background */
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(17, 24, 39, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      /* MOBILE: Back button hover/active states - subtle darkening */
+      .navrow .btn[data-prev]:hover:not(:disabled),
+      .navrow .btn[data-prev]:active:not(:disabled) {
+        background: #e5dcc7 !important; /* MOBILE: Slightly darker beige on hover/press */
+        color: var(--brand) !important; /* MOBILE: Darker text for contrast */
+        border-color: var(--ring) !important; /* MOBILE: Keep subtle border */
+        transform: translateY(-1px); /* MOBILE: Less movement than Next button */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important; /* MOBILE: Moderate shadow increase */
+      }
+
+      /* MOBILE: Ensure disabled buttons maintain IDENTICAL structure - only visual opacity differs */
+      .navrow .btn.primary:disabled,
+      .navrow .btn[id^="next"]:disabled,
+      .navrow .btn[data-prev]:disabled {
+        height: 48px !important; /* MOBILE: Same fixed height */
+        line-height: 1 !important; /* MOBILE: Same line-height */
+        padding: 12px 16px !important; /* MOBILE: Same padding */
+        border-radius: 24px !important; /* MOBILE: Same border radius */
+        font-size: 0.9rem !important; /* MOBILE: Same font size */
+        margin: 0 !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        transform: none !important;
+        align-self: center !important; /* MOBILE: Force center alignment */
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+
+      /* MOBILE: Disabled Next button - visual only */
+      .navrow .btn.primary:disabled,
+      .navrow .btn[id^="next"]:disabled {
+        background: #fff !important; /* MOBILE: Clear white background even when disabled */
+        color: var(--brand) !important; /* MOBILE: Brand color text */
+        border: 1px solid var(--ring) !important; /* MOBILE: Subtle border */
+        opacity: 0.6; /* MOBILE: Slight opacity to indicate disabled state */
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+      }
+
+      /* MOBILE: Disabled Back button - visual only, maintain subtle appearance */
+      .navrow .btn[data-prev]:disabled {
+        background: var(--panel) !important; /* MOBILE: Keep subtle background */
+        color: var(--muted) !important; /* MOBILE: Keep muted text */
+        border: 1px solid var(--ring) !important; /* MOBILE: Subtle border */
+        opacity: 0.5; /* MOBILE: More opacity reduction for disabled state */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important; /* MOBILE: Lighter shadow */
+      }
+
+      /* MOBILE: Back button with only one button (back-bottom) */
+      .navrow.back-bottom {
+        justify-content: flex-start;
+      }
+
+      .navrow.back-bottom .btn[data-prev] {
+        margin-right: auto;
+        margin-left: 0;
+      }
+
+      /* MOBILE: Hide Back button on Step 1 only - logo provides return home functionality */
+      #step-1 .navrow.back-bottom {
+        display: none;
+      }
+
+      /* MOBILE: Add bottom padding to sections to prevent content from being hidden behind floating buttons */
+      .section {
+        padding-top: 20px;
+        padding-bottom: 100px;
+      }
+
+      /* MOBILE: Very small screens - adjust button size and spacing */
+      @media (max-width: 480px) {
+        .navrow {
+          bottom: 16px;
+          padding: 0 12px;
+          gap: 8px;
+        }
+
+        /* MOBILE: Apply IDENTICAL base structural styles to BOTH buttons on small screens */
+        .navrow .btn[data-prev],
+        .navrow .btn.primary,
+        .navrow .btn[id^="next"] {
+          padding: 10px 14px !important;
+          min-height: 44px !important;
+          height: 44px !important; /* MOBILE: Fixed height for perfect alignment */
+          font-size: 0.85rem !important;
+          border-radius: 22px !important;
+          line-height: 1 !important; /* MOBILE: Normalize line-height */
+          margin: 0 !important;
+          margin-top: 0 !important;
+          margin-bottom: 0 !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+          align-self: center !important;
+          transform: none !important;
+        }
+
+        /* MOBILE: Ensure disabled buttons maintain IDENTICAL structure on small screens */
+        .navrow .btn.primary:disabled,
+        .navrow .btn[id^="next"]:disabled,
+        .navrow .btn[data-prev]:disabled {
+          height: 44px !important; /* MOBILE: Match button height */
+          line-height: 1 !important; /* MOBILE: Same line-height */
+          padding: 10px 14px !important; /* MOBILE: Same padding */
+          border-radius: 22px !important; /* MOBILE: Same border radius */
+          font-size: 0.85rem !important; /* MOBILE: Same font size */
+          align-self: center !important; /* MOBILE: Force center alignment */
+          margin: 0 !important;
+          margin-top: 0 !important;
+          margin-bottom: 0 !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+          transform: none !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+        }
+
+        /* MOBILE: Disabled Next button - visual only */
+        .navrow .btn.primary:disabled,
+        .navrow .btn[id^="next"]:disabled {
+          background: #fff !important;
+          color: var(--brand) !important;
+          border: 1px solid var(--ring) !important;
+          opacity: 0.6;
+        }
+
+        /* MOBILE: Disabled Back button - visual only */
+        .navrow .btn[data-prev]:disabled {
+          background: var(--panel) !important; /* MOBILE: Keep subtle background */
+          color: var(--muted) !important; /* MOBILE: Keep muted text */
+          border: 1px solid var(--ring) !important;
+          opacity: 0.5;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important; /* MOBILE: Lighter shadow */
+        }
+      }
+
+      /* MOBILE: Extra small screens - make buttons even more compact */
+      @media (max-width: 374px) {
+        .navrow {
+          bottom: 12px;
+          padding: 0 8px;
+        }
+
+        /* MOBILE: Apply IDENTICAL base structural styles to BOTH buttons on extra small screens */
+        .navrow .btn[data-prev],
+        .navrow .btn.primary,
+        .navrow .btn[id^="next"] {
+          padding: 10px 12px !important;
+          min-height: 44px !important;
+          height: 44px !important; /* MOBILE: Fixed height for perfect alignment */
+          font-size: 0.8rem !important;
+          line-height: 1 !important; /* MOBILE: Normalize line-height */
+          margin: 0 !important;
+          margin-top: 0 !important;
+          margin-bottom: 0 !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+          align-self: center !important;
+          transform: none !important;
+        }
+
+        /* MOBILE: Ensure disabled buttons maintain IDENTICAL structure on extra small screens */
+        .navrow .btn.primary:disabled,
+        .navrow .btn[id^="next"]:disabled,
+        .navrow .btn[data-prev]:disabled {
+          height: 44px !important; /* MOBILE: Match button height */
+          line-height: 1 !important; /* MOBILE: Same line-height */
+          padding: 10px 12px !important; /* MOBILE: Same padding */
+          border-radius: 22px !important; /* MOBILE: Same border radius */
+          font-size: 0.8rem !important; /* MOBILE: Same font size */
+          align-self: center !important; /* MOBILE: Force center alignment */
+          margin: 0 !important;
+          margin-top: 0 !important;
+          margin-bottom: 0 !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+          transform: none !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+        }
+
+        /* MOBILE: Disabled Next button - visual only */
+        .navrow .btn.primary:disabled,
+        .navrow .btn[id^="next"]:disabled {
+          background: #fff !important;
+          color: var(--brand) !important;
+          border: 1px solid var(--ring) !important;
+          opacity: 0.6;
+        }
+
+        /* MOBILE: Disabled Back button - visual only */
+        .navrow .btn[data-prev]:disabled {
+          background: var(--panel) !important; /* MOBILE: Keep subtle background */
+          color: var(--muted) !important; /* MOBILE: Keep muted text */
+          border: 1px solid var(--ring) !important;
+          opacity: 0.5;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important; /* MOBILE: Lighter shadow */
+        }
+      }
+
+      /* MOBILE: Ensure all buttons have proper touch targets */
+      .btn {
+        min-height: 44px;
+        padding: 12px 16px;
+        font-size: 1rem;
+      }
+
+      .btn.small {
+        min-height: 40px;
+        padding: 10px 14px;
+      }
+
+      .btn.xs {
+        min-height: 36px;
+        padding: 8px 12px;
+      }
+
+      /* MOBILE: Make inputs touch-friendly */
+      input[type="text"],
+      input[type="search"],
+      input[type="number"],
+      input[type="date"],
+      select {
+        min-height: 44px;
+        font-size: 16px; /* MOBILE: Prevent iOS zoom on focus */
+        padding: 12px 14px;
+      }
+
+      /* MOBILE: Adjust section padding */
+      .section {
+        padding: 20px 0;
+      }
+
+      /* MOBILE: Reduce step-3 qbox min-height for mobile */
+      #step-3 .qbox {
+        min-height: auto;
+      }
+
+      /* MOBILE: Reduce card padding */
+      .card {
+        padding: 16px;
+      }
+
+      /* MOBILE: Make option cards stack properly */
+      .option {
+        min-height: auto;
+      }
+
+      /* MOBILE: Adjust heading sizes for readability */
+      h1 {
+        font-size: 1.75rem;
+        line-height: 1.3;
+      }
+
+      .anim-title {
+        font-size: 1.75rem;
+      }
+
+      /* MOBILE: Adjust lead text */
+      .lead {
+        font-size: 1rem;
+        line-height: 1.5;
+      }
+
+      /* MOBILE: Fix modal for mobile screens */
+      .modal-card {
+        width: calc(100vw - 32px);
+        max-width: 100%;
+        max-height: 90vh;
+        margin: 16px;
+      }
+
+      .modal-body {
+        padding: 16px;
+        overflow-y: auto;
+      }
+
+      /* MOBILE: Stack regions grid */
+      .regions-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      /* MOBILE: Stack accordion cards */
+      .accordion-cards {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      /* MOBILE: Adjust checklist card min-height */
+      .checklist .card {
+        min-height: auto;
+        padding: 14px;
+      }
+
+      /* MOBILE: Ensure checkboxes are touch-friendly */
+      .check input[type="checkbox"] {
+        width: 22px;
+        height: 22px;
+        min-width: 22px;
+      }
+
+      .inline input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+      }
+
+      /* MOBILE: Adjust chips spacing */
+      .chips {
+        gap: 6px;
+      }
+
+      .chip {
+        padding: 10px 14px;
+        min-height: 40px;
+        font-size: 0.9rem;
+      }
+
+      /* MOBILE: Fix location items for touch */
+      .location-item {
+        padding: 10px 14px;
+        min-height: 44px;
+        font-size: 0.95rem;
+      }
+
+      /* MOBILE: Adjust autocomplete dropdown */
+      .autocomplete-list {
+        max-height: 200px;
+      }
+
+      /* MOBILE: Ensure profile icon is touch-friendly */
+      .profile-icon {
+        width: 44px;
+        height: 44px;
+      }
+
+      /* MOBILE: Fix vendor cards in results */
+      .vendor-card {
+        padding: 14px;
+      }
+
+      /* MOBILE: Stack vendor row on small screens */
+      .vendor-row {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      /* MOBILE: Adjust plan sticky sidebar */
+      .plan {
+        position: relative;
+        top: auto;
+        margin-top: 20px;
+      }
+
+      /* MOBILE: Fix budget pill text */
+      .budget-pill {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+      }
+
+      /* MOBILE: Adjust results header */
+      .results-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      /* MOBILE: Fix loading container */
+      .loading-container {
+        min-height: 300px;
+        padding: 30px 16px;
+      }
+
+      /* MOBILE: Adjust loading spinner */
+      .loading-spinner {
+        width: 60px;
+        height: 60px;
+      }
+
+      .loading-spinner::before {
+        width: 60px;
+        height: 60px;
+      }
+
+      .loading-spinner::after {
+        width: 45px;
+        height: 45px;
+        top: 7.5px;
+        left: 7.5px;
+      }
+
+      /* MOBILE: Improve option cards spacing and touch targets */
+      .card.option {
+        padding: 16px;
+        min-height: 80px;
+        gap: 8px;
+      }
+
+      .card.option h3 {
+        font-size: 1.05rem;
+        line-height: 1.4;
+        margin: 0;
+      }
+
+      .card.option .help {
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+
+      /* MOBILE: Improve search input styling */
+      #step-2 #event-search {
+        padding: 14px 16px;
+        font-size: 16px; /* Prevent iOS zoom */
+        border-radius: 12px;
+        margin-bottom: 20px;
+      }
+
+      /* MOBILE: Better spacing for qbox containers */
+      .qbox {
+        margin-top: 20px;
+      }
+
+      /* MOBILE: Improve accordion header touch targets */
+      .accordion-header {
+        padding: 18px 16px;
+        min-height: 56px;
+      }
+
+      .accordion-title {
+        font-size: 1rem;
+        line-height: 1.4;
+      }
+
+      .accordion-icon {
+        font-size: 1.3rem;
+      }
+
+      .accordion-chevron {
+        font-size: 1rem;
+        min-width: 24px;
+        min-height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* MOBILE: Improve accordion content padding */
+      .accordion-content {
+        padding: 0 16px 16px 16px;
+      }
+
+      /* MOBILE: Better checklist card spacing */
+      .checklist .card h3 {
+        font-size: 1rem;
+        margin-bottom: 12px;
+        padding-bottom: 10px;
+      }
+
+      .check {
+        padding: 12px;
+        min-height: 48px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+
+      .check input[type="checkbox"] {
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+      }
+
+      /* MOBILE: Improve chip/tag styling */
+      .chip {
+        min-height: 44px;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        border-radius: 22px;
+      }
+
+      /* MOBILE: Better location item styling */
+      .location-item {
+        min-height: 48px;
+        padding: 12px 16px;
+        font-size: 1rem;
+        border-radius: 12px;
+      }
+
+      /* MOBILE: Improve region group styling */
+      .region-group {
+        padding: 16px;
+        border-radius: 12px;
+      }
+
+      .region-title {
+        font-size: 1rem;
+        margin-bottom: 12px;
+        padding-bottom: 10px;
+      }
+
+      /* MOBILE: Better modal styling */
+      .modal-card {
+        border-radius: 20px;
+        margin: 12px;
+        width: calc(100vw - 24px);
+      }
+
+      .modal-head {
+        padding: 16px;
+        border-bottom: 1px solid var(--ring);
+      }
+
+      .modal-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+
+      .modal-close {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 10px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* MOBILE: Improve error messages */
+      .error-message {
+        font-size: 0.9rem;
+        margin-top: 6px;
+        padding: 8px 12px;
+        background: #fee2e2;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        color: #991b1b;
+      }
+
+      /* MOBILE: Improve success messages */
+      .success-message {
+        padding: 14px 16px;
+        font-size: 0.95rem;
+        border-radius: 12px;
+        margin-top: 16px;
+      }
+
+      /* MOBILE: Better focus states for accessibility */
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: 2px solid var(--brand);
+        outline-offset: 2px;
+      }
+
+      .btn:focus-visible {
+        outline: 2px solid var(--brand);
+        outline-offset: 2px;
+      }
+
+      .option:focus-visible {
+        outline: 3px solid var(--brand);
+        outline-offset: 2px;
+      }
+
+      /* MOBILE: Improve date input styling */
+      #date-specific input[type="date"],
+      #date-range input[type="date"] {
+        min-height: 48px;
+        font-size: 16px;
+        padding: 12px 14px;
+      }
+
+      /* MOBILE: Better autocomplete dropdown */
+      .autocomplete-list {
+        border-radius: 12px;
+        max-height: 240px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      }
+
+      .autocomplete-list div {
+        padding: 12px 14px;
+        font-size: 1rem;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+      }
+
+      /* MOBILE: Improve vendor card actions */
+      .card-actions {
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .card-actions .btn {
+        flex: 1;
+        min-width: 120px;
+      }
+
+      /* MOBILE: Better spacing for labels */
+      label {
+        font-size: 0.95rem;
+        margin: 12px 0 8px;
+        font-weight: 700;
+      }
+
+      /* MOBILE: Improve note text */
+      .note {
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-top: 12px;
+      }
+
+      /* MOBILE: Better help text styling */
+      .help {
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+
+      /* MOBILE: Improve regions toggle button */
+      .regions-toggle-btn {
+        padding: 12px 0;
+        font-size: 1rem;
+        min-height: 44px;
+      }
+
+      /* MOBILE: Better spacing for add-row */
+      .add-row {
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 12px;
+      }
+
+      /* MOBILE: Improve date-unsure-row */
+      .date-unsure-row {
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .date-unsure-row .inline {
+        min-height: 44px;
+      }
+
+      /* MOBILE: Better service group styling */
+      .svc-group {
+        border-radius: 16px;
+        overflow: hidden;
+      }
+
+      .svc-head {
+        padding: 16px;
+        min-height: 56px;
+      }
+
+      /* MOBILE: Improve loading text */
+      .loading-text {
+        font-size: 1rem;
+        margin-top: 16px;
+      }
+
+      .loading-subtext {
+        font-size: 0.9rem;
+        margin-top: 8px;
+      }
+
+      /* MOBILE: Better results CTA container */
+      .results-cta-container {
+        padding: 32px 20px;
+        gap: 16px;
+      }
+
+      .results-cta-title {
+        font-size: 1.3rem;
+      }
+
+      .results-cta-subtitle {
+        font-size: 0.95rem;
+      }
+
+      .results-cta-button {
+        font-size: 1rem;
+        padding: 14px 28px;
+        min-width: 180px;
+      }
+
+      /* MOBILE: Improve see-more-row buttons */
+      .see-more-row .btn.xs {
+        padding: 10px 16px;
+        min-height: 44px;
+        font-size: 0.9rem;
+      }
+
+      /* MOBILE: Better spacing between sections */
+      .section + .section {
+        margin-top: 0;
+      }
+
+      /* MOBILE: Improve inline checkbox spacing */
+      .inline {
+        gap: 10px;
+        min-height: 44px;
+        align-items: center;
+      }
+
+      /* MOBILE: Better select dropdown styling */
+      select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231e293b' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        background-size: 12px;
+        padding-right: 40px;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+      }
+
+      /* MOBILE: Improve textarea if present */
+      textarea {
+        min-height: 120px;
+        font-size: 16px;
+        padding: 12px 14px;
+        line-height: 1.5;
+        resize: vertical;
+      }
+    }
+
+    /* Very small screens (320px - 374px) */
+    @media (max-width: 374px) {
+      /* MOBILE: Further reduce padding on very small screens */
+      .container {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      /* MOBILE: Reduce font sizes slightly */
+      h1,
+      .anim-title {
+        font-size: 1.5rem;
+      }
+
+      /* MOBILE: Make category grid single column */
+      .cat-grid {
+        grid-template-columns: 1fr;
+      }
+
+      /* MOBILE: Reduce gap in boxgrid */
+      .boxgrid {
+        gap: 6px;
+      }
+
+      /* MOBILE: Further reduce card padding on very small screens */
+      .card {
+        padding: 14px;
+      }
+
+      .card.option {
+        padding: 14px;
+      }
+
+      /* MOBILE: Smaller buttons on very small screens */
+      .btn {
+        padding: 10px 14px;
+        font-size: 0.95rem;
+      }
+
+      /* MOBILE: Tighter spacing */
+      .qbox {
+        margin-top: 16px;
+      }
+
+      /* MOBILE: Smaller headings */
+      h1,
+      .anim-title {
+        font-size: 1.4rem;
+        line-height: 1.3;
+      }
+
+      /* MOBILE: Smaller category headings */
+      .cat h3 {
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+      }
+
+      /* MOBILE: Smaller event boxes */
+      .ebox {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+        min-height: 40px;
+      }
+    }
+
+    /* Tablet adjustments (768px - 1023px) */
+    @media (min-width: 768px) and (max-width: 1023px) {
+      /* TABLET: Adjust category grid to 3 columns */
+      .cat-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      /* TABLET: Keep grid-2 as 2 columns but adjust gap */
+      .grid-2 {
+        gap: 14px;
+      }
+
+      /* TABLET: Adjust results layout */
+      .results-wrap {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      /* TABLET: Adjust service body grid */
+      .svc-body {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* Prevent horizontal scrolling on all screen sizes */
+    html,
+    body {
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+
+    /* Ensure all containers respect viewport width */
+    * {
+      max-width: 100%;
+    }
+
+    /* Fix for images and media */
+    img,
+    video,
+    iframe {
+      max-width: 100%;
+      height: auto;
+    }
+
+  </style>
+  
+  <!-- Password Gate Styles - Easy to remove: delete this entire style block and the password-gate script -->
+  <style>
+    #password-gate {
+      position: fixed;
+      inset: 0;
+      background: var(--cream);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    #password-gate.hidden {
+      display: none;
+    }
+
+    .password-container {
+      background: #fff;
+      border: 1px solid var(--ring);
+      border-radius: var(--radius);
+      padding: 40px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+    }
+
+    .password-container h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .password-container p {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .password-input {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 1rem;
+      border: 2px solid var(--ring);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      transition: border-color 0.2s;
+      font-family: inherit;
+      background: #fff;
+    }
+
+    .password-input:focus {
+      outline: none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
+    }
+
+    .password-submit {
+      width: 100%;
+      padding: 14px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .password-submit:hover {
+      background: #0a0f1a;
+    }
+
+    .password-submit:active {
+      transform: scale(0.98);
+    }
+
+    .password-error {
+      color: #dc2626;
+      font-size: 0.9rem;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .password-error.show {
+      display: block;
+    }
+
+    .site-content {
+      display: none;
+    }
+
+    .site-content.authenticated {
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .password-container {
+        padding: 32px 24px;
+      }
+
+      .password-container h2 {
+        font-size: 1.3rem;
+      }
+    }
   </style>
 </head>
 <body>
+  <!-- Password Gate - Easy to remove: delete this entire div and the password-gate script -->
+  <div id="password-gate">
+    <div class="password-container">
+      <h2>Enter Site</h2>
+      <p>Please enter the password to continue</p>
+      <form id="password-form">
+        <input type="password" class="password-input" id="password-input" placeholder="Password" autocomplete="off" autofocus />
+        <div class="password-error" id="password-error">Incorrect password. Please try again.</div>
+        <button type="submit" class="password-submit">Enter</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="site-content" id="site-content">
   <header>
     <div class="container nav">
       <button class="mobile-menu-toggle-plan" id="mobileMenuTogglePlan" aria-label="Toggle menu">
@@ -869,14 +2164,14 @@
       <h1 class="anim-title drop">Let's get your planning started!</h1>
       <p class="anim-sub lead">Pick what you need and we'll guide you the rest of the way.</p>
       <div class="grid-2 qbox">
-        <div class="card option" id="opt-full" role="button" tabindex="0" aria-label="Plan a Full Event" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('opt-full').click();}">
-          <h3>I'm Planning a Full Event</h3>
-          <p class="help">We'll help you plan your full event—from venue to vendors.</p>
-        </div>
         <a class="card option" href="vendors.html" id="opt-service" aria-label="Browse Individual Vendors">
           <h3>I'm Looking for a Specific Service</h3>
           <p class="help">Browse individual vendors like halls, caterers, florists, photographers, and more.</p>
         </a>
+        <div class="card option" id="opt-full" role="button" tabindex="0" aria-label="Plan a Full Event" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('opt-full').click();}">
+          <h3>I'm Planning a Full Event</h3>
+          <p class="help">We'll help you plan your full event—from venue to vendors.</p>
+        </div>
       </div>
       <div class="navrow back-bottom">
         <a class="btn ghost" href="index.html">Back</a>
@@ -5449,6 +6744,60 @@ document.addEventListener('beforeinput', function(e){
       });
     }
   </script>
+
+  <!-- Password Gate Script - Easy to remove: delete this entire script block -->
+  <script>
+    (function() {
+      // PASSWORD CONFIGURATION - Change password here or remove entire gate
+      const SITE_PASSWORD = 'preview123';
+      const STORAGE_KEY = 'cleverplanners_auth';
+      
+      const passwordGate = document.getElementById('password-gate');
+      const siteContent = document.getElementById('site-content');
+      const passwordForm = document.getElementById('password-form');
+      const passwordInput = document.getElementById('password-input');
+      const passwordError = document.getElementById('password-error');
+      
+      // Check if already authenticated
+      function checkAuth() {
+        const authStatus = localStorage.getItem(STORAGE_KEY);
+        if (authStatus === 'authenticated') {
+          passwordGate.classList.add('hidden');
+          siteContent.classList.add('authenticated');
+          return true;
+        }
+        return false;
+      }
+      
+      // Handle password submission
+      function handleSubmit(e) {
+        e.preventDefault();
+        const enteredPassword = passwordInput.value.trim();
+        
+        if (enteredPassword === SITE_PASSWORD) {
+          // Store authentication
+          localStorage.setItem(STORAGE_KEY, 'authenticated');
+          // Hide gate and show content
+          passwordGate.classList.add('hidden');
+          siteContent.classList.add('authenticated');
+          passwordError.classList.remove('show');
+          passwordInput.value = '';
+        } else {
+          // Show error
+          passwordError.classList.add('show');
+          passwordInput.value = '';
+          passwordInput.focus();
+        }
+      }
+      
+      // Initialize
+      if (!checkAuth()) {
+        passwordForm.addEventListener('submit', handleSubmit);
+        passwordInput.focus();
+      }
+    })();
+  </script>
+  </div><!-- End site-content -->
 </body>
 </html>
 
