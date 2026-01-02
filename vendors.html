@@ -175,7 +175,7 @@
        ============================================ */
     .marketplace-hero{
       background:var(--cream);
-      padding:40px 22px 32px;
+      padding:56px 22px 64px;
       border-bottom:none;
       position:relative;
     }
@@ -191,7 +191,7 @@
       -webkit-background-clip:text;
       -webkit-text-fill-color:transparent;
       background-clip:text;
-      margin-bottom:32px;
+      margin-bottom:48px;
       letter-spacing:-0.02em;
       line-height:1.2;
       text-align:center;
@@ -953,175 +953,317 @@
 
     /* Main Content */
     .marketplace-content{
-      max-width:1600px;
+      max-width:1400px;
       margin:0 auto;
-      padding:24px 22px 30px;
-      display:grid;
-      grid-template-columns:240px 1fr;
-      gap:32px;
+      padding:56px 24px 64px;
+      display:block;
     }
 
     /* ============================================
-       SIDEBAR FILTERS - Premium Glassmorphism
+       INLINE FILTERS CONTROL - Minimal & Collapsible
+       ============================================ */
+    .filters-inline-control{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 12px;
+      background:transparent;
+      border:1px solid var(--ring);
+      border-radius:8px;
+      cursor:pointer;
+      user-select:none;
+      transition:all 0.2s ease;
+      font-size:0.875rem;
+      font-weight:500;
+      color:var(--muted);
+      margin-bottom:32px;
+      max-width:1200px;
+      margin-left:auto;
+      margin-right:auto;
+      padding-left:24px;
+      display:block;
+      width:fit-content;
+    }
+    .filters-inline-control:hover{
+      background:var(--soft);
+      border-color:#d4cbb2;
+      color:var(--ink);
+    }
+    .filters-inline-icon{
+      font-size:0.7rem;
+      transition:transform 0.2s ease;
+    }
+    .filters-inline-control.active .filters-inline-icon{
+      transform:rotate(90deg);
+    }
+    
+    /* ============================================
+       FILTERS OVERLAY - Slides out on click
        ============================================ */
     .filters-sidebar{
+      position:fixed;
+      top:0;
+      left:0;
+      width:320px;
+      max-width:90vw;
+      height:100vh;
       background:#fff;
-      border:1px solid var(--ring);
-      border-radius:var(--radius);
-      padding:0;
-      box-shadow:var(--shadow);
-      position:sticky;
-      top:116px;
-      max-height:calc(100vh - 152px);
+      box-shadow:4px 0 24px rgba(0,0,0,0.1);
+      z-index:2000;
+      transform:translateX(-100%);
+      transition:transform 0.3s ease;
       overflow-y:auto;
-      margin-left:-8px;
+      padding:24px;
+    }
+    .filters-sidebar.open{
+      transform:translateX(0);
+    }
+    .filters-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.3);
+      z-index:1999;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity 0.3s ease;
+    }
+    .filters-overlay.active{
+      opacity:1;
+      pointer-events:auto;
     }
     .filters-sidebar::-webkit-scrollbar{
-      width:6px;
+      width:4px;
     }
     .filters-sidebar::-webkit-scrollbar-track{
-      background:var(--soft);
+      background:transparent;
     }
     .filters-sidebar::-webkit-scrollbar-thumb{
-      background:var(--ring);
-      border-radius:3px;
+      background:#d0d0d0;
+      border-radius:2px;
+    }
+    .filters-sidebar::-webkit-scrollbar-thumb:hover{
+      background:#b8b8b8;
     }
     .filters-header{
-      padding:24px 24px 20px;
+      padding:0 0 20px;
       border-bottom:1px solid var(--ring);
-      background:var(--soft);
-      border-radius:var(--radius) var(--radius) 0 0;
+      background:transparent;
+      position:relative;
+      margin-bottom:24px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
     }
     .filters-header-title{
-      font-size:1.25rem;
-      font-weight:700;
+      font-size:1.125rem;
+      font-weight:600;
       color:var(--ink);
       letter-spacing:-0.01em;
       margin:0;
     }
+    .filters-close-btn{
+      background:none;
+      border:none;
+      font-size:1.5rem;
+      color:var(--muted);
+      cursor:pointer;
+      padding:0;
+      width:32px;
+      height:32px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:6px;
+      transition:all 0.2s ease;
+    }
+    .filters-close-btn:hover{
+      background:var(--soft);
+      color:var(--ink);
+    }
+    .filters-description{
+      display:none;
+    }
+    .filters-summary{
+      font-size:0.8rem;
+      color:#6b6b6b;
+      font-weight:400;
+      margin-top:4px;
+      width:100%;
+      display:none;
+    }
+    .filters-summary.active{
+      display:block;
+    }
+    .filters-count{
+      font-size:0.75rem;
+      color:#6b6b6b;
+      background:transparent;
+      padding:0;
+      border-radius:0;
+      font-weight:400;
+    }
+    .filters-content{
+      padding:0;
+    }
     .filter-section{
-      margin:0;
-      padding:24px;
-      border-bottom:1px solid var(--ring);
-      background:#fff;
+      margin:0 0 24px 0;
+      padding:0;
+      border-bottom:none;
+      background:transparent;
     }
     .filter-section:last-child{
-      border-bottom:none;
-      border-radius:0 0 var(--radius) var(--radius);
+      margin-bottom:0;
     }
     .filter-title{
-      font-size:0.875rem;
-      font-weight:700;
-      color:var(--ink);
-      margin:0 0 16px 0;
-      letter-spacing:0.02em;
-      text-transform:uppercase;
-      opacity:0.8;
+      font-size:0.8rem;
+      font-weight:500;
+      color:#6b6b6b;
+      margin:0 0 8px 0;
+      letter-spacing:0;
+      text-transform:none;
     }
     .filter-helper-text{
-      font-size:0.875rem;
-      color:var(--muted);
-      margin-bottom:16px;
-      font-weight:500;
+      font-size:0.85rem;
+      color:#6b6b6b;
+      margin-bottom:12px;
+      font-weight:400;
+      line-height:1.5;
     }
     .error-message{
-      padding:24px;
+      padding:20px;
       background:#fee2e2;
       border:1px solid #fca5a5;
-      border-radius:var(--radius);
+      border-radius:4px;
       color:#991b1b;
       text-align:center;
-      font-weight:600;
-      margin:32px 0;
+      font-weight:500;
+      margin:24px 0;
     }
     .filter-option{
-      margin-bottom:12px;
+      margin-bottom:6px;
+    }
+    .filter-option:last-child{
+      margin-bottom:0;
     }
     .filter-checkbox{
       display:flex;
       align-items:center;
       gap:10px;
       cursor:pointer;
+      padding:6px 0;
+      transition:background 0.15s ease;
+    }
+    .filter-checkbox:hover{
+      background:transparent;
     }
     .filter-checkbox input[type="checkbox"]{
       width:18px;
       height:18px;
       cursor:pointer;
-      accent-color:var(--brand);
+      accent-color:#4a4a4a;
+      flex-shrink:0;
     }
     .filter-checkbox label{
       cursor:pointer;
-      color:var(--muted);
+      color:#2a2a2a;
       font-size:0.9rem;
+      font-weight:400;
+      transition:color 0.15s ease;
+      flex:1;
     }
     .filter-checkbox:hover label{
-      color:var(--ink);
+      color:#4a4a4a;
     }
     .filter-input{
       width:100%;
-      padding:10px 14px;
-      border:1px solid var(--ring);
-      border-radius:8px;
-      font-size:0.9rem;
+      padding:8px 10px;
+      border:1px solid #e0e0e0;
+      border-radius:3px;
+      font-size:0.875rem;
       margin-bottom:0;
       background:#fff;
-      color:var(--ink);
-      transition:all 0.2s ease;
+      color:#2a2a2a;
+      transition:border-color 0.15s ease;
       font-family:inherit;
+      box-shadow:none;
+      -webkit-appearance:none;
+      -moz-appearance:textfield;
+      appearance:none;
+    }
+    .filter-input::-webkit-outer-spin-button,
+    .filter-input::-webkit-inner-spin-button{
+      -webkit-appearance:none;
+      appearance:none;
+      margin:0;
     }
     .filter-input::placeholder{
-      color:var(--muted);
-      opacity:0.7;
+      color:#9b9b9b;
+      opacity:1;
+    }
+    .filter-input:hover{
+      border-color:#d0d0d0;
     }
     .filter-input:focus{
       outline:none;
-      border-color:var(--brand);
-      box-shadow:0 0 0 3px rgba(17,24,39,0.08);
+      border-color:#b0b0b0;
+      box-shadow:none;
       background:#fff;
     }
     .price-range{
       display:flex;
-      gap:10px;
+      gap:6px;
       align-items:center;
+      background:transparent;
+      padding:0;
+      border:none;
     }
     .price-range input{
       flex:1;
+      margin-bottom:0;
     }
     .price-range span{
-      color:var(--muted);
-      font-weight:500;
-      font-size:0.9rem;
-      opacity:0.6;
+      color:#9b9b9b;
+      font-weight:400;
+      font-size:0.8rem;
       flex-shrink:0;
+      padding:0 2px;
     }
     .filter-section{
       position:relative;
     }
+    .filter-section.has-active-filters{
+      background:#fff;
+    }
+    .filter-section.has-active-filters .filter-title{
+      color:#2a2a2a;
+    }
     .save-search-btn{
       width:100%;
-      padding:12px 20px;
-      background:var(--brand);
+      padding:10px 16px;
+      background:#4a4a4a;
       color:#fff;
       border:none;
-      border-radius:8px;
-      font-weight:600;
-      font-size:0.95rem;
+      border-radius:3px;
+      font-weight:400;
+      font-size:0.85rem;
       cursor:pointer;
-      transition:all 0.2s ease;
-      box-shadow:0 2px 8px rgba(17,24,39,0.15);
+      transition:background-color 0.15s ease;
+      box-shadow:none;
+      letter-spacing:0;
+      margin-top:8px;
     }
     .save-search-btn:hover{
-      background:#0a0f1a;
-      transform:translateY(-1px);
-      box-shadow:0 4px 12px rgba(17,24,39,0.2);
+      background:#5a5a5a;
     }
     .save-search-btn:active{
-      transform:translateY(0);
+      background:#3a3a3a;
     }
 
     /* Vendor Grid */
     .vendors-section{
       background:transparent;
+      width:100%;
     }
     .section-header{
       display:flex;
@@ -1133,10 +1275,10 @@
     }
     .section-title{
       font-size:1.75rem;
-      font-weight:800;
+      font-weight:700;
       color:var(--ink);
       letter-spacing:-0.02em;
-      line-height:1.2;
+      line-height:1.3;
     }
     .view-toggle{
       display:flex;
@@ -1163,69 +1305,94 @@
     }
     .vendors-grid{
       display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
-      gap:20px;
+      grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+      gap:24px;
     }
     .category-section{
-      margin-bottom:48px;
+      margin-bottom:64px;
+      width:100%;
     }
     .category-header{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      margin-bottom:20px;
+      margin-bottom:24px;
+      max-width:1200px;
+      margin-left:auto;
+      margin-right:auto;
+      padding:0 24px;
     }
     .category-title{
-      font-size:1.5rem;
-      font-weight:800;
+      font-size:1.25rem;
+      font-weight:600;
       color:var(--ink);
-      letter-spacing:-0.02em;
+      letter-spacing:-0.01em;
       margin:0;
+      line-height:1.4;
     }
     .category-see-all{
-      font-size:0.95rem;
-      font-weight:600;
-      color:var(--brand);
+      font-size:0.9rem;
+      font-weight:500;
+      color:var(--muted);
       text-decoration:none;
       transition:color 0.2s;
       cursor:pointer;
     }
     .category-see-all:hover{
-      color:var(--accent1);
+      color:var(--brand);
     }
     .category-grid{
       display:grid;
       grid-template-columns:repeat(4, 1fr);
-      gap:20px;
+      gap:24px;
+      max-width:1200px;
+      margin:0 auto;
+      padding:0 24px;
     }
     @media (max-width:1200px){
       .category-grid{
         grid-template-columns:repeat(3, 1fr);
+        max-width:900px;
+        padding:0 20px;
+      }
+      .category-header{
+        padding:0 20px;
       }
     }
     @media (max-width:768px){
       .category-grid{
         grid-template-columns:repeat(2, 1fr);
+        max-width:100%;
+        padding:0 16px;
+      }
+      .category-header{
+        padding:0 16px;
+        flex-direction:column;
+        align-items:flex-start;
+        gap:12px;
+      }
+      .category-see-all{
+        align-self:flex-end;
       }
     }
     /* ============================================
-       VENDOR CARDS - Matching results.html Design
+       VENDOR CARDS - Modern Marketplace Design
        ============================================ */
     .vendor-block{
       border:1px solid var(--ring);
       border-radius:var(--radius);
-      padding:18px;
+      padding:0;
       background:#fff;
       display:flex;
       flex-direction:column;
-      gap:8px;
       position:relative;
       box-shadow:var(--shadow);
-      transition:all 0.2s ease;
+      transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow:hidden;
     }
     .vendor-block:hover{
-      transform:translateY(-2px);
-      box-shadow:0 12px 32px rgba(16,24,40,.12);
+      transform:translateY(-4px);
+      box-shadow:0 16px 48px rgba(16,24,40,.14);
       border-color:#d4cbb2;
     }
     .vendor-block.recommended{
@@ -1234,31 +1401,41 @@
     }
     .rec-label{
       display:inline-block;
-      padding:4px 10px;
+      padding:5px 12px;
       border-radius:999px;
       font-size:.75rem;
       font-weight:700;
       color:#fff;
       background:var(--brand);
       position:absolute;
-      top:-10px;
+      top:12px;
       left:12px;
-      z-index:1;
+      z-index:2;
       pointer-events:none;
-      box-shadow:0 2px 8px rgba(17,24,39,0.2);
+      box-shadow:0 2px 8px rgba(17,24,39,0.25);
+    }
+    .vendor-block-content{
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      flex:1;
     }
     .vendor-title{
-      font-weight:800;
-      font-size:1.1rem;
+      font-weight:700;
+      font-size:1.2rem;
       color:var(--ink);
-      margin-bottom:4px;
+      margin:0;
+      line-height:1.3;
+      letter-spacing:-0.01em;
     }
     .vendor-tags{
-      font-size:.9rem;
+      font-size:0.875rem;
       color:var(--muted);
       display:flex;
-      gap:8px;
+      gap:6px;
       flex-wrap:wrap;
+      line-height:1.5;
     }
     .badge{
       padding:4px 8px;
@@ -1318,14 +1495,15 @@
     .svcdr-price{font-weight:700;text-align:right;white-space:nowrap}
     @media (max-width:520px){.svcdr-item{grid-template-columns:1fr}.svcdr-price{text-align:left}}
     .svcdr-footer{padding:12px;border-top:1px solid var(--ring);display:flex;gap:8px;justify-content:flex-start;flex-wrap:wrap}
-    /* Elegant media area */
+    /* Elegant media area - Larger, more prominent */
     .media{
       position:relative;
-      height:120px;
-      border-radius:10px;
+      height:200px;
+      border-radius:0;
       overflow:hidden;
-      margin-top:4px;
+      margin:0;
       background:linear-gradient(135deg,var(--soft) 0%,#fff 100%);
+      flex-shrink:0;
     }
     .media-link{
       display:block;
@@ -1439,15 +1617,17 @@
     .meta-row{
       display:flex;
       flex-wrap:wrap;
-      gap:10px;
+      gap:12px;
       align-items:center;
-      font-size:.92rem;
+      font-size:0.9rem;
       color:var(--muted);
+      margin-top:4px;
     }
     .meta-row .price{
-      font-weight:500;
+      font-weight:700;
       color:var(--ink);
-      font-size:1.05rem;
+      font-size:1.15rem;
+      letter-spacing:-0.02em;
     }
     .meta-location{
       color:var(--muted);
@@ -1488,43 +1668,37 @@
     .card-divider{
       height:1px;
       background:var(--ring);
-      margin:6px 0;
+      margin:8px 0;
+      border:none;
     }
     .link-row{
       display:flex;
       flex-wrap:wrap;
       gap:8px;
+      margin-top:4px;
     }
-    .link-row a{
+    .link-row a,
+    .action-link{
       display:inline-flex;
       align-items:center;
-      padding:6px 8px;
-      border:1px solid var(--ring);
-      border-radius:8px;
-      background:var(--card);
-      color:var(--ink);
-      font-weight:600;
+      padding:6px 10px;
+      border:none;
+      border-radius:6px;
+      background:transparent;
+      color:var(--muted);
+      font-weight:500;
+      font-size:0.875rem;
       text-decoration:none;
       transition:all 0.2s ease;
+      cursor:pointer;
+      pointer-events:auto;
+      position:relative;
+      z-index:1;
     }
-    .link-row a:hover{
+    .link-row a:hover,
+    .action-link:hover{
+      color:var(--brand);
       background:var(--soft);
-      border-color:#d4cbb2;
-      transform:translateY(-1px);
-      box-shadow:0 2px 8px rgba(0,0,0,.08);
-    }
-    .link-row a{
-      cursor:pointer;
-      pointer-events:auto;
-      position:relative;
-      z-index:1;
-    }
-    /* Ensure action links are clickable */
-    .action-link{
-      cursor:pointer;
-      pointer-events:auto;
-      position:relative;
-      z-index:1;
     }
     .dot{
       color:var(--muted);
@@ -1533,24 +1707,18 @@
     /* Responsive */
     @media (max-width:1024px){
       .marketplace-content{
-        grid-template-columns:1fr;
-        gap:32px;
+        padding:48px 20px 56px;
+      }
+      .category-header{
+        padding:0 20px;
+      }
+      .category-grid{
+        max-width:100%;
+        padding:0 20px;
       }
       .filters-sidebar{
-        order:2;
-        position:relative;
-        top:auto;
-        max-height:none;
-        margin-left:0;
-      }
-      .filters-header{
-        padding:20px 20px 16px;
-      }
-      .filters-header-title{
-        font-size:1.1rem;
-      }
-      .filter-section{
-        padding:20px;
+        width:100%;
+        max-width:100vw;
       }
       .start-search-panel{
         order:1;
@@ -1697,7 +1865,14 @@
         font-size:clamp(1.75rem, 5vw, 2.5rem);
       }
       .marketplace-hero{
-        padding:24px 16px;
+        padding:40px 16px 48px;
+      }
+      .marketplace-content{
+        padding:32px 16px 40px;
+      }
+      .filters-inline-control{
+        padding-left:16px;
+        margin-bottom:24px;
       }
       .search-box{
         padding:16px;
@@ -1715,9 +1890,11 @@
         margin-top:8px;
       }
       .marketplace-content{
-        grid-template-columns:1fr;
-        gap:24px;
-        padding:20px 16px;
+        padding:32px 16px 40px;
+      }
+      .filters-inline-control{
+        padding-left:16px;
+        margin-bottom:24px;
       }
       .filters-sidebar{
         order:2;
@@ -1748,11 +1925,11 @@
         grid-template-columns:1fr;
         gap:16px;
       }
-      .vendor-block{
+      .vendor-block-content{
         padding:16px;
       }
       .category-section{
-        margin-bottom:32px;
+        margin-bottom:48px;
       }
       .category-header{
         padding:16px;
@@ -2043,13 +2220,16 @@
         </div>
           </div>
 
-  <!-- Main Content -->
-  <div class="marketplace-content">
-    <!-- Sidebar Filters -->
-    <aside class="filters-sidebar">
-      <div class="filters-header">
-        <h2 class="filters-header-title">Filters</h2>
-      </div>
+  <!-- Filters Overlay -->
+  <div class="filters-overlay" id="filters-overlay"></div>
+  
+  <!-- Filters Sidebar (Overlay) -->
+  <aside class="filters-sidebar" id="filters-sidebar">
+    <div class="filters-header">
+      <h2 class="filters-header-title">Filters</h2>
+      <button class="filters-close-btn" id="filters-close-btn" aria-label="Close filters">&times;</button>
+    </div>
+    <div class="filters-content" id="filters-content">
       <div class="filter-section">
         <h3 class="filter-title">Event Type</h3>
         <input type="text" class="filter-input" id="sidebar-event-type" placeholder="Search event type…">
@@ -2058,24 +2238,28 @@
       <div class="filter-section">
         <h3 class="filter-title">Price Range</h3>
         <div class="price-range">
-          <input type="number" class="filter-input" placeholder="Min" id="priceMin">
+            <input type="text" class="filter-input price-input" placeholder="Min" id="priceMin" inputmode="numeric">
           <span>-</span>
-          <input type="number" class="filter-input" placeholder="Max" id="priceMax">
+            <input type="text" class="filter-input price-input" placeholder="Max" id="priceMax" inputmode="numeric">
         </div>
-      </div>
-      <div class="filter-section">
-        <h3 class="filter-title">Location</h3>
-        <input type="text" class="filter-input" id="sidebar-location" placeholder="Search location…">
-        <div id="sidebar-location-results" style="max-height:200px;overflow-y:auto;margin-top:8px;display:none;background:#fff;border:1px solid var(--ring);border-radius:8px;padding:8px;box-shadow:var(--shadow);"></div>
       </div>
       <div class="filter-section">
         <h3 class="filter-title">Date</h3>
         <input type="date" class="filter-input" id="sidebar-date">
       </div>
-      <div class="filter-section" id="save-search-section" style="display:none;padding-top:16px;border-top:1px solid var(--ring);margin-top:8px;">
+      <div class="filter-section" id="save-search-section" style="display:none;padding-top:12px;margin-top:16px;">
         <button class="save-search-btn" id="save-search-btn">Save & Search</button>
       </div>
+      </div>
     </aside>
+
+  <!-- Main Content -->
+  <div class="marketplace-content">
+    <!-- Inline Filters Control -->
+    <button class="filters-inline-control" id="filters-inline-control">
+      <span>Filters</span>
+      <span class="filters-inline-icon">▸</span>
+    </button>
 
     <!-- Vendor Grid -->
     <main class="vendors-section">
@@ -2149,13 +2333,13 @@
       {id:36, name:"Tent & Equipment Rentals", category:"rentals", rating:4.7, reviewCount:156, location:"Denver, CO", price:"$1,500", priceNote:"Starting price", image:"", badge:"", features:["Tents", "Equipment"]},
     ];
 
-    // Event Types Data (from plan.html)
+    // Event Types Data (from plan.html - exact match)
     const EVENT_TYPES = {
       'Child': ['Bris', 'Vach Nacht', 'Kiddush', 'Baby Naming', 'Pidyon Haben', 'Upsherin', 'Child Birthday'],
       'Teenager': ['Bar Mitzvah', 'Bat Mitzvah', 'Sweet 16', 'Graduation Party', 'Teenager Birthday'],
       'Adult': ['Proposal', 'Engagement (Vort / Tenoyim)', 'Wedding', 'Sheva Brachos', 'Anniversary', 'Adult Birthday'],
-      'Other': ['Hachnasas Sefer Torah', 'Shul Dinner / Fundraiser', 'Gala / Charity Event', 'School Dinner / Banquet', 'Corporate Event', 'Custom Event'],
-      'Holiday Events': ['Purim Party', 'Chanukah Party', 'Shabbos Nachamu']
+      'Holiday Events': ['Purim Party', 'Chanukah Party', 'Shabbos Nachamu'],
+      'Other': ['Hachnasas Sefer Torah', 'Shul Dinner / Fundraiser', 'Gala / Charity Event', 'School Dinner / Banquet', 'Corporate Event', 'Custom Event']
     };
 
     // Vendor Categories (all available categories)
@@ -2182,20 +2366,238 @@
       return EVENT_VENDOR_CATEGORIES[eventType] || EVENT_VENDOR_CATEGORIES['default'];
     }
 
-    // Location Data (from plan.html)
+    // Location Data (from plan.html - exact match)
     const LOCATION_GROUPS = [
-      { group: "🇺🇸 New York", items: ["Boro Park", "Flatbush", "Manhattan", "Williamsburg", "Monsey", "New Square", "Monroe", "Catskills", "Queens (Kew Gardens Hills, Far Rockaway, Forest Hills, Hillcrest)", "Staten Island", "Long Island (Five Towns – Lawrence, Cedarhurst, Woodmere, Hewlett, Inwood)", "Great Neck", "West Hempstead"] },
-      { group: "🇺🇸 New Jersey", items: ["Passaic", "Clifton", "Elizabeth", "Edison / Highland Park", "Teaneck", "Lakewood / Jackson / Toms River", "Jersey Shore"] },
+      { group: "🇺🇸 New York", items: ["Boro Park", "Flatbush", "Manhattan", "Williamsburg", "Monsey", "New Square", "Monroe", "Catskills", "Queens", "Kew Gardens Hills", "Far Rockaway", "Forest Hills", "Hillcrest", "Staten Island", "Long Island", "Lawrence", "Cedarhurst", "Woodmere", "Hewlett", "Inwood", "Great Neck", "West Hempstead"] },
+      { group: "🇺🇸 New Jersey", items: ["Passaic", "Clifton", "Elizabeth", "Edison", "Highland Park", "Teaneck", "Lakewood", "Jackson", "Toms River", "Jersey Shore"] },
       { group: "🇺🇸 Florida", items: ["Miami", "Orlando", "Boca Raton", "Hollywood", "North Miami Beach"] },
       { group: "🇺🇸 California", items: ["Los Angeles"] },
-      { group: "🇺🇸 Out of Town (USA)", items: ["Baltimore", "Chicago", "Cleveland", "Linden", "Arizona", "Detroit", "Waterbury (CT)", "New Orleans", "Atlanta", "Philadelphia", "Cincinnati", "Scranton", "Minneapolis", "Boston (MA)", "St. Louis (MO)"] },
-      { group: "🌍 South Africa", items: ["Johannesburg"] },
+      { group: "🇺🇸 Out of Town (USA)", items: ["Baltimore", "Chicago", "Cleveland", "Linden", "Arizona", "Detroit", "Waterbury", "New Orleans", "Atlanta", "Philadelphia", "Cincinnati", "Scranton", "Minneapolis", "Boston", "St. Louis"] },
       { group: "🇬🇧 United Kingdom (UK)", items: ["Golders Green", "Stamford Hill", "Hendon", "Gateshead", "Manchester", "Canvey Island", "Edgware"] },
       { group: "🇨🇦 Canada", items: ["Montreal", "Toronto"] },
+      { group: "🌍 South Africa", items: ["Johannesburg"] },
       { group: "🇧🇪 Belgium", items: ["Antwerp"] },
       { group: "🇨🇭 Switzerland", items: ["Zurich"] },
       { group: "🇦🇺 Australia", items: ["Sydney", "Melbourne"] }
     ];
+
+    // Categories, Subcategories, and Services from plan.html Checklist (Step 5)
+    // Structure: Categories (accordion-title) -> Subcategories (card h3) -> Services (checkbox values)
+    // EXACT MATCH to plan.html accordion-title elements, in order
+    const PLAN_CHECKLIST_DATA = {
+      categories: [
+        { name: 'VENUES & HALLS', icon: '🏛️' },
+        { name: 'CATERING & FOOD', icon: '🍽️' },
+        { name: 'EVENT DESIGN, DECOR & FLOWERS', icon: '🌸' },
+        { name: 'EVENT RENTALS & EQUIPMENT', icon: '🪑' },
+        { name: 'EVENT PLANNING & EVENT STAFF', icon: '👔' },
+        { name: 'MUSIC', icon: '🎵' },
+        { name: 'SINGERS & CHOIRS', icon: '🎤' },
+        { name: 'PHOTOGRAPHY & VIDEO', icon: '📸' },
+        { name: 'LIGHTING / VIDEO / SOUND', icon: '💡' },
+        { name: 'WOMENS WEAR, HAIR & STYLE', icon: '💄' },
+        { name: 'MENS WEAR, HAIR & STYLE', icon: '👔' },
+        { name: 'INVITATIONS, PAPER & DIGITAL TOOLS', icon: '✉️' },
+        { name: 'RELIGIOUS & JUDAICA SERVICES', icon: '✡️' },
+        { name: 'TRANSPORTATION & VALET', icon: '🚗' },
+        { name: 'ENTERTAINMENT & ENTERTAINERS', icon: '🎭' },
+        { name: 'PARTY PROPS & INTERACTIVE FUN (SHTICK)', icon: '🎪' },
+        { name: 'GIFTS', icon: '🎁' },
+        { name: 'GEMACHS & COMMUNITY RESOURCES', icon: '🤝' },
+        { name: 'LEGAL & PERMITS', icon: '⚖️' }
+      ],
+      subcategories: [
+        // VENUES & HALLS
+        { name: 'Venue Types', category: 'VENUES & HALLS' },
+        // CATERING & FOOD
+        { name: 'Catering Services', category: 'CATERING & FOOD' },
+        { name: 'Platters & Boards', category: 'CATERING & FOOD' },
+        { name: 'Baked Goods & Pastries', category: 'CATERING & FOOD' },
+        { name: 'Desserts', category: 'CATERING & FOOD' },
+        { name: 'Specialty Tables & Food Stations', category: 'CATERING & FOOD' },
+        { name: 'Beverage Services', category: 'CATERING & FOOD' },
+        { name: '✡️ Kosher Supervision', category: 'CATERING & FOOD' },
+        // EVENT DESIGN, DECOR & FLOWERS
+        { name: 'Flowers', category: 'EVENT DESIGN, DECOR & FLOWERS' },
+        { name: 'Event Décor & Styling', category: 'EVENT DESIGN, DECOR & FLOWERS' },
+        // EVENT RENTALS & EQUIPMENT
+        { name: 'Rentals & Supplies', category: 'EVENT RENTALS & EQUIPMENT' },
+        // EVENT PLANNING & EVENT STAFF
+        { name: 'Event Staffing', category: 'EVENT PLANNING & EVENT STAFF' },
+        { name: 'Event Planning ', category: 'EVENT PLANNING & EVENT STAFF' },
+        { name: 'Event Help', category: 'EVENT PLANNING & EVENT STAFF' },
+        // MUSIC
+        { name: 'Bands & DJs', category: 'MUSIC' },
+        { name: 'Individual Instruments', category: 'MUSIC' },
+        { name: 'Unique Instruments', category: 'MUSIC' },
+        // SINGERS & CHOIRS
+        { name: 'Singers', category: 'SINGERS & CHOIRS' },
+        // PHOTOGRAPHY & VIDEO
+        { name: 'Event Coverage', category: 'PHOTOGRAPHY & VIDEO' },
+        { name: 'Photo & Video Editing', category: 'PHOTOGRAPHY & VIDEO' },
+        // LIGHTING / VIDEO / SOUND
+        { name: 'Lighting', category: 'LIGHTING / VIDEO / SOUND' },
+        { name: 'Sound', category: 'LIGHTING / VIDEO / SOUND' },
+        { name: 'Video & AV', category: 'LIGHTING / VIDEO / SOUND' },
+        // WOMENS WEAR, HAIR & STYLE
+        { name: 'Bridal Wear', category: 'WOMENS WEAR, HAIR & STYLE' },
+        { name: 'Makeup Artists', category: 'WOMENS WEAR, HAIR & STYLE' },
+        { name: 'Hair & Sheitel', category: 'WOMENS WEAR, HAIR & STYLE' },
+        { name: 'Nails & Accessories', category: 'WOMENS WEAR, HAIR & STYLE' },
+        // MENS WEAR, HAIR & STYLE
+        { name: "Men's Wear", category: 'MENS WEAR, HAIR & STYLE' },
+        { name: "Men's Grooming & Hair", category: 'MENS WEAR, HAIR & STYLE' },
+        // INVITATIONS, PAPER & DIGITAL TOOLS
+        { name: 'Invitations (Print)', category: 'INVITATIONS, PAPER & DIGITAL TOOLS' },
+        { name: 'Digital Invitations & Guest Management', category: 'INVITATIONS, PAPER & DIGITAL TOOLS' },
+        { name: 'Event Programs & Booklets', category: 'INVITATIONS, PAPER & DIGITAL TOOLS' },
+        { name: 'Seating & On-Table Paper', category: 'INVITATIONS, PAPER & DIGITAL TOOLS' },
+        { name: 'Thank You & Post-Event Paper', category: 'INVITATIONS, PAPER & DIGITAL TOOLS' },
+        { name: 'Ceremony Paper', category: 'INVITATIONS, PAPER & DIGITAL TOOLS' },
+        { name: 'Branding & Printing Services', category: 'INVITATIONS, PAPER & DIGITAL TOOLS' },
+        // RELIGIOUS & JUDAICA SERVICES
+        { name: 'Religious Services', category: 'RELIGIOUS & JUDAICA SERVICES' },
+        { name: 'Documents & Texts', category: 'RELIGIOUS & JUDAICA SERVICES' },
+        { name: 'Religious Items', category: 'RELIGIOUS & JUDAICA SERVICES' },
+        // TRANSPORTATION & VALET
+        { name: 'Transportation & Valet', category: 'TRANSPORTATION & VALET' },
+        // ENTERTAINMENT & ENTERTAINERS
+        { name: 'Live Performers ', category: 'ENTERTAINMENT & ENTERTAINERS' },
+        { name: 'Kids Entertainment', category: 'ENTERTAINMENT & ENTERTAINERS' },
+        { name: 'Interactive Experiences & Rentals', category: 'ENTERTAINMENT & ENTERTAINERS' },
+        // PARTY PROPS & INTERACTIVE FUN (SHTICK)
+        { name: 'Party Props & Shtick Rentals', category: 'PARTY PROPS & INTERACTIVE FUN (SHTICK)' },
+        { name: 'Custom Shtick & Apparel', category: 'PARTY PROPS & INTERACTIVE FUN (SHTICK)' },
+        // GIFTS
+        { name: 'Gifts', category: 'GIFTS' },
+        // GEMACHS & COMMUNITY RESOURCES
+        { name: 'Gemachs', category: 'GEMACHS & COMMUNITY RESOURCES' },
+        // LEGAL & PERMITS
+        { name: 'Legal Services', category: 'LEGAL & PERMITS' },
+        { name: 'Marriage & Personal Legal Documentation', category: 'LEGAL & PERMITS' },
+        { name: 'Permits & Compliance', category: 'LEGAL & PERMITS' }
+      ],
+      services: [
+        // VENUES & HALLS - Venue Types
+        'Ballroom / Hall', 'Outdoor / Tent Venue', 'Backyard Event Space', 'Rooftop Venue', 'Hotel Ballroom',
+        // CATERING & FOOD - Catering Services
+        'Full-Service Caterer', 'Drop-Off & Pickup Catering', 'Private Chef', 'Kiddush Packages', 'Shabbos Meal Boxes',
+        // CATERING & FOOD - Platters & Boards
+        'Fruit Platters', 'Salad Platters', 'Sushi Platters', 'Fish Platters / Cured Fish Boards', 'Meat Boards / Jerky Boards', 'Kosher Charcuterie Boards',
+        // CATERING & FOOD - Baked Goods & Pastries
+        'Pastries (Rugelach etc.)', 'Cookies & Cakes', 'Miniature Deserts ', 'Seudah / Jumbo Challah', 'Sourdough Breads',
+        // CATERING & FOOD - Desserts
+        'Candy ', 'Nuts', 'Acai Boards', 'Hot Chocolate Bar', 'Ices / Ice Cream / Sorbet ', 'Waffle / Crepe Station',
+        // CATERING & FOOD - Specialty Tables & Food Stations
+        'Meat Bar / Carving Station', 'Live Sushi Bar', 'Taco / Shawarma Station', 'Meat Pizza Bar', 'Diary Pizza Bar ', 'Pasta Station',
+        // CATERING & FOOD - Beverage Services
+        'Bar & Bartenders', 'Coffee Cart / Espresso Bar', 'Smoothie / Juice Bar', 'Slush / Slushie Station',
+        // CATERING & FOOD - Kosher Supervision
+        'Mashgichim / Kosher Supervision',
+        // EVENT DESIGN, DECOR & FLOWERS - Flowers
+        'Florist', 'Flower Centerpieces', 'Floral Installations', 'Floral for Chuppah', 'Faux Flowers for Chuppah',
+        // EVENT DESIGN, DECOR & FLOWERS - Event Décor & Styling
+        'Backdrop Design', 'Balloon Design', 'Custom Signage', 'Stage Design', 'Chuppah Design & Rental',
+        // EVENT RENTALS & EQUIPMENT - Rentals & Supplies
+        'Tables', 'Chairs', 'Linens', 'Chair Covers', 'Lounge Furniture',
+        // EVENT PLANNING & EVENT STAFF - Event Staffing
+        'Waiters', 'Kitchen Crew', 'Setup & Cleanup Crew', 'Security / Crowd Control', 'Valet Crew',
+        // EVENT PLANNING & EVENT STAFF - Event Planning
+        'Event Planner', 'Day-Of Coordinator', 'Event Producer / Manager', 'On-Site Event Manager',
+        // EVENT PLANNING & EVENT STAFF - Event Help
+        'Childcare / Babysitting', 'Elder Care Assistance', 'General Event Assistance / Event Helpers', 'Lost & Found Desk', 'Event Stylist / Party Planner',
+        // MUSIC - Bands & DJs
+        'One-Man Band', 'Full Band', 'Orchestra', 'DJ',
+        // MUSIC - Individual Instruments
+        'Keyboard', 'Drums', 'Guitar', 'Trumpet', 'Violin',
+        // MUSIC - Unique Instruments
+        'Accordion', 'Harp', 'Bongo Drum', 'Bagpipe', 'Xylophone',
+        // SINGERS & CHOIRS - Singers
+        'Lead Singer', 'Chazzan', 'Choir', 'Child Singer / Soloist', 'Badchan',
+        // PHOTOGRAPHY & VIDEO - Event Coverage
+        'Photographer', 'Videographer', 'Live Event Streaming', 'Drone Photography / Video', 'Magnet Photographer',
+        // PHOTOGRAPHY & VIDEO - Photo & Video Editing
+        'Video Editing', 'Photo Editing  ', 'Album Design & Printing', 'Slideshow / Montage Creation',
+        // LIGHTING / VIDEO / SOUND - Lighting
+        'Dance Floor Lighting', 'DJ Lighting', 'DJ Lighting + Technician', 'Spotlighting (Stage / Chuppah)', 'String Lights', 'Chandeliers', 'LED Dance Floor',
+        // LIGHTING / VIDEO / SOUND - Sound
+        'Sound System', 'Microphones', 'Sound Engineer / Mixer',
+        // LIGHTING / VIDEO / SOUND - Video & AV
+        'LED Screens', 'Projectors', 'AV Technician', 'Video DJ / Visual Effects', 'Lighting Technician',
+        // WOMENS WEAR, HAIR & STYLE - Bridal Wear
+        'Bridal Gowns', 'Family Gowns', 'Bridal Gown & Accessories Gemach',
+        // WOMENS WEAR, HAIR & STYLE - Makeup Artists
+        'Bridal Makeup', 'On-Site Touch-Up Makeup Artist',
+        // WOMENS WEAR, HAIR & STYLE - Hair & Sheitel
+        'Bridal Hair Stylist', 'Wig / Sheitel Stylist', 'Sheitel Vendor', 'Wig / Sheitel Gemach',
+        // WOMENS WEAR, HAIR & STYLE - Nails & Accessories
+        'Nail Technician', 'Lash Technician', 'Brow Styling', 'Wedding Sneaker / Dance Shoe Rentals', 'Wedding Shoes / Sneakers Gemach',
+        // MENS WEAR, HAIR & STYLE - Men's Wear
+        'Suits', 'Hats', 'Shtreimels', 'Beckitchies', 'Custom Suits ',
+        // MENS WEAR, HAIR & STYLE - Men's Grooming & Hair
+        "Men's Barber", "Kid's Barber ", "Men's Barber House Call (On-Site / Day-Of)", "Kid's Barber House Call (On-Site / Day-Of)", 'Professional Upsherien Haircuts ',
+        // INVITATIONS, PAPER & DIGITAL TOOLS - Invitations (Print)
+        'Printed Invitations', 'Invitation Design', 'Save the Date Cards', 'RSVP Cards', 'Reception Cards',
+        // INVITATIONS, PAPER & DIGITAL TOOLS - Digital Invitations & Guest Management
+        'Digital Invitations', 'Event Website', 'Event App', 'SMS / WhatsApp RSVP Reminders', 'RSVP Management & Tracking', 'Guest List Management', 'Guest Check-In Systems', 'QR Code Displays', 'Digital Guest Book', 'Digital Seating Charts',
+        // INVITATIONS, PAPER & DIGITAL TOOLS - Event Programs & Booklets
+        'Event Programs', 'Simcha / Souvenir Booklets', 'Custom Benchers',
+        // INVITATIONS, PAPER & DIGITAL TOOLS - Seating & On-Table Paper
+        'Place Cards', 'Escort Cards', 'Seating Charts', 'Table Numbers', 'Menus',
+        // INVITATIONS, PAPER & DIGITAL TOOLS - Thank You & Post-Event Paper
+        'Thank You Cards', 'Wedding Favor Tags',
+        // INVITATIONS, PAPER & DIGITAL TOOLS - Ceremony Paper
+        'Ceremony Programs', 'Yichud Room Sign',
+        // INVITATIONS, PAPER & DIGITAL TOOLS - Branding & Printing Services
+        'Custom Logos / Monograms', 'Graphic Designer', 'Printing Services', 'Envelope Addressing', 'Calligraphy', 'Wax Seals', 'Custom Stamps',
+        // RELIGIOUS & JUDAICA SERVICES - Religious Services
+        'Rabbi', 'Mesader Kiddushin', 'Mohel', 'Sofer', 'Mashgichim / Kosher Supervisor', 'Chazzan', 'Mikvah Attendant',
+        // RELIGIOUS & JUDAICA SERVICES - Documents & Texts
+        'Ketubah', 'Tenaim Document', 'Benchers', 'Siddurim', 'Chumashim',
+        // RELIGIOUS & JUDAICA SERVICES - Religious Items
+        'Kiddush Cup', 'Challah Covers', 'Havdalah Set', 'Torah Scroll Rental',
+        // TRANSPORTATION & VALET - Transportation & Valet
+        'Car / Van Service', 'Limo & Party Bus', 'Luxury Car Rental', 'Chauffeurs & Drivers ', 'Valet Parking Crew',
+        // ENTERTAINMENT & ENTERTAINERS - Live Performers
+        'Magician', 'Mentalist', 'Comedian', 'Game Show Host / Interactive Games',
+        // ENTERTAINMENT & ENTERTAINERS - Kids Entertainment
+        'Clown', 'Face Painter', 'Storyteller', 'Puppet Show', "Children Performers (Uncle Moishy etc.) ",
+        // ENTERTAINMENT & ENTERTAINERS - Interactive Experiences & Rentals
+        'Virtual Reality / VR Entertainment', 'Arcade / Game Table Rentals', 'Inflatable Rentals (Slides / Obstacles)', 'Carnival / Game Booth Rentals', 'Live Polling / Games',
+        // PARTY PROPS & INTERACTIVE FUN (SHTICK) - Party Props & Shtick Rentals
+        'Umbrellas', 'Parachutes & Arches', 'Juggling Props', 'Glow & Light Props', 'All Shtick Props',
+        // PARTY PROPS & INTERACTIVE FUN (SHTICK) - Custom Shtick & Apparel
+        'Custom Clothing (e.g. "Brother of the Chosson")',
+        // GIFTS - Gifts
+        'Wedding Favors', 'Guest Gifts', 'Welcome Bags', 'Gift Bags', 'Engraved Gifts',
+        // GEMACHS & COMMUNITY RESOURCES - Gemachs
+        'Bridal Gown & Accessories Gemach', 'Baby Equipment Gemach', 'Chosson Clothing Gemach', 'Wig / Sheitel Gemach',
+        // LEGAL & PERMITS - Legal Services
+        'Legal Consulting', 'Contracts', 'Vendor Contract Review',
+        // LEGAL & PERMITS - Marriage & Personal Legal Documentation
+        'Marriage License', 'Name Change Assistance', 'Civil Prenuptial Agreement', 'Halachic Prenuptial Agreement',
+        // LEGAL & PERMITS - Permits & Compliance
+        'General Permits Assistance', 'Public Event Permits', 'Noise Ordinance & Curfew Compliance', 'Fire & Safety Code Review'
+      ]
+    };
+
+    // Helper function to get all locations as flat array for autocomplete
+    function getAllLocations() {
+      const allLocations = [];
+      LOCATION_GROUPS.forEach(group => {
+        group.items.forEach(location => allLocations.push(location));
+      });
+      return allLocations;
+    }
+
+    // Helper function to get all event types as flat array for autocomplete
+    function getAllEventTypes() {
+      const allEvents = [];
+      Object.values(EVENT_TYPES).forEach(category => {
+        category.forEach(event => allEvents.push(event));
+      });
+      return allEvents;
+    }
 
     // Filter state
     const filterState = {
@@ -2604,15 +3006,6 @@
         
         return `
           <div class="vendor-block" data-category="${safeCategory}" tabindex="0" role="group" aria-label="${safeName} – ${safeCategory}">
-            
-            <div class="vendor-title">${safeName}</div>
-            
-            ${safeFeatures.length ? `
-              <div class="vendor-tags">
-                ${safeFeatures.map(f => `<span class="badge">${f}</span>`).join('')}
-          </div>
-              ` : ''}
-            
             <div class="media" data-vid="${vendor.id}" data-idx="0">
               <a href="#" class="media-link" data-link="${vendor.id}" title="View vendor">
                 <div class="media-swatch" style="background: ${MEDIA_BACKGROUNDS[0]};"></div>
@@ -2621,29 +3014,39 @@
               <button class="media-btn media-next" type="button" aria-label="Next">›</button>
             </div>
             
-            <div class="meta-row">
-              <span class="price">From ${fmtShort(priceNum)}</span>
-              <span class="dot">•</span>
-              <span class="meta-location">${safeLocation}</span>
-              <span class="dot">•</span>
-              <span class="meta-availability ${availClass}">
-                ${availabilityText}
-                <span class="avail-info-icon" data-avail-info="true" aria-label="Availability information" title="What does this mean?">i</span>
-              </span>
+            <div class="vendor-block-content">
+              <div class="vendor-title">${safeName}</div>
+              
+              ${safeFeatures.length ? `
+                <div class="vendor-tags">
+                  ${safeFeatures.map(f => `<span class="badge">${f}</span>`).join('')}
+                </div>
+              ` : ''}
+              
+              <div class="meta-row">
+                <span class="price">From ${fmtShort(priceNum)}</span>
+                <span class="dot">•</span>
+                <span class="meta-location">${safeLocation}</span>
+                <span class="dot">•</span>
+                <span class="meta-availability ${availClass}">
+                  ${availabilityText}
+                  <span class="avail-info-icon" data-avail-info="true" aria-label="Availability information" title="What does this mean?">i</span>
+                </span>
               </div>
-            
-            <div class="card-divider" aria-hidden="true"></div>
-            
-            <div class="add-row">
-              <a href="vendor-booking.html?id=${vendor.id}&name=${encodeURIComponent(vendor.name)}&category=${encodeURIComponent(vendor.category)}" class="add-btn" data-id="${vendor.id}" data-cat="${safeCategory}" data-name="${safeName}" data-price="${priceNum}">
-                Book Now
-              </a>
-          </div>
-            
-            <div class="link-row">
-              <a href="#" class="action-link" data-action="message" data-id="${vendor.id}">Message</a>
-              <a href="#" class="action-link" data-action="services" data-id="${vendor.id}">View Services</a>
-              <a href="vendor-detail.html?id=${vendor.id}" class="action-link" data-action="details" data-id="${vendor.id}">Full Details</a>
+              
+              <div class="card-divider" aria-hidden="true"></div>
+              
+              <div class="add-row">
+                <a href="vendor-booking.html?id=${vendor.id}&name=${encodeURIComponent(vendor.name)}&category=${encodeURIComponent(vendor.category)}" class="add-btn" data-id="${vendor.id}" data-cat="${safeCategory}" data-name="${safeName}" data-price="${priceNum}">
+                  Book Now
+                </a>
+              </div>
+              
+              <div class="link-row">
+                <a href="#" class="action-link" data-action="message" data-id="${vendor.id}">Message</a>
+                <a href="#" class="action-link" data-action="services" data-id="${vendor.id}">View Services</a>
+                <a href="vendor-detail.html?id=${vendor.id}" class="action-link" data-action="details" data-id="${vendor.id}">Full Details</a>
+              </div>
             </div>
           </div>
         `;
@@ -2889,6 +3292,7 @@
       if (saveSearchSection) {
         saveSearchSection.style.display = 'block';
       }
+      updateFilterCount();
     }
     
     function hideSaveSearchButton() {
@@ -2896,7 +3300,112 @@
       if (saveSearchSection) {
         saveSearchSection.style.display = 'none';
       }
+      updateFilterCount();
     }
+    
+    // Helper function to format currency (simple version for summary)
+    function formatCurrencyForSummary(value) {
+      if (value === null || value === undefined) return '';
+      return '$' + parseInt(value).toLocaleString('en-US');
+    }
+    
+    // Update filter count indicator and summary
+    function updateFilterCount() {
+      const filtersSummaryEl = document.getElementById('filters-summary');
+      const filtersSidebar = document.querySelector('.filters-sidebar');
+      
+      let count = 0;
+      const summaryParts = [];
+      
+      // Price range
+      if (filterState.priceMin !== null || filterState.priceMax !== null) {
+        count++;
+        const min = filterState.priceMin !== null ? formatCurrencyForSummary(filterState.priceMin) : '';
+        const max = filterState.priceMax !== null ? formatCurrencyForSummary(filterState.priceMax) : '';
+        if (min && max) {
+          summaryParts.push(`${min}–${max}`);
+        } else if (min) {
+          summaryParts.push(`From ${min}`);
+        } else if (max) {
+          summaryParts.push(`Up to ${max}`);
+        }
+      }
+      
+      // Date
+      if (filterState.date) {
+        count++;
+        const date = new Date(filterState.date);
+        const month = date.toLocaleDateString('en-US', { month: 'short' });
+        const year = date.getFullYear();
+        summaryParts.push(`${month} ${year}`);
+      }
+      
+      // Event type
+      if (filterState.eventType) {
+        count++;
+        summaryParts.push(filterState.eventType);
+      }
+      
+      // Update summary
+      if (filtersSummaryEl) {
+        if (summaryParts.length > 0) {
+          filtersSummaryEl.textContent = summaryParts.join(' · ');
+          filtersSummaryEl.classList.add('active');
+        } else {
+          filtersSummaryEl.textContent = '';
+          filtersSummaryEl.classList.remove('active');
+        }
+      }
+      
+      // Note: Filters overlay can be opened manually, no auto-expand needed
+    }
+    
+    // Inline filters control toggle
+    const filtersInlineControl = document.getElementById('filters-inline-control');
+    const filtersSidebar = document.getElementById('filters-sidebar');
+    const filtersOverlay = document.getElementById('filters-overlay');
+    const filtersCloseBtn = document.getElementById('filters-close-btn');
+    
+    function openFilters() {
+      if (filtersSidebar) filtersSidebar.classList.add('open');
+      if (filtersOverlay) filtersOverlay.classList.add('active');
+      if (filtersInlineControl) filtersInlineControl.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeFilters() {
+      if (filtersSidebar) filtersSidebar.classList.remove('open');
+      if (filtersOverlay) filtersOverlay.classList.remove('active');
+      if (filtersInlineControl) filtersInlineControl.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    
+    if (filtersInlineControl) {
+      filtersInlineControl.addEventListener('click', (e) => {
+        e.preventDefault();
+        openFilters();
+      });
+    }
+    
+    if (filtersCloseBtn) {
+      filtersCloseBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeFilters();
+      });
+    }
+    
+    if (filtersOverlay) {
+      filtersOverlay.addEventListener('click', () => {
+        closeFilters();
+      });
+    }
+    
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && filtersSidebar && filtersSidebar.classList.contains('open')) {
+        closeFilters();
+      }
+    });
     
     // Save & Search button handler
     if (saveSearchBtn) {
@@ -2990,7 +3499,6 @@
     filterModalOptions('modal-vendor-categories', 'vendor-categories-search');
 
     // Sidebar filter handlers
-    const sidebarLocationInput = document.getElementById('sidebar-location');
     const sidebarDateInput = document.getElementById('sidebar-date');
     const sidebarPriceMin = document.getElementById('priceMin');
     const sidebarPriceMax = document.getElementById('priceMax');
@@ -2999,15 +3507,6 @@
     // Event Type autocomplete in sidebar
     if (sidebarEventTypeInput) {
       let eventTypeResults = document.getElementById('sidebar-event-type-results');
-      
-      // Get all event types as flat array
-      function getAllEventTypes() {
-        const allEvents = [];
-        Object.values(EVENT_TYPES).forEach(category => {
-          category.forEach(event => allEvents.push(event));
-        });
-        return allEvents;
-      }
       
       // Close dropdown when clicking outside
       document.addEventListener('click', (e) => {
@@ -3059,59 +3558,11 @@
       // Track changes
       sidebarEventTypeInput.addEventListener('change', () => {
         if (sidebarEventTypeInput.value) {
+          filterState.eventType = sidebarEventTypeInput.value;
           showSaveSearchButton();
-        }
-      });
-    }
-
-    // Location autocomplete in sidebar
-    if (sidebarLocationInput) {
-      let locationResults = document.getElementById('sidebar-location-results');
-      
-      // Close dropdown when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!sidebarLocationInput.contains(e.target) && !locationResults.contains(e.target)) {
-          locationResults.style.display = 'none';
-        }
-      });
-
-      sidebarLocationInput.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase().trim();
-        if (query.length < 2) {
-          locationResults.style.display = 'none';
-          return;
-        }
-
-        let html = '';
-        LOCATION_GROUPS.forEach(group => {
-          const matchingItems = group.items.filter(item => 
-            item.toLowerCase().includes(query)
-          );
-          if (matchingItems.length > 0) {
-            html += `<div style="padding:8px 0;border-bottom:1px solid var(--ring);">`;
-            html += `<div style="font-weight:600;color:var(--muted);font-size:0.85rem;margin-bottom:4px;">${group.group}</div>`;
-            matchingItems.forEach(location => {
-              html += `<div style="padding:6px 12px;cursor:pointer;border-radius:12px;transition:background 0.2s;" class="location-option" data-value="${location}" onmouseover="this.style.background='var(--soft)'" onmouseout="this.style.background='transparent'">${location}</div>`;
-            });
-            html += `</div>`;
-          }
-        });
-
-        if (html) {
-          locationResults.innerHTML = html;
-          locationResults.style.display = 'block';
-
-          // Add click handlers
-          locationResults.querySelectorAll('.location-option').forEach(option => {
-            option.addEventListener('click', () => {
-              sidebarLocationInput.value = option.dataset.value;
-              filterState.location = option.dataset.value;
-              locationResults.style.display = 'none';
-              showSaveSearchButton();
-            });
-          });
         } else {
-          locationResults.style.display = 'none';
+          filterState.eventType = null;
+          updateFilterCount();
         }
       });
     }
@@ -3119,23 +3570,115 @@
     // Date filter
     if (sidebarDateInput) {
       sidebarDateInput.addEventListener('change', (e) => {
-        filterState.date = e.target.value;
-        showSaveSearchButton();
+        filterState.date = e.target.value || null;
+        if (filterState.date) {
+          showSaveSearchButton();
+        } else {
+          updateFilterCount();
+        }
       });
     }
 
-    // Price range filters
+    // Price formatting functions
+    function formatCurrency(value) {
+      if (!value || value === '') return '';
+      // Remove all non-numeric characters
+      const numericValue = value.toString().replace(/[^0-9]/g, '');
+      if (numericValue === '') return '';
+      // Format as currency
+      return '$' + parseInt(numericValue).toLocaleString('en-US');
+    }
+    
+    function parseCurrency(value) {
+      if (!value || value === '') return null;
+      // Remove all non-numeric characters
+      const numericValue = value.toString().replace(/[^0-9]/g, '');
+      return numericValue === '' ? null : parseInt(numericValue);
+    }
+
+    // Price range filters with formatting
     if (sidebarPriceMin) {
+      // Format on blur
+      sidebarPriceMin.addEventListener('blur', () => {
+        const numericValue = parseCurrency(sidebarPriceMin.value);
+        if (numericValue !== null) {
+          sidebarPriceMin.value = formatCurrency(numericValue);
+          filterState.priceMin = numericValue;
+        } else {
+          sidebarPriceMin.value = '';
+          filterState.priceMin = null;
+        }
+        validatePriceRange();
+        updateFilterCount();
+        showSaveSearchButton();
+      });
+      
+      // Allow typing numbers only
+      sidebarPriceMin.addEventListener('input', (e) => {
+        // Remove non-numeric characters as user types
+        const numericValue = e.target.value.replace(/[^0-9]/g, '');
+        e.target.value = numericValue;
+        filterState.priceMin = numericValue ? parseInt(numericValue) : null;
+        validatePriceRange();
+        updateFilterCount();
+      });
+      
       sidebarPriceMin.addEventListener('change', () => {
-        filterState.priceMin = sidebarPriceMin.value ? parseInt(sidebarPriceMin.value) : null;
+        const numericValue = parseCurrency(sidebarPriceMin.value);
+        filterState.priceMin = numericValue;
+        validatePriceRange();
+        updateFilterCount();
         showSaveSearchButton();
       });
     }
+    
     if (sidebarPriceMax) {
-      sidebarPriceMax.addEventListener('change', () => {
-        filterState.priceMax = sidebarPriceMax.value ? parseInt(sidebarPriceMax.value) : null;
+      // Format on blur
+      sidebarPriceMax.addEventListener('blur', () => {
+        const numericValue = parseCurrency(sidebarPriceMax.value);
+        if (numericValue !== null) {
+          sidebarPriceMax.value = formatCurrency(numericValue);
+          filterState.priceMax = numericValue;
+        } else {
+          sidebarPriceMax.value = '';
+          filterState.priceMax = null;
+        }
+        validatePriceRange();
+        updateFilterCount();
         showSaveSearchButton();
       });
+      
+      // Allow typing numbers only
+      sidebarPriceMax.addEventListener('input', (e) => {
+        // Remove non-numeric characters as user types
+        const numericValue = e.target.value.replace(/[^0-9]/g, '');
+        e.target.value = numericValue;
+        filterState.priceMax = numericValue ? parseInt(numericValue) : null;
+        validatePriceRange();
+        updateFilterCount();
+      });
+      
+      sidebarPriceMax.addEventListener('change', () => {
+        const numericValue = parseCurrency(sidebarPriceMax.value);
+        filterState.priceMax = numericValue;
+        validatePriceRange();
+        updateFilterCount();
+        showSaveSearchButton();
+      });
+    }
+    
+    // Validate price range (min <= max)
+    function validatePriceRange() {
+      if (filterState.priceMin !== null && filterState.priceMax !== null) {
+        if (filterState.priceMin > filterState.priceMax) {
+          // Swap values if min > max
+          const temp = filterState.priceMin;
+          filterState.priceMin = filterState.priceMax;
+          filterState.priceMax = temp;
+          if (sidebarPriceMin) sidebarPriceMin.value = formatCurrency(filterState.priceMin);
+          if (sidebarPriceMax) sidebarPriceMax.value = formatCurrency(filterState.priceMax);
+        }
+      }
     }
 
     // View toggle
@@ -3147,45 +3690,720 @@
       });
     });
 
-    // Vendor search data structure
-    const VENDOR_SEARCH_DATA = {
-      categories: [
-        {name:'Music & Performers', icon:'🎵', type:'category'},
-        {name:'Photography & Video', icon:'📸', type:'category'},
-        {name:'Catering & Food', icon:'🍽️', type:'category'},
-        {name:'Venue & Halls', icon:'🏛️', type:'category'},
-        {name:'Décor & Flowers', icon:'🌸', type:'category'},
-        {name:'Beauty & Styling', icon:'💄', type:'category'},
-        {name:'Planning & Coordination', icon:'📋', type:'category'},
-        {name:'Transportation', icon:'🚗', type:'category'},
-        {name:'Rentals & Supplies', icon:'🪑', type:'category'},
-        {name:'Religious Services', icon:'✡️', type:'category'},
-        {name:'Invitations & Stationery', icon:'✉️', type:'category'},
-        {name:'Gifts & Favors', icon:'🎁', type:'category'},
-      ],
-      subcategories: [
-        {name:'DJ', parent:'Music & Performers', icon:'🎧', type:'subcategory'},
-        {name:'Live Band', parent:'Music & Performers', icon:'🎸', type:'subcategory'},
-        {name:'Badchan', parent:'Music & Performers', icon:'🎤', type:'subcategory'},
-        {name:'Videography', parent:'Photography & Video', icon:'🎥', type:'subcategory'},
-        {name:'Engagement Photos', parent:'Photography & Video', icon:'💍', type:'subcategory'},
-        {name:'Kosher Catering', parent:'Catering & Food', icon:'✡️', type:'subcategory'},
-        {name:'Buffet Service', parent:'Catering & Food', icon:'🍱', type:'subcategory'},
-        {name:'Bridal Hair', parent:'Beauty & Styling', icon:'💇', type:'subcategory'},
-        {name:'Makeup Artist', parent:'Beauty & Styling', icon:'💄', type:'subcategory'},
-        {name:'Floral Arrangements', parent:'Décor & Flowers', icon:'🌺', type:'subcategory'},
-        {name:'Centerpieces', parent:'Décor & Flowers', icon:'🌷', type:'subcategory'},
-        {name:'Chuppah', parent:'Décor & Flowers', icon:'🏛️', type:'subcategory'},
-        {name:'Tech & Lighting', parent:'Rentals & Supplies', icon:'💡', type:'subcategory'},
-        {name:'Smoke Machine', parent:'Tech & Lighting', icon:'☁️', type:'subcategory'},
-      ]
-    };
+    // Vendor categories - single source of truth for vendor dropdown content
+    const VENDOR_CATEGORIES = [
+      {
+        name: "Venues & Halls",
+        subcategories: [
+          {
+            name: "Venue Types",
+            services: [
+              "Ballroom / Hall",
+              "Outdoor / Tent Venue",
+              "Backyard Event Space",
+              "Rooftop Venue",
+              "Hotel Ballroom",
+              "Shul",
+              "Private Home",
+              "Restaurant",
+              "Chuppah-Only Venue"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Catering & Food",
+        subcategories: [
+          {
+            name: "Catering Services",
+            services: [
+              "Full-Service Caterer",
+              "Drop-Off & Pickup Catering",
+              "Private Chef",
+              "Kiddush Packages",
+              "Shabbos Meal Boxes"
+            ]
+          },
+          {
+            name: "Platters & Boards",
+            services: [
+              "Fruit Platters",
+              "Salad Platters",
+              "Sushi Platters",
+              "Fish Platters / Cured Fish Boards",
+              "Meat Boards / Jerky Boards",
+              "Kosher Charcuterie Boards"
+            ]
+          },
+          {
+            name: "Baked Goods & Pastries",
+            services: [
+              "Pastries (Rugelach etc.)",
+              "Cookies & Cakes",
+              "Miniature Desserts",
+              "Seudah / Jumbo Challah",
+              "Sourdough Breads",
+              "Custom Cakes",
+              "Custom Cookies"
+            ]
+          },
+          {
+            name: "Desserts",
+            services: [
+              "Candy",
+              "Nuts",
+              "Acai Boards",
+              "Hot Chocolate Bar",
+              "Ices / Ice Cream / Sorbet",
+              "Waffle / Crepe Station",
+              "Popcorn Station",
+              "Cotton Candy Station",
+              "Full Viennese & Dessert Table Packages"
+            ]
+          },
+          {
+            name: "Specialty Tables & Food Stations",
+            services: [
+              "Meat Bar / Carving Station",
+              "Live Sushi Bar",
+              "Taco / Shawarma Station",
+              "Meat Pizza Bar",
+              "Dairy Pizza Bar",
+              "Pasta Station"
+            ]
+          },
+          {
+            name: "Beverage Services",
+            services: [
+              "Bar & Bartenders",
+              "Coffee Cart / Espresso Bar",
+              "Smoothie / Juice Bar",
+              "Slush / Slushie Station"
+            ]
+          },
+          {
+            name: "Kosher Supervision",
+            services: [
+              "Mashgichim / Kosher Supervision"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Event Design, Decor & Flowers",
+        subcategories: [
+          {
+            name: "Flowers",
+            services: [
+              "Florist",
+              "Flower Centerpieces",
+              "Floral Installations",
+              "Floral for Chuppah",
+              "Faux Flowers for Chuppah",
+              "Flower Centerpieces Gemach"
+            ]
+          },
+          {
+            name: "Event Décor & Styling",
+            services: [
+              "Backdrop Design",
+              "Balloon Design",
+              "Custom Signage",
+              "Stage Design",
+              "Chuppah Design & Rental",
+              "Full Event Stylist",
+              "LED / Neon Signage",
+              "Custom Candles",
+              "Lighting",
+              "Centerpieces",
+              "Ice Sculptures",
+              "Tablecloths / Linens",
+              "Tablecloths / Linens Gemach",
+              "Centerpieces Gemach"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Event Rentals & Equipment",
+        subcategories: [
+          {
+            name: "Rentals & Supplies",
+            services: [
+              "Tables",
+              "Chairs",
+              "Linens",
+              "Chair Covers",
+              "Lounge Furniture",
+              "Tent Rentals",
+              "Dance Floor",
+              "Staging / Risers",
+              "Heaters",
+              "Fans",
+              "China / Flatware",
+              "Glassware",
+              "Serving Ware",
+              "Kiddush Cups",
+              "Chuppah Rentals",
+              "Emergency Wedding Kit",
+              "Coat Racks",
+              "Game Rentals",
+              "Inflatable Rentals",
+              "Bassinet / Crib Rental",
+              "Tables & Chairs Gemach",
+              "Restroom Trailers"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Event Planning & Event Staff",
+        subcategories: [
+          {
+            name: "Event Staffing",
+            services: [
+              "Waiters",
+              "Kitchen Crew",
+              "Setup & Cleanup Crew",
+              "Security / Crowd Control",
+              "Valet Crew",
+              "EMTs / Paramedics",
+              "Coat Check Attendants",
+              "Bathroom Attendants"
+            ]
+          },
+          {
+            name: "Event Planning",
+            services: [
+              "Event Planner",
+              "Day-Of Coordinator",
+              "Event Producer / Manager",
+              "On-Site Event Manager"
+            ]
+          },
+          {
+            name: "Event Help",
+            services: [
+              "Childcare / Babysitting",
+              "Elder Care Assistance",
+              "General Event Assistance / Event Helpers",
+              "Lost & Found Desk",
+              "Event Stylist / Party Planner"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Music",
+        subcategories: [
+          {
+            name: "Bands & DJs",
+            services: [
+              "One-Man Band",
+              "Full Band",
+              "Orchestra",
+              "DJ"
+            ]
+          },
+          {
+            name: "Individual Instruments",
+            services: [
+              "Keyboard",
+              "Drums",
+              "Guitar",
+              "Trumpet",
+              "Violin",
+              "Clarinet",
+              "Percussion",
+              "Saxophone",
+              "Trombone",
+              "Flute",
+              "Acoustic Guitar",
+              "Electric Guitar",
+              "Electric Violin",
+              "Classical Piano"
+            ]
+          },
+          {
+            name: "Unique Instruments",
+            services: [
+              "Accordion",
+              "Harp",
+              "Bongo Drum",
+              "Bagpipe",
+              "Xylophone",
+              "Cello",
+              "Oud",
+              "Bass",
+              "Steel Drum",
+              "Pan Flute",
+              "Handpan"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Singers & Choirs",
+        subcategories: [
+          {
+            name: "Singers",
+            services: [
+              "Lead Singer",
+              "Chazzan",
+              "Choir",
+              "Child Singer / Soloist",
+              "Badchan",
+              "Kumzits Singer",
+              "Children's Choir",
+              "Female Singer (Women-Only)"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Photography & Video",
+        subcategories: [
+          {
+            name: "Event Coverage",
+            services: [
+              "Photographer",
+              "Videographer",
+              "Live Event Streaming",
+              "Drone Photography / Video",
+              "Magnet Photographer",
+              "Photo + Video Package",
+              "Photo Booth",
+              "Same-Day Slideshow",
+              "Same-Day Video Edit"
+            ]
+          },
+          {
+            name: "Photo & Video Editing",
+            services: [
+              "Video Editing",
+              "Photo Editing",
+              "Album Design & Printing",
+              "Slideshow / Montage Creation"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Lighting / Video / Sound",
+        subcategories: [
+          {
+            name: "Lighting",
+            services: [
+              "Dance Floor Lighting",
+              "DJ Lighting",
+              "DJ Lighting + Technician",
+              "Spotlighting (Stage / Chuppah)",
+              "String Lights",
+              "Chandeliers",
+              "LED Dance Floor"
+            ]
+          },
+          {
+            name: "Sound",
+            services: [
+              "Sound System",
+              "Microphones",
+              "Sound Engineer / Mixer"
+            ]
+          },
+          {
+            name: "Video & AV",
+            services: [
+              "LED Screens",
+              "Projectors",
+              "AV Technician",
+              "Video DJ / Visual Effects",
+              "Lighting Technician"
+            ]
+          },
+          {
+            name: "Special Effects (FX)",
+            services: [
+              "Confetti Machine",
+              "Smoke Machine",
+              "Power Generators"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Womens Wear, Hair & Style",
+        subcategories: [
+          {
+            name: "Bridal Wear",
+            services: [
+              "Bridal Gowns",
+              "Family Gowns",
+              "Bridal Gown & Accessories Gemach"
+            ]
+          },
+          {
+            name: "Makeup Artists",
+            services: [
+              "Bridal Makeup",
+              "On-Site Touch-Up Makeup Artist"
+            ]
+          },
+          {
+            name: "Hair & Sheitel",
+            services: [
+              "Bridal Hair Stylist",
+              "Wig / Sheitel Stylist",
+              "Sheitel Vendor",
+              "Wig / Sheitel Gemach"
+            ]
+          },
+          {
+            name: "Nails & Accessories",
+            services: [
+              "Nail Technician",
+              "Lash Technician",
+              "Brow Styling",
+              "Wedding Sneaker / Dance Shoe Rentals",
+              "Wedding Shoes / Sneakers Gemach"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Mens Wear, Hair & Style",
+        subcategories: [
+          {
+            name: "Men's Wear",
+            services: [
+              "Suits",
+              "Hats",
+              "Shtreimels",
+              "Beckitchies",
+              "Custom Suits",
+              "Shirts",
+              "Ties",
+              "Kittel",
+              "Tallis",
+              "Custom Beckitchies",
+              "Custom Shirts",
+              "Custom Ties",
+              "Clothing Gemach",
+              "Chosson Clothing Gemach"
+            ]
+          },
+          {
+            name: "Men's Grooming & Hair",
+            services: [
+              "Men's Barber",
+              "Kid's Barber",
+              "Men's Barber House Call (On-Site / Day-Of)",
+              "Kid's Barber House Call (On-Site / Day-Of)",
+              "Professional Upsherien Haircuts"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Invitations, Paper & Digital Tools",
+        subcategories: [
+          {
+            name: "Invitations (Print)",
+            services: [
+              "Printed Invitations",
+              "Invitation Design",
+              "Save the Date Cards",
+              "RSVP Cards",
+              "Reception Cards"
+            ]
+          },
+          {
+            name: "Digital Invitations & Guest Management",
+            services: [
+              "Digital Invitations",
+              "Event Website",
+              "Event App",
+              "SMS / WhatsApp RSVP Reminders",
+              "RSVP Management & Tracking",
+              "Guest List Management",
+              "Guest Check-In Systems",
+              "QR Code Displays",
+              "Digital Guest Book",
+              "Digital Seating Charts"
+            ]
+          },
+          {
+            name: "Event Programs & Booklets",
+            services: [
+              "Event Programs",
+              "Simcha / Souvenir Booklets",
+              "Custom Benchers"
+            ]
+          },
+          {
+            name: "Seating & On-Table Paper",
+            services: [
+              "Place Cards",
+              "Escort Cards",
+              "Seating Charts",
+              "Table Numbers",
+              "Menus"
+            ]
+          },
+          {
+            name: "Thank You & Post-Event Paper",
+            services: [
+              "Thank You Cards",
+              "Wedding Favor Tags"
+            ]
+          },
+          {
+            name: "Ceremony Paper",
+            services: [
+              "Ceremony Programs",
+              "Yichud Room Sign"
+            ]
+          },
+          {
+            name: "Branding & Printing Services",
+            services: [
+              "Custom Logos / Monograms",
+              "Graphic Designer",
+              "Printing Services",
+              "Envelope Addressing",
+              "Calligraphy",
+              "Wax Seals",
+              "Custom Stamps"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Religious & Judaica Services",
+        subcategories: [
+          {
+            name: "Religious Services",
+            services: [
+              "Rabbi",
+              "Mesader Kiddushin",
+              "Mohel",
+              "Sofer",
+              "Mashgichim / Kosher Supervisor",
+              "Chazzan",
+              "Mikvah Attendant"
+            ]
+          },
+          {
+            name: "Documents & Texts",
+            services: [
+              "Ketubah",
+              "Tenaim Document",
+              "Benchers",
+              "Siddurim",
+              "Chumashim"
+            ]
+          },
+          {
+            name: "Religious Items",
+            services: [
+              "Kiddush Cup",
+              "Challah Covers",
+              "Havdalah Set",
+              "Torah Scroll Rental"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Transportation & Valet",
+        subcategories: [
+          {
+            name: "Transportation & Valet",
+            services: [
+              "Car / Van Service",
+              "Limo & Party Bus",
+              "Luxury Car Rental",
+              "Chauffeurs & Drivers",
+              "Valet Parking Crew"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Entertainment & Entertainers",
+        subcategories: [
+          {
+            name: "Live Performers",
+            services: [
+              "Magician",
+              "Mentalist",
+              "Comedian",
+              "Game Show Host / Interactive Games",
+              "Simon Says Entertainer"
+            ]
+          },
+          {
+            name: "Kids Entertainment",
+            services: [
+              "Clown",
+              "Face Painter",
+              "Storyteller",
+              "Puppet Show",
+              "Ventriloquist",
+              "Children Performers",
+              "Juggler",
+              "Stilt Walker",
+              "Balloon Twister",
+              "Bike Show",
+              "Bubble Show",
+              "Science Show",
+              "Petting Zoo",
+              "Magic Workshop",
+              "Interactive Games Performer",
+              "Character Performers"
+            ]
+          },
+          {
+            name: "Interactive Experiences & Rentals",
+            services: [
+              "Virtual Reality / VR Entertainment",
+              "Arcade / Game Table Rentals",
+              "Inflatable Rentals",
+              "Carnival / Game Booth Rentals",
+              "Live Polling / Games"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Party Props & Interactive Fun",
+        subcategories: [
+          {
+            name: "Party Props & Shtick Rentals",
+            services: [
+              "Umbrellas",
+              "Parachutes & Arches",
+              "Juggling Props",
+              "Glow & Light Props",
+              "All Shtick Props",
+              "Ropes",
+              "Mazel Tov Signs",
+              "Wedding Shtick Gemach"
+            ]
+          },
+          {
+            name: "Custom Shtick & Apparel",
+            services: [
+              "Custom Clothing"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Gifts",
+        subcategories: [
+          {
+            name: "Gifts",
+            services: [
+              "Wedding Favors",
+              "Guest Gifts",
+              "Welcome Bags",
+              "Gift Bags",
+              "Engraved Gifts",
+              "Pekelach",
+              "Candy / Chocolate Favors",
+              "Custom Cookies",
+              "Personalized Custom Kippahs",
+              "Personalized Judaica",
+              "Children's Activity Kits",
+              "Custom Packaging",
+              "Gift Wrapping"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Gemachs & Community Resources",
+        subcategories: [
+          {
+            name: "Gemachs",
+            services: [
+              "Bridal Gown & Accessories Gemach",
+              "Baby Equipment Gemach",
+              "Chosson Clothing Gemach",
+              "Wig / Sheitel Gemach",
+              "Wedding Shtick Gemach",
+              "Baby Clothing Gemach",
+              "Kids Clothing Gemach",
+              "Gowns Gemach",
+              "Simcha Supplies Gemach",
+              "Wedding Shoes / Sneakers Gemach",
+              "Centerpieces Gemach",
+              "Tablecloths / Linens Gemach",
+              "Tables & Chairs Gemach",
+              "Kosher Kitchen Setup Gemach"
+            ]
+          }
+        ]
+      },
+      {
+        name: "Legal & Permits",
+        subcategories: [
+          {
+            name: "Legal Services",
+            services: [
+              "Legal Consulting",
+              "Contracts",
+              "Vendor Contract Review"
+            ]
+          },
+          {
+            name: "Marriage & Personal Legal Documentation",
+            services: [
+              "Marriage License",
+              "Name Change Assistance",
+              "Civil Prenuptial Agreement",
+              "Halachic Prenuptial Agreement"
+            ]
+          },
+          {
+            name: "Permits & Compliance",
+            services: [
+              "General Permits Assistance",
+              "Public Event Permits",
+              "Noise Ordinance & Curfew Compliance",
+              "Fire & Safety Code Review",
+              "Tent / Temporary Structure Compliance",
+              "Raffle / Auction Legal Compliance",
+              "Power & Electrical Compliance"
+            ]
+          },
+          {
+            name: "Event Insurance",
+            services: [
+              "Event Insurance"
+            ]
+          },
+          {
+            name: "City & Municipal Permits",
+            services: [
+              "City Permits",
+              "Noise Permits",
+              "Street Closures"
+            ]
+          }
+        ]
+      }
+    ];
     
-    // Search state
+    // Vendor selection state
+    let selectedCategory = null;
+    let selectedSubcategory = null;
+    let selectedService = null;
+    
+    // Search state (for location and vendor selection)
     const searchState = {
       selectedVendor: null,
-      selectedCategory: null,
-      selectedSubcategory: null,
       selectedLocation: null,
       isIndividualVendor: false
     };
@@ -3196,36 +4414,126 @@
     const locationDropdown = document.getElementById('locationDropdown');
     const searchBtn = document.querySelector('.search-btn');
     
-    // Vendor search functions
-    function getVendorSearchResults(query) {
-      if (!query || query.length < 1) {
-        // Show all categories when empty
-        return {
-          categories: VENDOR_SEARCH_DATA.categories,
-          subcategories: [],
-          vendors: []
-        };
+    // Helper: Get subcategories for a category
+    function getSubcategoriesForCategory(categoryName) {
+      const category = VENDOR_CATEGORIES.find(cat => cat.name === categoryName);
+      if (!category) return [];
+      return category.subcategories.map(sub => ({
+        name: sub.name,
+        parent: categoryName
+      }));
+    }
+    
+    // Helper: Get services for a subcategory
+    function getServicesForSubcategory(categoryName, subcategoryName) {
+      const category = VENDOR_CATEGORIES.find(cat => cat.name === categoryName);
+      if (!category) return [];
+      const subcategory = category.subcategories.find(sub => sub.name === subcategoryName);
+      if (!subcategory) return [];
+      return subcategory.services.map(serviceName => ({
+          name: serviceName,
+          type: 'service'
+        }));
       }
       
+    // Helper: Get vendors for a service (for search results, not dropdown)
+    function getVendorsForService(serviceName) {
+      // Map service to vendor category and filter vendors
+      return MOCK_VENDORS.filter(v => {
+        // Simple matching - in production this would be more sophisticated
+        const serviceLower = serviceName.toLowerCase();
+        const categoryMatch = v.category.toLowerCase().includes(serviceLower.split(' ')[0]);
+        return categoryMatch;
+      }).slice(0, 10).map(v => ({
+        name: v.name,
+        category: v.category,
+        icon: '🏢',
+        type: 'vendor',
+        id: v.id
+      }));
+    }
+    
+    // Vendor search functions - updated for progressive selection
+    function getVendorSearchResults(query) {
       const lowerQuery = query.toLowerCase();
       const results = {
         categories: [],
         subcategories: [],
+        services: [],
         vendors: []
       };
       
-      // Priority 1: Categories
-      results.categories = VENDOR_SEARCH_DATA.categories.filter(cat => 
-        cat.name.toLowerCase().includes(lowerQuery)
-      );
+      // Progressive disclosure: show items based on selection state
+      if (!selectedCategory && !query) {
+        // Step 1: Show all categories
+        results.categories = VENDOR_CATEGORIES.map(cat => ({
+          name: cat.name,
+          icon: '📋', // Default icon, can be customized
+          type: 'category'
+        }));
+      } else if (selectedCategory && !selectedSubcategory) {
+        // Step 2: Show only subcategories (category list removed)
+        const subcats = getSubcategoriesForCategory(selectedCategory);
+        if (!query) {
+          results.subcategories = subcats;
+        } else {
+          results.subcategories = subcats.filter(sub => 
+            sub.name.toLowerCase().includes(lowerQuery)
+          );
+        }
+      } else if (selectedCategory && selectedSubcategory && !selectedService) {
+        // Step 3: Show only services (category and subcategory lists removed)
+        const services = getServicesForSubcategory(selectedCategory, selectedSubcategory);
+        if (!query) {
+          results.services = services;
+        } else {
+          results.services = services.filter(s => 
+            s.name.toLowerCase().includes(lowerQuery)
+          );
+        }
+      }
       
-      // Priority 2: Sub-categories
-      results.subcategories = VENDOR_SEARCH_DATA.subcategories.filter(sub => 
-        sub.name.toLowerCase().includes(lowerQuery) ||
-        sub.parent.toLowerCase().includes(lowerQuery)
-      );
-      
-      // Priority 3: Vendor names
+      // If there's a query and no selection state, search across all levels
+      if (query && !selectedCategory) {
+        // Search categories
+        results.categories = VENDOR_CATEGORIES
+          .filter(cat => cat.name.toLowerCase().includes(lowerQuery))
+          .map(cat => ({
+            name: cat.name,
+            icon: '📋',
+            type: 'category'
+          }));
+        
+        // Search subcategories
+        VENDOR_CATEGORIES.forEach(cat => {
+          cat.subcategories.forEach(sub => {
+            if (sub.name.toLowerCase().includes(lowerQuery) || 
+                cat.name.toLowerCase().includes(lowerQuery)) {
+              results.subcategories.push({
+                name: sub.name,
+                parent: cat.name,
+                icon: '📋'
+              });
+            }
+          });
+        });
+        
+        // Search services
+        VENDOR_CATEGORIES.forEach(cat => {
+          cat.subcategories.forEach(sub => {
+            sub.services.forEach(serviceName => {
+              if (serviceName.toLowerCase().includes(lowerQuery)) {
+                results.services.push({
+                  name: serviceName,
+                  type: 'service'
+                });
+              }
+            });
+          });
+        });
+        results.services = results.services.slice(0, 10);
+        
+        // Search vendors
       results.vendors = MOCK_VENDORS.filter(v => {
         const nameMatch = v.name.toLowerCase().includes(lowerQuery);
         const categoryMatch = v.category.toLowerCase().includes(lowerQuery);
@@ -3237,6 +4545,7 @@
         type: 'vendor',
         id: v.id
       }));
+      }
       
       return results;
     }
@@ -3245,8 +4554,25 @@
       const results = getVendorSearchResults(query);
       let html = '<div class="dropdown-content">';
       
-      // Categories
-      if (results.categories.length > 0) {
+      // Show breadcrumb/context if drilling down
+      if (selectedCategory || selectedSubcategory || selectedService) {
+        html += '<div class="dropdown-group" style="border-bottom:1px solid var(--ring);padding-bottom:8px;margin-bottom:8px;">';
+        html += '<div style="font-size:0.85rem;color:var(--muted);padding:4px 12px;">';
+        if (selectedCategory) {
+          html += `<span style="cursor:pointer;" data-action="reset-drill">📋 ${escapeHtml(selectedCategory)}</span>`;
+          if (selectedSubcategory) {
+            html += ` <span>›</span> <span style="cursor:pointer;" data-action="reset-to-category">${escapeHtml(selectedSubcategory)}</span>`;
+            if (selectedService) {
+              html += ` <span>›</span> <span>${escapeHtml(selectedService)}</span>`;
+            }
+          }
+        }
+        html += '</div>';
+        html += '</div>';
+      }
+      
+      // Categories (show only in Step 1 - no category selected yet)
+      if (results.categories.length > 0 && !selectedCategory) {
         html += '<div class="dropdown-group"><div class="dropdown-group-title">Categories</div>';
         results.categories.forEach(item => {
           html += `<div class="dropdown-item" data-type="category" data-value="${escapeHtml(item.name)}">
@@ -3257,23 +4583,32 @@
         html += '</div>';
       }
       
-      // Subcategories
-      if (results.subcategories.length > 0) {
+      // Subcategories (show only in Step 2 - category selected, subcategory not selected)
+      if (results.subcategories.length > 0 && selectedCategory && !selectedSubcategory) {
         html += '<div class="dropdown-group"><div class="dropdown-group-title">Subcategories</div>';
         results.subcategories.forEach(item => {
           html += `<div class="dropdown-item" data-type="subcategory" data-value="${escapeHtml(item.name)}" data-parent="${escapeHtml(item.parent)}">
-            <div class="dropdown-icon">${item.icon}</div>
-            <div>
+            <div class="dropdown-icon">${item.icon || '📋'}</div>
               <div>${escapeHtml(item.name)}</div>
-              <div style="font-size:0.85rem;color:var(--muted);">${escapeHtml(item.parent)}</div>
-            </div>
           </div>`;
         });
         html += '</div>';
       }
       
-      // Vendors
-      if (results.vendors.length > 0) {
+      // Services (show only in Step 3 - subcategory selected, service not selected)
+      if (results.services.length > 0 && selectedCategory && selectedSubcategory && !selectedService) {
+        html += '<div class="dropdown-group"><div class="dropdown-group-title">Services</div>';
+        results.services.forEach(item => {
+          html += `<div class="dropdown-item" data-type="service" data-value="${escapeHtml(item.name)}">
+            <div class="dropdown-icon">📋</div>
+            <div>${escapeHtml(item.name)}</div>
+          </div>`;
+        });
+        html += '</div>';
+      }
+      
+      // Vendors (only show when searching, not in progressive flow)
+      if (results.vendors.length > 0 && query && !selectedCategory) {
         html += '<div class="dropdown-group"><div class="dropdown-group-title">Vendors</div>';
         results.vendors.forEach(item => {
           html += `<div class="dropdown-item" data-type="vendor" data-id="${item.id}">
@@ -3287,13 +4622,15 @@
         html += '</div>';
       }
       
-      // If no query, show all categories
-      if (!query && results.categories.length === 0) {
+      // If no results at any level and no selection state, show all categories
+      if (results.categories.length === 0 && results.subcategories.length === 0 && 
+          results.services.length === 0 && results.vendors.length === 0 && !query &&
+          !selectedCategory && !selectedSubcategory && !selectedService) {
         html += '<div class="dropdown-group"><div class="dropdown-group-title">All Categories</div>';
-        VENDOR_SEARCH_DATA.categories.forEach(item => {
-          html += `<div class="dropdown-item" data-type="category" data-value="${escapeHtml(item.name)}">
-            <div class="dropdown-icon">${item.icon}</div>
-            <div>${escapeHtml(item.name)}</div>
+        VENDOR_CATEGORIES.forEach(cat => {
+          html += `<div class="dropdown-item" data-type="category" data-value="${escapeHtml(cat.name)}">
+            <div class="dropdown-icon">📋</div>
+            <div>${escapeHtml(cat.name)}</div>
           </div>`;
         });
         html += '</div>';
@@ -3303,42 +4640,84 @@
       vendorDropdown.innerHTML = html;
       vendorDropdown.classList.add('show');
       
-      // Add click handlers
+      // Add click handlers for breadcrumb navigation
+      vendorDropdown.querySelectorAll('[data-action="reset-drill"]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectedCategory = null;
+          selectedSubcategory = null;
+          selectedService = null;
+          renderVendorDropdown('');
+          vendorDropdown.classList.add('show');
+        });
+      });
+      
+      vendorDropdown.querySelectorAll('[data-action="reset-to-category"]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectedSubcategory = null;
+          selectedService = null;
+          renderVendorDropdown('');
+          vendorDropdown.classList.add('show');
+        });
+      });
+      
+      // Add click handlers for progressive selection
       vendorDropdown.querySelectorAll('.dropdown-item').forEach(item => {
-        item.addEventListener('click', () => {
+        item.addEventListener('click', (e) => {
+          e.stopPropagation(); // Prevent event from bubbling to document click handler
           const type = item.dataset.type;
           const value = item.dataset.value;
           const id = item.dataset.id;
           
           if (type === 'vendor' && id) {
-            // Individual vendor selected - redirect immediately
+            // Vendor selected - close dropdown and navigate
             searchState.selectedVendor = id;
             searchState.isIndividualVendor = true;
             vendorSearchInput.value = item.querySelector('div > div').textContent;
+            // Reset selection state
+            selectedCategory = null;
+            selectedSubcategory = null;
+            selectedService = null;
             vendorDropdown.classList.remove('show');
             window.location.href = `vendor-detail.html?id=${id}`;
           } else if (type === 'category') {
-            // Category selected - focus location field
-            searchState.selectedCategory = value;
-            searchState.selectedSubcategory = null;
-            searchState.isIndividualVendor = false;
+            // Step 1: Category selected - show subcategories (keep dropdown open)
+            selectedCategory = value;
+            selectedSubcategory = null;
+            selectedService = null;
             vendorSearchInput.value = value;
-            vendorDropdown.classList.remove('show');
-            locationSearchInput.focus();
-            // Open location dropdown
-            renderLocationDropdown();
-            locationDropdown.classList.add('show');
+            // Clear dropdown content and render ONLY subcategories (keep dropdown open)
+            renderVendorDropdown('');
+            // Ensure dropdown stays open
+            vendorDropdown.classList.add('show');
           } else if (type === 'subcategory') {
-            // Subcategory selected - focus location field
-            searchState.selectedSubcategory = value;
-            searchState.selectedCategory = item.dataset.parent;
-            searchState.isIndividualVendor = false;
+            // Step 2: Subcategory selected - show services (keep dropdown open)
+            selectedSubcategory = value;
+            selectedService = null;
+            if (!selectedCategory) {
+              selectedCategory = item.dataset.parent;
+            }
             vendorSearchInput.value = value;
+            // Replace dropdown content with services (keep dropdown open)
+            renderVendorDropdown('');
+            // Ensure dropdown stays open
+            vendorDropdown.classList.add('show');
+          } else if (type === 'service') {
+            // Step 3: Service selected - close dropdown and move focus to location
+            selectedService = value;
+            vendorSearchInput.value = value;
+            // DO NOT call renderVendorDropdown()
+            // Close dropdown and focus location input
             vendorDropdown.classList.remove('show');
-            locationSearchInput.focus();
-            // Open location dropdown
-            renderLocationDropdown();
-            locationDropdown.classList.add('show');
+            if (locationSearchInput) {
+              locationSearchInput.focus();
+              // Open location dropdown if it normally opens on focus
+              if (locationDropdown) {
+                renderLocationDropdown('us', locationSearchInput.value);
+                locationDropdown.classList.add('show');
+              }
+            }
           }
         });
       });
@@ -3426,8 +4805,8 @@
           locationSearchInput.value = value;
           locationDropdown.classList.remove('show');
           
-          // If category/subcategory was selected, trigger search
-          if (searchState.selectedCategory || searchState.selectedSubcategory) {
+          // If category/subcategory/service was selected, trigger search
+          if (selectedCategory || selectedSubcategory || selectedService) {
             executeSearch();
           }
         });
@@ -3441,25 +4820,26 @@
         return;
       }
       
-      if (searchState.selectedCategory || searchState.selectedSubcategory) {
+      if (selectedCategory || selectedSubcategory || selectedService) {
         if (searchState.selectedLocation) {
-          // Category + Location -> show results page
+          // Category/Subcategory/Service + Location -> show results page
           // Filter vendors by category and location
           let filtered = MOCK_VENDORS;
           
-          if (searchState.selectedCategory) {
+          if (selectedCategory) {
+            // Map VENDOR_CATEGORIES to vendor category keys
             const categoryMap = {
-              'Music & Performers': 'music',
-              'Photography & Video': 'photography',
-              'Catering & Food': 'catering',
-              'Venue & Halls': 'venue',
-              'Décor & Flowers': 'florist',
-              'Beauty & Styling': 'beauty',
-              'Planning & Coordination': 'planning',
-              'Transportation': 'transportation',
-              'Rentals & Supplies': 'rentals'
+              'MUSIC': 'music',
+              'PHOTOGRAPHY & VIDEO': 'photography',
+              'CATERING & FOOD': 'catering',
+              'VENUES & HALLS': 'venue',
+              'EVENT DESIGN, DECOR & FLOWERS': 'florist',
+              'WOMENS WEAR, HAIR & STYLE': 'beauty',
+              'EVENT PLANNING & EVENT STAFF': 'planning',
+              'TRANSPORTATION & VALET': 'transportation',
+              'EVENT RENTALS & EQUIPMENT': 'rentals'
             };
-            const catKey = categoryMap[searchState.selectedCategory];
+            const catKey = categoryMap[selectedCategory.toUpperCase()];
             if (catKey) {
               filtered = filtered.filter(v => v.category === catKey);
             }
@@ -3476,28 +4856,34 @@
           // Update title
           const sectionTitle = document.querySelector('.section-title');
           if (sectionTitle) {
-            const searchTerm = searchState.selectedSubcategory || searchState.selectedCategory;
+            const searchTerm = selectedService || selectedSubcategory || selectedCategory;
             sectionTitle.textContent = `Search Results: ${searchTerm} in ${searchState.selectedLocation}`;
           }
         } else {
-          // Category only - show category results
+          // Category/Subcategory/Service only - show results
           let filtered = MOCK_VENDORS;
           const categoryMap = {
-            'Music & Performers': 'music',
-            'Photography & Video': 'photography',
-            'Catering & Food': 'catering',
-            'Venue & Halls': 'venue',
-            'Décor & Flowers': 'florist',
-            'Beauty & Styling': 'beauty',
-            'Planning & Coordination': 'planning',
-            'Transportation': 'transportation',
-            'Rentals & Supplies': 'rentals'
+            'MUSIC': 'music',
+            'PHOTOGRAPHY & VIDEO': 'photography',
+            'CATERING & FOOD': 'catering',
+            'VENUES & HALLS': 'venue',
+            'EVENT DESIGN, DECOR & FLOWERS': 'florist',
+            'WOMENS WEAR, HAIR & STYLE': 'beauty',
+            'EVENT PLANNING & EVENT STAFF': 'planning',
+            'TRANSPORTATION & VALET': 'transportation',
+            'EVENT RENTALS & EQUIPMENT': 'rentals'
           };
-          const catKey = categoryMap[searchState.selectedCategory];
+          const catKey = categoryMap[selectedCategory?.toUpperCase()];
           if (catKey) {
             filtered = filtered.filter(v => v.category === catKey);
           }
           renderVendors(filtered);
+          
+          // Update title
+          const sectionTitle = document.querySelector('.section-title');
+          if (sectionTitle) {
+            sectionTitle.textContent = `Search Results: ${selectedService || selectedSubcategory || selectedCategory}`;
+          }
         }
       }
     }
@@ -3509,7 +4895,15 @@
       const openVendorDropdown = () => {
         // Close location dropdown when opening vendor dropdown
         locationDropdown.classList.remove('show');
+        // Reset selection if input is empty, otherwise maintain current state
+        if (vendorSearchInput.value.trim() === '') {
+          selectedCategory = null;
+          selectedSubcategory = null;
+          selectedService = null;
+          renderVendorDropdown('');
+        } else {
         renderVendorDropdown(vendorSearchInput.value);
+        }
         vendorDropdown.classList.add('show');
       };
       
@@ -3528,14 +4922,38 @@
         
         // Close location dropdown when typing in vendor field
         locationDropdown.classList.remove('show');
-        // Show dropdown immediately when typing
+        
+        debounceTimer = setTimeout(() => {
+          if (query.trim() === '') {
+            // Reset selection when input is cleared - back to category view
+            selectedCategory = null;
+            selectedSubcategory = null;
+            selectedService = null;
+            renderVendorDropdown('');
+          } else {
+            // Filter within current selection level without resetting
         renderVendorDropdown(query);
+          }
         vendorDropdown.classList.add('show');
+        }, CONFIG.searchDebounceMs);
       });
       
       vendorSearchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          // Reset selection and close dropdown
+          selectedCategory = null;
+          selectedSubcategory = null;
+          selectedService = null;
+          vendorDropdown.classList.remove('show');
+          e.preventDefault();
+          return;
+        }
         if (e.key === 'Enter') {
           executeSearch();
+          // Reset selection on search execution
+          selectedCategory = null;
+          selectedSubcategory = null;
+          selectedService = null;
           vendorDropdown.classList.remove('show');
           locationDropdown.classList.remove('show');
         }
