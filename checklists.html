@@ -322,19 +322,45 @@
       list-style:none;
     }
     .event-list li{
-      padding:8px 0;
-      color:var(--muted);
+      margin:0;
+      padding:0;
       border-bottom:1px solid var(--soft);
     }
     .event-list li:last-child{
       border-bottom:none;
     }
     .event-list a{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 16px;
       color:var(--ink);
       font-weight:500;
-      transition:color 0.2s;
+      text-decoration:none;
+      transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor:pointer;
+      border-radius:8px;
+      margin:2px 0;
+      position:relative;
     }
     .event-list a:hover{
+      background:var(--soft);
+      color:var(--brand);
+      transform:translateX(4px);
+      padding-left:20px;
+    }
+    .event-list a::after{
+      content:'→';
+      color:var(--muted);
+      font-size:1.1rem;
+      font-weight:400;
+      opacity:0;
+      transform:translateX(-4px);
+      transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .event-list a:hover::after{
+      opacity:1;
+      transform:translateX(0);
       color:var(--brand);
     }
 
@@ -419,6 +445,159 @@
         right:-8px;
       }
     }
+
+    /* Enhanced Checklist Styles */
+    .checklist-header{
+      margin-bottom:32px;
+    }
+    .progress-bar-container{
+      margin-top:16px;
+      margin-bottom:24px;
+    }
+    .progress-bar{
+      height:8px;
+      background:var(--soft);
+      border-radius:999px;
+      overflow:hidden;
+      margin-bottom:8px;
+    }
+    .progress-bar-fill{
+      height:100%;
+      background:linear-gradient(90deg, var(--accent2) 0%, var(--grad-2) 50%, var(--accent1) 100%);
+      border-radius:999px;
+      transition:width 0.4s ease;
+    }
+    .progress-text{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:0.9rem;
+      color:var(--muted);
+    }
+    .progress-percentage{
+      font-weight:600;
+      color:var(--ink);
+    }
+    .checklist-item{
+      display:flex;
+      align-items:flex-start;
+      gap:16px;
+      padding:20px;
+      background:#fff;
+      border:2px solid var(--ring);
+      border-radius:16px;
+      margin-bottom:16px;
+      transition:all 0.2s ease;
+      position:relative;
+    }
+    .checklist-item:hover{
+      border-color:#d4cbb2;
+      box-shadow:0 4px 12px rgba(16,24,40,.08);
+      transform:translateY(-1px);
+    }
+    .checklist-item.completed{
+      background:var(--soft);
+      border-color:#d4cbb2;
+    }
+    .checklist-item.completed .checklist-item-label{
+      text-decoration:line-through;
+      color:var(--muted);
+    }
+    .checklist-item-checkbox{
+      margin-top:2px;
+      width:20px;
+      height:20px;
+      cursor:pointer;
+      flex-shrink:0;
+      accent-color:var(--brand);
+    }
+    .checklist-item-content{
+      flex:1;
+      min-width:0;
+    }
+    .checklist-item-label{
+      font-weight:600;
+      font-size:1rem;
+      color:var(--ink);
+      margin-bottom:4px;
+      line-height:1.5;
+      cursor:pointer;
+    }
+    .checklist-item-actions{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-shrink:0;
+    }
+    .btn-find-vendors{
+      padding:8px 18px;
+      background:#fff;
+      color:var(--ink);
+      border:1.5px solid var(--ring);
+      border-radius:999px;
+      font-weight:600;
+      font-size:0.875rem;
+      letter-spacing:0.01em;
+      cursor:pointer;
+      transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space:nowrap;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      box-shadow:0 1px 3px rgba(0,0,0,0.04);
+      position:relative;
+    }
+    .btn-find-vendors::before{
+      content:'';
+      position:absolute;
+      inset:0;
+      border-radius:999px;
+      background:linear-gradient(135deg, rgba(184,168,255,0.08) 0%, rgba(255,122,182,0.08) 100%);
+      opacity:0;
+      transition:opacity 0.2s ease;
+      pointer-events:none;
+    }
+    .btn-find-vendors:hover{
+      background:#fff;
+      border-color:var(--grad-2);
+      color:var(--ink);
+      transform:translateY(-1px);
+      box-shadow:0 4px 12px rgba(184,168,255,0.15), 0 2px 4px rgba(0,0,0,0.06);
+    }
+    .btn-find-vendors:hover::before{
+      opacity:1;
+    }
+    .btn-find-vendors:active{
+      transform:translateY(0);
+      box-shadow:0 1px 3px rgba(0,0,0,0.04);
+      transition:all 0.1s ease;
+    }
+    .checklist-item-icon{
+      font-size:0.95rem;
+      opacity:0.7;
+      transition:opacity 0.2s ease, transform 0.2s ease;
+    }
+    .btn-find-vendors:hover .checklist-item-icon{
+      opacity:1;
+      transform:scale(1.05);
+    }
+    @media (max-width: 768px) {
+      .checklist-item{
+        flex-direction:column;
+        gap:12px;
+      }
+      .checklist-item-actions{
+        width:100%;
+      }
+      .btn-find-vendors{
+        flex:1;
+        justify-content:center;
+      }
+      .checklist-header{
+        margin-bottom:24px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -467,10 +646,31 @@
   <!-- Main Content -->
   <div class="container">
     <h1 class="page-title">Event Checklists</h1>
-    <p class="page-subtitle">Select an event type to view its checklist</p>
+    <p class="page-subtitle" id="pageSubtitle">Select an event type to view its checklist</p>
     
+    <!-- Event Selection View -->
     <div class="event-categories" id="eventCategories">
       <!-- Event categories will be populated by JavaScript -->
+    </div>
+    
+    <!-- Checklist View -->
+      <div id="checklistView" style="display:none;" role="region" aria-labelledby="checklistEventName">
+      <div class="checklist-header">
+        <button id="backToEvents" style="background:transparent;border:1px solid var(--ring);color:var(--ink);padding:8px 16px;border-radius:8px;font-weight:500;font-size:0.9rem;cursor:pointer;transition:all 0.2s;margin-bottom:16px;" aria-label="Return to event selection">← Back to Events</button>
+        <h2 id="checklistEventName" style="font-size:1.8rem;font-weight:800;color:var(--ink);margin-bottom:8px;"></h2>
+        <div class="progress-bar-container">
+          <div class="progress-bar">
+            <div class="progress-bar-fill" id="progressBarFill" style="width:0%"></div>
+          </div>
+          <div class="progress-text">
+            <span id="checklistProgress" aria-live="polite" aria-atomic="true"></span>
+            <span class="progress-percentage" id="progressPercentage">0%</span>
+          </div>
+        </div>
+      </div>
+      <div id="checklistItems" role="list">
+        <!-- Checklist items will be populated by JavaScript -->
+      </div>
     </div>
   </div>
 
@@ -483,6 +683,300 @@
       'Holiday Events': ['Purim Party', 'Chanukah Party', 'Shabbos Nachamu']
     };
 
+    // Checklist data structure
+    const CHECKLISTS = {
+      'Bris': [
+        { id: 'mohel', label: 'Book Mohel', completed: false },
+        { id: 'venue', label: 'Reserve venue or home setup', completed: false },
+        { id: 'catering', label: 'Arrange catering / Kiddush', completed: false },
+        { id: 'chairs', label: 'Order chairs and tables', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false },
+        { id: 'sandek', label: 'Choose Sandek and Kvatter', completed: false },
+        { id: 'name', label: 'Decide on baby\'s Hebrew name', completed: false }
+      ],
+      'Vach Nacht': [
+        { id: 'venue', label: 'Reserve venue or home setup', completed: false },
+        { id: 'catering', label: 'Arrange catering / refreshments', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false },
+        { id: 'entertainment', label: 'Book entertainment if desired', completed: false }
+      ],
+      'Kiddush': [
+        { id: 'venue', label: 'Reserve shul hall or venue', completed: false },
+        { id: 'catering', label: 'Arrange Kiddush catering', completed: false },
+        { id: 'budget', label: 'Set budget', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false }
+      ],
+      'Baby Naming': [
+        { id: 'venue', label: 'Reserve venue or home setup', completed: false },
+        { id: 'catering', label: 'Arrange catering / Kiddush', completed: false },
+        { id: 'name', label: 'Decide on baby\'s Hebrew name', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false }
+      ],
+      'Pidyon Haben': [
+        { id: 'kohen', label: 'Arrange Kohen for ceremony', completed: false },
+        { id: 'venue', label: 'Reserve venue or home setup', completed: false },
+        { id: 'catering', label: 'Arrange catering', completed: false },
+        { id: 'coins', label: 'Prepare silver coins for redemption', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false }
+      ],
+      'Upsherin': [
+        { id: 'venue', label: 'Reserve venue or home setup', completed: false },
+        { id: 'catering', label: 'Arrange catering / refreshments', completed: false },
+        { id: 'barber', label: 'Arrange barber / first haircut', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false }
+      ],
+      'Child Birthday': [
+        { id: 'venue', label: 'Reserve venue or home setup', completed: false },
+        { id: 'theme', label: 'Choose theme and decorations', completed: false },
+        { id: 'catering', label: 'Arrange catering / cake', completed: false },
+        { id: 'entertainment', label: 'Book entertainment / activities', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false }
+      ],
+      'Bar Mitzvah': [
+        { id: 'shul', label: 'Reserve shul for service', completed: false },
+        { id: 'venue', label: 'Reserve reception venue', completed: false },
+        { id: 'catering', label: 'Hire caterer', completed: false },
+        { id: 'music', label: 'Book music / DJ', completed: false },
+        { id: 'photography', label: 'Hire photographer / videographer', completed: false },
+        { id: 'invitations', label: 'Order and send invitations', completed: false },
+        { id: 'decor', label: 'Plan décor and theme', completed: false },
+        { id: 'speech', label: 'Prepare Bar Mitzvah speech', completed: false }
+      ],
+      'Bat Mitzvah': [
+        { id: 'venue', label: 'Reserve venue', completed: false },
+        { id: 'catering', label: 'Hire caterer', completed: false },
+        { id: 'music', label: 'Book music / DJ', completed: false },
+        { id: 'photography', label: 'Hire photographer / videographer', completed: false },
+        { id: 'invitations', label: 'Order and send invitations', completed: false },
+        { id: 'decor', label: 'Plan décor and theme', completed: false },
+        { id: 'speech', label: 'Prepare Bat Mitzvah speech', completed: false }
+      ],
+      'Sweet 16': [
+        { id: 'venue', label: 'Reserve venue', completed: false },
+        { id: 'theme', label: 'Choose theme and decorations', completed: false },
+        { id: 'catering', label: 'Hire caterer', completed: false },
+        { id: 'music', label: 'Book music / DJ', completed: false },
+        { id: 'photography', label: 'Hire photographer / videographer', completed: false },
+        { id: 'invitations', label: 'Order and send invitations', completed: false }
+      ],
+      'Graduation Party': [
+        { id: 'venue', label: 'Reserve venue', completed: false },
+        { id: 'catering', label: 'Hire caterer', completed: false },
+        { id: 'music', label: 'Book music / DJ', completed: false },
+        { id: 'photography', label: 'Hire photographer', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false },
+        { id: 'decor', label: 'Plan decorations', completed: false }
+      ],
+      'Teenager Birthday': [
+        { id: 'venue', label: 'Reserve venue or home setup', completed: false },
+        { id: 'theme', label: 'Choose theme', completed: false },
+        { id: 'catering', label: 'Arrange catering / cake', completed: false },
+        { id: 'entertainment', label: 'Book entertainment', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false }
+      ],
+      'Proposal': [
+        { id: 'location', label: 'Choose proposal location', completed: false },
+        { id: 'ring', label: 'Purchase engagement ring', completed: false },
+        { id: 'photographer', label: 'Hire photographer (optional)', completed: false },
+        { id: 'reservations', label: 'Make dinner reservations', completed: false }
+      ],
+      'Engagement (Vort / Tenoyim)': [
+        { id: 'venue', label: 'Reserve venue', completed: false },
+        { id: 'catering', label: 'Arrange catering', completed: false },
+        { id: 'rabbinic', label: 'Arrange Rabbinic officiant', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false },
+        { id: 'ketubah', label: 'Order engagement contract (if applicable)', completed: false }
+      ],
+      'Wedding': [
+        { id: 'venue', label: 'Book venue', completed: false },
+        { id: 'caterer', label: 'Hire caterer', completed: false },
+        { id: 'photography', label: 'Hire photographer', completed: false },
+        { id: 'videography', label: 'Hire videographer', completed: false },
+        { id: 'music', label: 'Book music / band / DJ', completed: false },
+        { id: 'flowers', label: 'Arrange flowers and décor', completed: false },
+        { id: 'officiant', label: 'Arrange Rabbinic officiant', completed: false },
+        { id: 'invitations', label: 'Order and send invitations', completed: false },
+        { id: 'attire', label: 'Order wedding attire', completed: false },
+        { id: 'hair', label: 'Book hair and makeup', completed: false }
+      ],
+      'Sheva Brachos': [
+        { id: 'venue', label: 'Reserve venue or home setup', completed: false },
+        { id: 'catering', label: 'Arrange catering', completed: false },
+        { id: 'hosts', label: 'Arrange hosts for each night', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false }
+      ],
+      'Anniversary': [
+        { id: 'venue', label: 'Reserve venue or restaurant', completed: false },
+        { id: 'catering', label: 'Arrange catering (if needed)', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false },
+        { id: 'gifts', label: 'Plan gifts / favors', completed: false }
+      ],
+      'Adult Birthday': [
+        { id: 'venue', label: 'Reserve venue or home setup', completed: false },
+        { id: 'catering', label: 'Arrange catering', completed: false },
+        { id: 'entertainment', label: 'Book entertainment (optional)', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false }
+      ],
+      'Hachnasas Sefer Torah': [
+        { id: 'venue', label: 'Reserve venue / shul', completed: false },
+        { id: 'catering', label: 'Arrange Kiddush / Seudah', completed: false },
+        { id: 'sofer', label: 'Arrange Sofer for completion', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false }
+      ],
+      'Shul Dinner / Fundraiser': [
+        { id: 'venue', label: 'Reserve venue', completed: false },
+        { id: 'catering', label: 'Hire caterer', completed: false },
+        { id: 'program', label: 'Plan program and speakers', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false },
+        { id: 'honorees', label: 'Arrange honorees', completed: false }
+      ],
+      'Gala / Charity Event': [
+        { id: 'venue', label: 'Reserve venue', completed: false },
+        { id: 'catering', label: 'Hire caterer', completed: false },
+        { id: 'program', label: 'Plan program', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false },
+        { id: 'fundraising', label: 'Set up fundraising system', completed: false }
+      ],
+      'School Dinner / Banquet': [
+        { id: 'venue', label: 'Reserve venue', completed: false },
+        { id: 'catering', label: 'Hire caterer', completed: false },
+        { id: 'program', label: 'Plan program', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false }
+      ],
+      'Corporate Event': [
+        { id: 'venue', label: 'Reserve venue', completed: false },
+        { id: 'catering', label: 'Hire caterer', completed: false },
+        { id: 'av', label: 'Arrange AV equipment', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false }
+      ],
+      'Custom Event': [
+        { id: 'venue', label: 'Reserve venue', completed: false },
+        { id: 'catering', label: 'Arrange catering', completed: false },
+        { id: 'planning', label: 'Plan event details', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false }
+      ],
+      'Purim Party': [
+        { id: 'venue', label: 'Reserve venue or home setup', completed: false },
+        { id: 'catering', label: 'Arrange Mishloach Manos and Seudah', completed: false },
+        { id: 'costumes', label: 'Plan costumes / theme', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false }
+      ],
+      'Chanukah Party': [
+        { id: 'venue', label: 'Reserve venue or home setup', completed: false },
+        { id: 'catering', label: 'Arrange catering', completed: false },
+        { id: 'menorah', label: 'Arrange Menorah lighting', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false }
+      ],
+      'Shabbos Nachamu': [
+        { id: 'venue', label: 'Reserve venue or home setup', completed: false },
+        { id: 'catering', label: 'Arrange Shabbos meals', completed: false },
+        { id: 'program', label: 'Plan program / activities', completed: false },
+        { id: 'invitations', label: 'Send invitations', completed: false }
+      ]
+    };
+
+    // Vendor category mapping for checklist items
+    // Maps checklist item IDs to vendor categories for "Find Vendors" links
+    const VENDOR_CATEGORY_MAP = {
+      'venue': 'venue',
+      'shul': 'venue',
+      'catering': 'catering',
+      'caterer': 'catering',
+      'photography': 'photography',
+      'photographer': 'photography',
+      'videography': 'photography',
+      'music': 'music',
+      'entertainment': 'music',
+      'flowers': 'florist',
+      'florist': 'florist',
+      'decor': 'florist',
+      'theme': 'florist',
+      'beauty': 'beauty',
+      'hair': 'beauty',
+      'planning': 'planning',
+      'transportation': 'transportation',
+      'chairs': 'rentals',
+      'rentals': 'rentals',
+      'av': 'rentals'
+    };
+
+    // Custom button text mapping for checklist items
+    // Provides more specific, contextual button labels
+    const VENDOR_BUTTON_TEXT_MAP = {
+      'venue': 'Find Halls',
+      'shul': 'Find Halls',
+      'catering': 'Find Caterers',
+      'caterer': 'Find Caterers',
+      'photography': 'Find Photographers',
+      'photographer': 'Find Photographers',
+      'videography': 'Find Videographers',
+      'music': 'Find Musicians',
+      'entertainment': 'Find Entertainment',
+      'flowers': 'Find Florists',
+      'florist': 'Find Florists',
+      'decor': 'Find Decorators',
+      'theme': 'Find Decorators',
+      'beauty': 'Find Stylists',
+      'hair': 'Find Stylists',
+      'planning': 'Find Planners',
+      'transportation': 'Find Transportation',
+      'chairs': 'Find Rentals',
+      'rentals': 'Find Rentals',
+      'av': 'Find Equipment'
+    };
+
+    // Get vendor category for a checklist item
+    function getVendorCategory(itemId) {
+      return VENDOR_CATEGORY_MAP[itemId] || null;
+    }
+
+    // Get custom button text for a checklist item
+    function getVendorButtonText(itemId) {
+      return VENDOR_BUTTON_TEXT_MAP[itemId] || 'Find Vendors';
+    }
+
+    // Storage keys
+    const STORAGE_KEYS = {
+      SELECTED_EVENT: 'checklistSelectedEvent',
+      PROGRESS: 'checklistProgress'
+    };
+
+    // Get checklist progress from localStorage
+    function getChecklistProgress() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEYS.PROGRESS);
+        return stored ? JSON.parse(stored) : {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    // Save checklist progress to localStorage
+    function saveChecklistProgress(progress) {
+      try {
+        localStorage.setItem(STORAGE_KEYS.PROGRESS, JSON.stringify(progress));
+      } catch (e) {
+        console.error('Failed to save checklist progress:', e);
+      }
+    }
+
+    // Get completed state for a specific checklist item
+    function getItemCompleted(eventName, itemId) {
+      const progress = getChecklistProgress();
+      return progress[eventName] && progress[eventName][itemId] === true;
+    }
+
+    // Toggle completion for a checklist item
+    function toggleItemCompleted(eventName, itemId, completed) {
+      const progress = getChecklistProgress();
+      if (!progress[eventName]) {
+        progress[eventName] = {};
+      }
+      progress[eventName][itemId] = completed;
+      saveChecklistProgress(progress);
+    }
+
+    // Render event categories view
     function renderEventCategories() {
       const container = document.getElementById('eventCategories');
       if (!container) return;
@@ -494,17 +988,208 @@
           <div class="category-card">
             <h2 class="category-name">${category}</h2>
             <ul class="event-list">
-              ${events.map(event => `<li><a href="#">${event}</a></li>`).join('')}
+              ${events.map(event => {
+                const escapedEvent = event.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                return `<li><a href="#" data-event="${escapedEvent}" role="button" tabindex="0">${event}</a></li>`;
+              }).join('')}
             </ul>
           </div>
         `;
       });
 
       container.innerHTML = html;
+      
+      // Use event delegation for better performance
+      container.addEventListener('click', (e) => {
+        const link = e.target.closest('a[data-event]');
+        if (link) {
+          e.preventDefault();
+          const eventName = link.getAttribute('data-event');
+          selectEvent(eventName);
+        }
+      });
+      
+      // Keyboard support for event links
+      container.addEventListener('keydown', (e) => {
+        const link = e.target.closest('a[data-event]');
+        if (link && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          const eventName = link.getAttribute('data-event');
+          selectEvent(eventName);
+        }
+      });
+    }
+
+    // Select an event and show its checklist
+    function selectEvent(eventName) {
+      // Save selected event
+      localStorage.setItem(STORAGE_KEYS.SELECTED_EVENT, eventName);
+      
+      // Show checklist view
+      showChecklistView(eventName);
+    }
+
+    // Show checklist view
+    function showChecklistView(eventName) {
+      const eventCategories = document.getElementById('eventCategories');
+      const checklistView = document.getElementById('checklistView');
+      const pageSubtitle = document.getElementById('pageSubtitle');
+      
+      if (!eventCategories || !checklistView) return;
+      
+      // Hide event selection view
+      eventCategories.style.display = 'none';
+      pageSubtitle.style.display = 'none';
+      
+      // Show checklist view
+      checklistView.style.display = 'block';
+      
+      // Render checklist
+      renderChecklist(eventName);
+    }
+
+    // Show event selection view
+    function showEventSelectionView() {
+      const eventCategories = document.getElementById('eventCategories');
+      const checklistView = document.getElementById('checklistView');
+      const pageSubtitle = document.getElementById('pageSubtitle');
+      
+      if (!eventCategories || !checklistView) return;
+      
+      // Show event selection view
+      eventCategories.style.display = 'grid';
+      pageSubtitle.style.display = 'block';
+      
+      // Hide checklist view
+      checklistView.style.display = 'none';
+      
+      // Clear selected event
+      localStorage.removeItem(STORAGE_KEYS.SELECTED_EVENT);
+    }
+
+    // Sanitize ID to be safe for use in HTML
+    function sanitizeId(str) {
+      return str.replace(/[^a-zA-Z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    }
+
+    // Generate checkbox ID
+    function getCheckboxId(eventName, itemId) {
+      return `checklist-${sanitizeId(eventName)}-${sanitizeId(itemId)}`;
+    }
+
+    // Update progress display
+    function updateProgressDisplay(eventName, items, checklistProgress) {
+      const progressBarFill = document.getElementById('progressBarFill');
+      const progressPercentage = document.getElementById('progressPercentage');
+      const progress = getChecklistProgress();
+      const eventProgress = progress[eventName] || {};
+      const completedCount = items.filter(item => eventProgress[item.id] === true).length;
+      const total = items.length;
+      const percentage = total > 0 ? Math.round((completedCount / total) * 100) : 0;
+      
+      if (checklistProgress) {
+        checklistProgress.textContent = `${completedCount} of ${total} completed`;
+      }
+      if (progressBarFill) {
+        progressBarFill.style.width = `${percentage}%`;
+      }
+      if (progressPercentage) {
+        progressPercentage.textContent = `${percentage}%`;
+      }
+    }
+
+    // Render checklist for an event
+    function renderChecklist(eventName) {
+      const checklistItems = document.getElementById('checklistItems');
+      const checklistEventName = document.getElementById('checklistEventName');
+      const checklistProgress = document.getElementById('checklistProgress');
+      
+      if (!checklistItems || !checklistEventName || !checklistProgress) return;
+      
+      // Set event name
+      checklistEventName.textContent = eventName;
+      
+      // Get checklist items
+      const items = CHECKLISTS[eventName] || [];
+      const progress = getChecklistProgress();
+      const eventProgress = progress[eventName] || {};
+      
+      // Render checklist items
+      if (items.length === 0) {
+        checklistItems.innerHTML = '<p style="color:var(--muted);padding:24px;">No checklist available for this event.</p>';
+        updateProgressDisplay(eventName, items, checklistProgress);
+        return;
+      }
+      
+      // Store event name as data attribute for event delegation
+      let html = `<div data-event="${sanitizeId(eventName)}">`;
+      items.forEach((item) => {
+        const isCompleted = eventProgress[item.id] === true;
+        const checkboxId = getCheckboxId(eventName, item.id);
+        const vendorCategory = getVendorCategory(item.id);
+        const escapedLabel = item.label.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        const completedClass = isCompleted ? 'completed' : '';
+        
+        html += `
+          <div class="checklist-item ${completedClass}" role="listitem">
+            <input type="checkbox" id="${checkboxId}" class="checklist-item-checkbox" data-item-id="${item.id}" ${isCompleted ? 'checked' : ''} aria-label="${escapedLabel}">
+            <div class="checklist-item-content">
+              <label for="${checkboxId}" class="checklist-item-label">${item.label}</label>
+            </div>
+            <div class="checklist-item-actions">
+              ${vendorCategory ? `<a href="vendors.html?category=${vendorCategory}" class="btn-find-vendors"><span class="checklist-item-icon">🔍</span> ${getVendorButtonText(item.id)}</a>` : ''}
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      
+      checklistItems.innerHTML = html;
+      
+      // Update progress display
+      updateProgressDisplay(eventName, items, checklistProgress);
+      
+      // Use event delegation for better performance
+      const checklistContainer = checklistItems.querySelector('div[data-event]');
+      if (checklistContainer) {
+        checklistContainer.addEventListener('change', (e) => {
+          if (e.target.type === 'checkbox' && e.target.classList.contains('checklist-item-checkbox')) {
+            const itemId = e.target.getAttribute('data-item-id');
+            const completed = e.target.checked;
+            const checklistItem = e.target.closest('.checklist-item');
+            
+            toggleItemCompleted(eventName, itemId, completed);
+            
+            // Update visual state
+            if (completed) {
+              checklistItem.classList.add('completed');
+            } else {
+              checklistItem.classList.remove('completed');
+            }
+            
+            updateProgressDisplay(eventName, items, checklistProgress);
+          }
+        });
+      }
     }
 
     // Initialize
     renderEventCategories();
+    
+    // Check if there's a previously selected event
+    const selectedEvent = localStorage.getItem(STORAGE_KEYS.SELECTED_EVENT);
+    if (selectedEvent && CHECKLISTS[selectedEvent]) {
+      showChecklistView(selectedEvent);
+    }
+    
+    // Back button handler
+    const backToEvents = document.getElementById('backToEvents');
+    if (backToEvents) {
+      backToEvents.addEventListener('click', (e) => {
+        e.preventDefault();
+        showEventSelectionView();
+      });
+    }
     // Profile dropdown functionality
     const profileIcon = document.getElementById('profileIcon');
     const profileDropdown = document.getElementById('profileDropdown');

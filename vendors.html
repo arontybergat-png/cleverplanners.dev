@@ -956,14 +956,16 @@
       max-width:1400px;
       margin:0 auto;
       padding:56px 24px 64px;
-      display:block;
+      display:flex;
+      align-items:flex-start;
+      gap:24px;
     }
 
     /* ============================================
        INLINE FILTERS CONTROL - Minimal & Collapsible
        ============================================ */
     .filters-inline-control{
-      display:inline-flex;
+      display:none;
       align-items:center;
       gap:6px;
       padding:8px 12px;
@@ -976,13 +978,12 @@
       font-size:0.875rem;
       font-weight:500;
       color:var(--muted);
-      margin-bottom:32px;
-      max-width:1200px;
-      margin-left:auto;
-      margin-right:auto;
-      padding-left:24px;
-      display:block;
+      margin:0;
+      flex-shrink:0;
       width:fit-content;
+    }
+    .filters-inline-control.show{
+      display:inline-flex;
     }
     .filters-inline-control:hover{
       background:var(--soft);
@@ -1264,6 +1265,7 @@
     .vendors-section{
       background:transparent;
       width:100%;
+      flex:1;
     }
     .section-header{
       display:flex;
@@ -1313,9 +1315,6 @@
       width:100%;
     }
     .category-header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
       margin-bottom:24px;
       max-width:1200px;
       margin-left:auto;
@@ -1330,6 +1329,14 @@
       margin:0;
       line-height:1.4;
     }
+    .category-grid-wrapper{
+      display:flex;
+      align-items:center;
+      gap:24px;
+      max-width:1200px;
+      margin:0 auto;
+      padding:0 24px;
+    }
     .category-see-all{
       font-size:0.9rem;
       font-weight:500;
@@ -1337,6 +1344,8 @@
       text-decoration:none;
       transition:color 0.2s;
       cursor:pointer;
+      flex-shrink:0;
+      margin-bottom:0;
     }
     .category-see-all:hover{
       color:var(--brand);
@@ -1345,31 +1354,31 @@
       display:grid;
       grid-template-columns:repeat(4, 1fr);
       gap:24px;
-      max-width:1200px;
-      margin:0 auto;
-      padding:0 24px;
+      flex:1;
+      min-width:0;
     }
     @media (max-width:1200px){
       .category-grid{
         grid-template-columns:repeat(3, 1fr);
-        max-width:900px;
-        padding:0 20px;
       }
       .category-header{
+        padding:0 20px;
+      }
+      .category-grid-wrapper{
         padding:0 20px;
       }
     }
     @media (max-width:768px){
       .category-grid{
         grid-template-columns:repeat(2, 1fr);
-        max-width:100%;
-        padding:0 16px;
       }
       .category-header{
         padding:0 16px;
+      }
+      .category-grid-wrapper{
+        padding:0 16px;
         flex-direction:column;
         align-items:flex-start;
-        gap:12px;
       }
       .category-see-all{
         align-self:flex-end;
@@ -1415,10 +1424,10 @@
       box-shadow:0 2px 8px rgba(17,24,39,0.25);
     }
     .vendor-block-content{
-      padding:20px;
+      padding:16px;
       display:flex;
       flex-direction:column;
-      gap:12px;
+      gap:8px;
       flex:1;
     }
     .vendor-title{
@@ -1498,7 +1507,7 @@
     /* Elegant media area - Larger, more prominent */
     .media{
       position:relative;
-      height:200px;
+      height:140px;
       border-radius:0;
       overflow:hidden;
       margin:0;
@@ -1891,9 +1900,9 @@
       }
       .marketplace-content{
         padding:32px 16px 40px;
+        flex-direction:column;
       }
       .filters-inline-control{
-        padding-left:16px;
         margin-bottom:24px;
       }
       .filters-sidebar{
@@ -2949,7 +2958,9 @@
           });
           
           header.appendChild(title);
-          header.appendChild(seeAllLink);
+          
+          const gridWrapper = document.createElement('div');
+          gridWrapper.className = 'category-grid-wrapper';
           
           const grid = document.createElement('div');
           grid.className = 'category-grid';
@@ -2962,13 +2973,20 @@
             grid.appendChild(tempDiv.firstElementChild);
           });
           
+          gridWrapper.appendChild(grid);
+          gridWrapper.appendChild(seeAllLink);
+          
           section.appendChild(header);
-          section.appendChild(grid);
+          section.appendChild(gridWrapper);
           container.appendChild(section);
         });
         
         // Add media carousel functionality
         addMediaCarousels();
+        
+        // Hide filters button on home state
+        const filtersBtn = document.getElementById('filters-inline-control');
+        if (filtersBtn) filtersBtn.classList.remove('show');
       } catch (error) {
         console.error('Error rendering category sections:', error);
         const container = document.getElementById('categorySections');
@@ -3111,6 +3129,13 @@
         
         // Add media carousel functionality
         addMediaCarousels();
+        
+        // Auto-scroll to results
+        scrollToSearchResults();
+        
+        // Show filters button
+        const filtersBtn = document.getElementById('filters-inline-control');
+        if (filtersBtn) filtersBtn.classList.add('show');
       } catch (error) {
         console.error('Error showing category results:', error);
         // Show user-friendly error message
@@ -4814,12 +4839,275 @@
     }
     
     // Execute search based on current state
+    // Generate mock search results based on category and location text
+    function generateMockSearchResults(categoryText, locationText) {
+      const categoryLower = (categoryText || '').toLowerCase();
+      const locationLower = (locationText || '').toLowerCase();
+      
+      // Determine category from text input
+      let categoryKey = null;
+      const categoryKeywords = {
+        'venue': ['venue', 'hall', 'ballroom', 'hall', 'event space', 'reception'],
+        'catering': ['catering', 'caterer', 'food', 'catering service', 'catering company'],
+        'photography': ['photography', 'photographer', 'photo', 'video', 'videographer', 'photographer'],
+        'music': ['music', 'dj', 'band', 'musician', 'entertainment', 'orchestra'],
+        'beauty': ['beauty', 'makeup', 'hair', 'stylist', 'salon', 'beauty service'],
+        'florist': ['florist', 'flower', 'floral', 'decoration', 'decor', 'décor'],
+        'planning': ['planning', 'planner', 'coordination', 'event planner', 'event planning'],
+        'transportation': ['transportation', 'limo', 'limousine', 'car service', 'transport'],
+        'rentals': ['rental', 'rentals', 'equipment', 'furniture', 'tent', 'chairs']
+      };
+      
+      for (const [key, keywords] of Object.entries(categoryKeywords)) {
+        if (keywords.some(keyword => categoryLower.includes(keyword))) {
+          categoryKey = key;
+          break;
+        }
+      }
+      
+      // Extract location name (remove common suffixes like ", NY", ", NY", etc.)
+      let locationName = locationLower.trim();
+      if (locationName.includes(',')) {
+        locationName = locationName.split(',')[0].trim();
+      }
+      
+      // Generate mock vendor names based on category and location
+      const mockVendors = [];
+      const vendorNameTemplates = {
+        'venue': [
+          '{location} Grand Ballroom',
+          '{location} Elegant Hall',
+          '{location} Regency Wedding Hall',
+          '{location} Luxury Event Center',
+          '{location} Grand Hall',
+          '{location} Premier Ballroom',
+          '{location} Classic Venue',
+          '{location} Modern Event Space'
+        ],
+        'catering': [
+          '{location} Gourmet Catering',
+          '{location} Elegant Catering Co.',
+          '{location} Fine Dining Caterers',
+          '{location} Premier Catering Services',
+          '{location} Delicious Catering',
+          '{location} Exquisite Catering',
+          '{location} Professional Caterers',
+          '{location} Gourmet Food Services'
+        ],
+        'photography': [
+          '{location} Photography Studio',
+          '{location} Capture Moments',
+          '{location} Elegant Photography',
+          '{location} Professional Photos',
+          '{location} Lens & Light Studio',
+          '{location} Perfect Moments Photography',
+          '{location} Wedding Photographers',
+          '{location} Photo & Video Services'
+        ],
+        'music': [
+          '{location} Music Entertainment',
+          '{location} DJ Services',
+          '{location} Live Band Entertainment',
+          '{location} Professional Musicians',
+          '{location} Sound & Music Co.',
+          '{location} Entertainment Services',
+          '{location} Classical Musicians',
+          '{location} Party Entertainment'
+        ],
+        'beauty': [
+          '{location} Beauty Studio',
+          '{location} Bridal Beauty',
+          '{location} Glamour Beauty Co.',
+          '{location} Elite Beauty Services',
+          '{location} Makeup & Hair Studio',
+          '{location} Professional Stylists',
+          '{location} Beauty & Style',
+          '{location} Salon Services'
+        ],
+        'florist': [
+          '{location} Floral Design',
+          '{location} Elegant Blooms',
+          '{location} Garden Floral Co.',
+          '{location} Blossom Floral',
+          '{location} Beautiful Flowers',
+          '{location} Floral Arrangements',
+          '{location} Premium Florist',
+          '{location} Custom Floral Design'
+        ],
+        'planning': [
+          '{location} Event Planning',
+          '{location} Perfect Day Planners',
+          '{location} Event Coordination',
+          '{location} Professional Planners',
+          '{location} Event Design & Planning',
+          '{location} Complete Event Planning',
+          '{location} Wedding Planning Services',
+          '{location} Event Management Co.'
+        ],
+        'transportation': [
+          '{location} Car Service',
+          '{location} Luxury Limousines',
+          '{location} Premium Transport',
+          '{location} Executive Transportation',
+          '{location} Professional Car Service',
+          '{location} Limo Services',
+          '{location} Transportation Co.',
+          '{location} Party Bus Services'
+        ],
+        'rentals': [
+          '{location} Event Rentals',
+          '{location} Premium Rentals',
+          '{location} Equipment Rentals',
+          '{location} Furniture Rentals',
+          '{location} Tent & Equipment',
+          '{location} Party Rentals',
+          '{location} Rental Services',
+          '{location} Event Equipment Co.'
+        ]
+      };
+      
+      // Default templates if category not found
+      const defaultTemplates = [
+        '{location} Event Services',
+        '{location} Professional Services',
+        '{location} Quality Vendors',
+        '{location} Event Solutions',
+        '{location} Premium Services',
+        '{location} Trusted Vendors',
+        '{location} Expert Services',
+        '{location} Event Professionals'
+      ];
+      
+      const templates = categoryKey && vendorNameTemplates[categoryKey] 
+        ? vendorNameTemplates[categoryKey] 
+        : defaultTemplates;
+      
+      const basePriceRanges = {
+        'venue': [4000, 6000],
+        'catering': [45, 60],
+        'photography': [2800, 3500],
+        'music': [1200, 2000],
+        'beauty': [350, 500],
+        'florist': [800, 1100],
+        'planning': [2500, 3500],
+        'transportation': [600, 1200],
+        'rentals': [1500, 2200]
+      };
+      
+      const priceRange = categoryKey && basePriceRanges[categoryKey] 
+        ? basePriceRanges[categoryKey] 
+        : [1000, 3000];
+      
+      const locationDisplay = locationName ? locationName.split(' ').map(w => 
+        w.charAt(0).toUpperCase() + w.slice(1)
+      ).join(' ') : 'Multiple Locations';
+      
+      // Generate 6-8 mock vendors
+      const count = Math.floor(Math.random() * 3) + 6; // 6-8 vendors
+      const usedNames = new Set();
+      
+      for (let i = 0; i < count; i++) {
+        let nameTemplate = templates[i % templates.length];
+        let vendorName = nameTemplate.replace('{location}', locationDisplay);
+        
+        // Ensure unique names
+        let nameIndex = 1;
+        const originalName = vendorName;
+        while (usedNames.has(vendorName)) {
+          vendorName = `${originalName} ${nameIndex}`;
+          nameIndex++;
+        }
+        usedNames.add(vendorName);
+        
+        const price = Math.floor(Math.random() * (priceRange[1] - priceRange[0]) + priceRange[0]);
+        const priceDisplay = categoryKey === 'catering' 
+          ? `$${price}` 
+          : `$${price.toLocaleString()}`;
+        
+        const rating = (Math.random() * 0.5 + 4.5).toFixed(1);
+        const reviewCount = Math.floor(Math.random() * 150 + 50);
+        const avail = Math.random() > 0.2 ? 'ok' : 'maybe';
+        
+        const features = categoryKey === 'venue' 
+          ? ['Grand Ballroom', 'Parking', 'Catering Available']
+          : categoryKey === 'catering'
+          ? ['Kosher Options', 'Buffet Available']
+          : categoryKey === 'photography'
+          ? ['Photo & Video', 'Full Day Coverage']
+          : categoryKey === 'music'
+          ? ['Live Music', 'MC Services']
+          : categoryKey === 'beauty'
+          ? ['Hair & Makeup', 'On-Site']
+          : categoryKey === 'florist'
+          ? ['Custom Design', 'Delivery']
+          : categoryKey === 'planning'
+          ? ['Full Service', 'Day-Of Coordination']
+          : categoryKey === 'transportation'
+          ? ['Fleet', 'Professional']
+          : categoryKey === 'rentals'
+          ? ['Tables & Chairs', 'Equipment']
+          : ['Professional', 'Quality Service'];
+        
+        mockVendors.push({
+          id: 10000 + i,
+          name: vendorName,
+          category: categoryKey || 'venue',
+          rating: parseFloat(rating),
+          reviewCount: reviewCount,
+          location: locationDisplay + (locationName ? ', NY' : ''),
+          price: priceDisplay,
+          priceNote: categoryKey === 'catering' ? 'per person' : 'Starting price',
+          image: '',
+          badge: Math.random() > 0.6 ? (Math.random() > 0.5 ? 'Popular' : 'Top Rated') : '',
+          features: features,
+          avail: avail
+        });
+      }
+      
+      return mockVendors;
+    }
+
+    // Scroll to search results smoothly
+    function scrollToSearchResults() {
+      const container = document.getElementById('categorySections');
+      if (!container) return;
+      
+      // Use requestAnimationFrame to ensure DOM is updated
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          const containerRect = container.getBoundingClientRect();
+          const scrollOffset = containerRect.top + window.scrollY - 100; // 100px offset from top
+          
+          window.scrollTo({
+            top: Math.max(0, scrollOffset),
+            behavior: 'smooth'
+          });
+        }, 50); // Small delay to ensure rendering is complete
+      });
+    }
+
     function executeSearch() {
       if (searchState.isIndividualVendor) {
         // Already redirected, do nothing
         return;
       }
       
+      // Get text input values
+      const categoryText = vendorSearchInput?.value?.trim() || '';
+      const locationText = locationSearchInput?.value?.trim() || '';
+      
+      // Handle free-form text search
+      if (categoryText || locationText) {
+        const mockResults = generateMockSearchResults(categoryText, locationText);
+        renderVendors(mockResults);
+        scrollToSearchResults();
+        // Show filters button
+        const filtersBtn = document.getElementById('filters-inline-control');
+        if (filtersBtn) filtersBtn.classList.add('show');
+        return;
+      }
+      
+      // Handle dropdown-based search (existing functionality)
       if (selectedCategory || selectedSubcategory || selectedService) {
         if (searchState.selectedLocation) {
           // Category/Subcategory/Service + Location -> show results page
@@ -4852,6 +5140,10 @@
           }
           
           renderVendors(filtered);
+          scrollToSearchResults();
+          // Show filters button
+          const filtersBtn = document.getElementById('filters-inline-control');
+          if (filtersBtn) filtersBtn.classList.add('show');
           
           // Update title
           const sectionTitle = document.querySelector('.section-title');
@@ -4878,6 +5170,10 @@
             filtered = filtered.filter(v => v.category === catKey);
           }
           renderVendors(filtered);
+          scrollToSearchResults();
+          // Show filters button
+          const filtersBtn = document.getElementById('filters-inline-control');
+          if (filtersBtn) filtersBtn.classList.add('show');
           
           // Update title
           const sectionTitle = document.querySelector('.section-title');
