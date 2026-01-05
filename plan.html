@@ -1884,6 +1884,36 @@
         line-height: 1.5;
         resize: vertical;
       }
+
+      /* MOBILE: Hide "Add more locations (optional)" text */
+      #location-specific .note {
+        display: none !important;
+      }
+
+      /* MOBILE: Make Event Location input field wider */
+      #location-specific > div[style*="display:flex"] {
+        flex-direction: column !important;
+        gap: 12px !important;
+      }
+
+      #location-specific #location-inputs {
+        width: 100% !important;
+        flex: none !important;
+      }
+
+      #location-specific .autocomplete-wrapper {
+        width: 100% !important;
+      }
+
+      #location-specific .loc-input {
+        width: 100% !important;
+      }
+
+      /* MOBILE: Stack the add location button below input */
+      #location-specific > div[style*="display:flex"] > div:last-child {
+        align-self: flex-start !important;
+        width: auto !important;
+      }
     }
 
     /* Very small screens (320px - 374px) */
@@ -2323,7 +2353,6 @@
               </div>
             </div>
             <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;padding-top:0">
-              <span class="note" style="margin:0;white-space:nowrap">Add more locations (optional)</span>
               <button id="add-location" class="btn small" type="button" aria-label="Add Another Location">+ Add location</button>
             </div>
           </div>
