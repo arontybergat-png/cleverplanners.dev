@@ -358,34 +358,30 @@
       transform:translateY(-1px);
     }
     .vendor-dropdown{
-      position:absolute;
-      top:calc(100% + 4px);
-      left:0;
-      width:50%;
+      position:static;
+      width:100%;
       background:#fff;
       border:1px solid var(--ring);
       border-radius:var(--radius-sm);
       box-shadow:var(--shadow-lg);
       max-height:500px;
       overflow-y:auto;
-      z-index:1001;
+      z-index:auto;
       display:none;
-      margin-top:0;
+      margin-top:8px;
     }
     .location-dropdown{
-      position:absolute;
-      top:calc(100% + 4px);
-      right:0;
-      width:50%;
+      position:static;
+      width:100%;
       background:#fff;
       border:1px solid var(--ring);
       border-radius:var(--radius-sm);
       box-shadow:var(--shadow-lg);
       max-height:500px;
       overflow-y:auto;
-      z-index:1001;
+      z-index:auto;
       display:none;
-      margin-top:0;
+      margin-top:8px;
     }
     .vendor-dropdown.show,
     .location-dropdown.show{
@@ -1496,11 +1492,22 @@
       }
       .vendor-dropdown,
       .location-dropdown{
+        position:static;
         width:100%;
-        left:0;
-        right:0;
+        left:auto;
+        right:auto;
+        top:auto;
         max-width:100%;
-        z-index:1002;
+        z-index:auto;
+        margin-top:8px;
+        max-height:none;
+        overflow-y:visible;
+        box-shadow:0 2px 8px rgba(0,0,0,0.1);
+      }
+      .vendor-dropdown .dropdown-content,
+      .location-dropdown .dropdown-content{
+        max-height:none;
+        overflow-y:visible;
       }
       .vendor-dropdown{
         width:100%;
@@ -2035,6 +2042,25 @@
         padding:0;
         overflow:visible;
         z-index:1;
+      }
+      .vendor-dropdown,
+      .location-dropdown{
+        position:static;
+        width:100%;
+        left:auto;
+        right:auto;
+        top:auto;
+        max-width:100%;
+        z-index:auto;
+        margin-top:8px;
+        max-height:none;
+        overflow-y:visible;
+        box-shadow:0 2px 8px rgba(0,0,0,0.1);
+      }
+      .vendor-dropdown .dropdown-content,
+      .location-dropdown .dropdown-content{
+        max-height:none;
+        overflow-y:visible;
       }
       .search-input-wrapper{
         flex-direction:column;
