@@ -259,112 +259,18 @@
       /* Hide ALL vendor card wrappers except the first one (recommended) on mobile by default */
       .svc-body > div:nth-child(2),
       .svc-body > div:nth-child(n+3){
-        position:relative;
-        max-height:0 !important;
-        overflow:hidden !important;
-        opacity:0 !important;
-        margin:0 !important;
-        padding:0 !important;
+        display:none !important;
       }
-      /* Seamless fade preview area - integrated into first card */
-      .svc-group:not([data-expanded="true"]) .svc-body > div:first-child{
-        position:relative;
-      }
+      /* Remove fade preview area - no preview of next vendor */
       .svc-group:not([data-expanded="true"]) .svc-body > div:first-child .vendor-block{
         position:relative;
-        padding-bottom:90px !important;
+        padding-bottom:18px !important;
         overflow:visible !important;
         margin-bottom:0 !important;
       }
-      /* Create seamless fade gradient at bottom of first card */
+      /* Remove fade gradient - no preview needed */
       .svc-group:not([data-expanded="true"]) .svc-body > div:first-child .vendor-block::after{
-        content:'';
-        position:absolute;
-        bottom:0;
-        left:0;
-        right:0;
-        height:90px;
-        background:linear-gradient(to bottom, transparent 0%, rgba(251,246,237,0.2) 15%, rgba(251,246,237,0.5) 50%, var(--cream) 100%);
-        pointer-events:none;
-        z-index:1;
-        border-radius:0 0 12px 12px;
-      }
-      /* Preview container for next vendor title and See More - positioned over first card */
-      .svc-group:not([data-expanded="true"]) .svc-body > div:nth-child(2){
-        position:absolute;
-        bottom:0;
-        left:16px;
-        right:16px;
-        height:90px;
-        opacity:1 !important;
-        pointer-events:auto;
-        margin:0 !important;
-        padding:0 !important;
-        overflow:visible !important;
-        background:transparent !important;
-        z-index:2;
-        display:flex !important;
-        flex-direction:column;
-        align-items:center;
-        justify-content:center;
-        cursor:pointer;
-        -webkit-tap-highlight-color:transparent;
-      }
-      /* Show vendor block structure but hide most content */
-      .svc-group:not([data-expanded="true"]) .svc-body > div:nth-child(2) .vendor-block{
-        background:transparent !important;
-        border:none !important;
-        box-shadow:none !important;
-        padding:0 !important;
-        margin:0 !important;
-        display:block !important;
-        pointer-events:none;
-      }
-      /* Show only the vendor title from next card - faded */
-      .svc-group:not([data-expanded="true"]) .svc-body > div:nth-child(2) .vendor-title{
-        font-size:0.85rem;
-        font-weight:500;
-        color:var(--muted);
-        opacity:0.35;
-        padding:0;
-        margin:0 0 10px 0;
-        line-height:1.3;
-        text-align:center;
-        display:block !important;
-        position:relative;
-        z-index:2;
-      }
-      /* Hide everything else from the second card */
-      .svc-group:not([data-expanded="true"]) .svc-body > div:nth-child(2) .vendor-block > *:not(.vendor-title){
         display:none !important;
-      }
-      .svc-group:not([data-expanded="true"]) .svc-body > div:nth-child(2) .rec-label{
-        display:none !important;
-      }
-      /* "See More →" text styling - appears below faded title */
-      .svc-group:not([data-expanded="true"]) .svc-body > div:nth-child(2)::before{
-        content:'See More →';
-        font-size:0.95rem;
-        font-weight:600;
-        color:var(--ink);
-        text-align:center;
-        display:block;
-        position:relative;
-        z-index:3;
-        margin-top:0;
-        letter-spacing:-0.01em;
-        opacity:0.9;
-      }
-      /* Make the whole fade area clickable with subtle feedback */
-      .svc-group:not([data-expanded="true"]) .svc-body > div:nth-child(2){
-        -webkit-tap-highlight-color:rgba(0,0,0,0.05);
-        transition:opacity 0.15s ease;
-      }
-      .svc-group:not([data-expanded="true"]) .svc-body > div:nth-child(2):active{
-        opacity:0.6;
-      }
-      .svc-group:not([data-expanded="true"]) .svc-body > div:nth-child(2):active::before{
-        opacity:0.7;
       }
       /* Completely hide third+ cards */
       .svc-body > div:nth-child(n+3){
@@ -400,6 +306,30 @@
       .svc-group:not([data-expanded="true"]) .svc-body{
         padding-bottom:64px;
         position:relative;
+        overflow-y:hidden !important;
+      }
+      /* Add "See More →" text at bottom of collapsed category */
+      .svc-group:not([data-expanded="true"]) .svc-body::after{
+        content:'See More →';
+        position:absolute;
+        bottom:16px;
+        left:50%;
+        transform:translateX(-50%);
+        font-size:0.95rem;
+        font-weight:600;
+        color:var(--ink);
+        text-align:center;
+        letter-spacing:-0.01em;
+        opacity:0.9;
+        pointer-events:none;
+        z-index:1;
+      }
+      /* Make bottom area of svc-body clickable on mobile when collapsed */
+      .svc-group:not([data-expanded="true"]) .svc-body{
+        cursor:pointer;
+      }
+      .svc-group:not([data-expanded="true"]) .svc-body > *{
+        pointer-events:auto;
       }
       /* Hide "See More" button in header on mobile when collapsed (using fade area instead) */
       .svc-group:not([data-expanded="true"]) .svc-head .see-more{
@@ -2139,22 +2069,30 @@
           return;
         }
 
-        // Handle clicks on mobile fade area (seamless "See More" interaction)
-        const fadeArea = e.target.closest('.svc-body > div:nth-child(2)');
-        if(fadeArea && window.innerWidth <= 900){
-          const g = fadeArea.closest('.svc-group');
-          if(g && g.dataset.expanded !== 'true'){
-            e.preventDefault();
-            e.stopPropagation();
-            try{
-              const seeMoreBtn = g.querySelector('[data-see-more]');
-              if(seeMoreBtn){
-                seeMoreBtn.click();
+        // Handle clicks on mobile "See More" area at bottom (seamless "See More" interaction)
+        if(window.innerWidth <= 900){
+          const svcBody = e.target.closest('.svc-body');
+          if(svcBody && e.target === svcBody){
+            const g = svcBody.closest('.svc-group');
+            if(g && g.dataset.expanded !== 'true'){
+              // Check if click is in the bottom area (where "See More" text appears)
+              const rect = svcBody.getBoundingClientRect();
+              const clickY = e.clientY - rect.top;
+              const bottomArea = rect.height - 64; // Bottom 64px is the "See More" area
+              if(clickY >= bottomArea){
+                e.preventDefault();
+                e.stopPropagation();
+                try{
+                  const seeMoreBtn = g.querySelector('[data-see-more]');
+                  if(seeMoreBtn){
+                    seeMoreBtn.click();
+                  }
+                }catch(err){
+                  console.error('Error handling see more area click:', err);
+                }
+                return;
               }
-            }catch(err){
-              console.error('Error handling fade area click:', err);
             }
-            return;
           }
         }
 
