@@ -36,6 +36,7 @@
       --font-display:800; --font-bold:700; --font-semibold:600; --font-medium:500;
     }
     *{box-sizing:border-box; margin:0; padding:0}
+    html{overflow-x:hidden}
     html:focus-within{scroll-behavior:smooth}
     @media (prefers-reduced-motion: reduce){ html:focus-within{scroll-behavior:auto} }
     body{
@@ -46,6 +47,8 @@
       line-height:1.6;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
+      overflow-x:hidden;
+      width:100%;
     }
     a{color:inherit;text-decoration:none}
     img{max-width:100%;display:block}
@@ -65,6 +68,9 @@
       top:0;
       z-index:1000;
       box-shadow:0 2px 8px rgba(0,0,0,.03);
+      width:100%;
+      box-sizing:border-box;
+      overflow-x:hidden;
     }
     .header-main{
       max-width:1400px;
@@ -83,6 +89,10 @@
       letter-spacing:-0.02em;
       transition:opacity 0.2s;
       white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      flex-shrink:1;
+      min-width:0;
     }
     .logo:hover{
       opacity:0.9;
@@ -178,11 +188,17 @@
       padding:56px 22px 64px;
       border-bottom:none;
       position:relative;
+      width:100%;
+      box-sizing:border-box;
+      overflow-x:hidden;
     }
     .hero-inner{
       max-width:800px;
       margin:0 auto;
       text-align:center;
+      width:100%;
+      padding:0 4px;
+      position:relative;
     }
     .hero-title-animated{
       font-size:clamp(2rem, 4vw, 2.5rem);
@@ -198,6 +214,9 @@
       opacity:0;
       animation:fadeInUp 0.8s ease forwards;
       position:relative;
+      word-wrap:break-word;
+      overflow-wrap:break-word;
+      hyphens:auto;
     }
     @keyframes fadeInUp{
       from{
@@ -253,6 +272,9 @@
       max-width:900px;
       margin:0 auto;
       position:relative;
+      width:100%;
+      box-sizing:border-box;
+      overflow:visible;
     }
     .search-input-wrapper{
       display:flex;
@@ -265,6 +287,8 @@
       transition:all 0.3s ease;
       min-height:64px;
       position:relative;
+      width:100%;
+      box-sizing:border-box;
     }
     .search-input-wrapper:focus-within{
       border-color:var(--brand);
@@ -278,6 +302,7 @@
       gap:12px;
       padding:0 18px;
       position:relative;
+      min-width:0;
     }
     .search-icon{
       width:20px;
@@ -291,6 +316,7 @@
       align-items:center;
       padding:0 18px;
       position:relative;
+      min-width:0;
     }
     .search-divider{
       width:1px;
@@ -306,6 +332,8 @@
       outline:none;
       background:transparent;
       color:var(--ink);
+      min-width:0;
+      width:100%;
     }
     .search-input::placeholder{
       color:var(--muted);
@@ -1384,6 +1412,114 @@
         align-self:flex-end;
       }
     }
+    @media (max-width:480px){
+      .category-grid{
+        grid-template-columns:1fr;
+        gap:16px;
+      }
+      .hero-title-animated{
+        font-size:1.5rem;
+      }
+      .marketplace-hero{
+        padding:32px 16px 40px;
+      }
+      .vendor-block-content{
+        padding:14px;
+        gap:6px;
+      }
+      .vendor-title{
+        font-size:1rem;
+      }
+      .category-title{
+        font-size:1.1rem;
+      }
+      .category-section{
+        margin-bottom:32px;
+      }
+    }
+    @media (max-width:400px){
+      .header-main{
+        padding:0 12px;
+        gap:8px;
+        height:56px;
+      }
+      .logo{
+        font-size:1.1rem;
+        letter-spacing:-0.01em;
+      }
+      .header-actions{
+        gap:6px;
+      }
+      .header-actions .btn-login,
+      .header-actions .btn-signup{
+        font-size:0.75rem;
+        padding:6px 10px;
+        white-space:nowrap;
+      }
+      .mobile-menu-toggle{
+        width:28px;
+        height:28px;
+      }
+      .mobile-menu-toggle span{
+        width:20px;
+      }
+      .marketplace-hero{
+        padding:28px 12px 36px;
+      }
+      .hero-inner{
+        padding:0 4px;
+      }
+      .hero-title-animated{
+        font-size:1.4rem;
+        margin-bottom:32px;
+        word-wrap:break-word;
+        overflow-wrap:break-word;
+      }
+      .search-box{
+        width:100%;
+        max-width:100%;
+      }
+      .search-input-wrapper{
+        padding:12px;
+      }
+      .search-input-left,
+      .search-input-right{
+        padding:0 8px;
+      }
+      .search-input{
+        font-size:0.9rem;
+        padding:10px 0;
+      }
+      .search-btn{
+        padding:12px 16px;
+        font-size:0.9rem;
+      }
+      .vendor-dropdown,
+      .location-dropdown{
+        width:100%;
+        left:0;
+        right:0;
+        max-width:100%;
+        z-index:1002;
+      }
+      .vendor-dropdown{
+        width:100%;
+      }
+      .location-dropdown{
+        width:100%;
+      }
+      .search-box{
+        overflow:visible;
+        z-index:1;
+      }
+      .hero-inner{
+        overflow:visible;
+      }
+      .marketplace-hero{
+        overflow-x:hidden;
+        overflow-y:visible;
+      }
+    }
     /* ============================================
        VENDOR CARDS - Modern Marketplace Design
        ============================================ */
@@ -1857,9 +1993,15 @@
         height:60px;
         padding:0 16px;
         gap:12px;
+        min-width:0;
       }
       .logo{
         font-size:1.3rem;
+        flex-shrink:1;
+        min-width:0;
+      }
+      .header-actions{
+        flex-shrink:0;
       }
       .header-nav{
         display:none;
@@ -1873,6 +2015,12 @@
       .hero-title-animated{
         font-size:clamp(1.75rem, 5vw, 2.5rem);
       }
+      .vendor-block:hover{
+        transform:none;
+      }
+      .vendor-block:active{
+        transform:scale(0.98);
+      }
       .marketplace-hero{
         padding:40px 16px 48px;
       }
@@ -1884,11 +2032,29 @@
         margin-bottom:24px;
       }
       .search-box{
-        padding:16px;
+        padding:0;
+        overflow:visible;
+        z-index:1;
       }
       .search-input-wrapper{
         flex-direction:column;
         gap:12px;
+        min-height:auto;
+        padding:16px;
+      }
+      .search-input-wrapper:focus-within{
+        transform:none;
+      }
+      .search-input-left,
+      .search-input-right{
+        padding:0 12px;
+        border-bottom:1px solid var(--ring);
+      }
+      .search-input-right{
+        border-bottom:none;
+      }
+      .search-input{
+        padding:12px 0;
       }
       .search-divider{
         display:none;
@@ -1896,7 +2062,8 @@
       .search-btn{
         width:100%;
         padding:14px;
-        margin-top:8px;
+        margin-top:0;
+        border-radius:12px;
       }
       .marketplace-content{
         padding:32px 16px 40px;
@@ -1937,15 +2104,34 @@
       .vendor-block-content{
         padding:16px;
       }
+      .vendor-title{
+        font-size:1.1rem;
+      }
+      .meta-row .price{
+        font-size:1rem;
+      }
+      .add-btn{
+        min-height:44px;
+        padding:12px 20px;
+      }
+      .action-link{
+        min-height:44px;
+        padding:8px 12px;
+      }
       .category-section{
-        margin-bottom:48px;
+        margin-bottom:40px;
       }
       .category-header{
         padding:16px;
         margin-bottom:16px;
       }
       .category-title{
-        font-size:1.5rem;
+        font-size:1.25rem;
+      }
+      .media-btn{
+        width:36px;
+        height:36px;
+        font-size:1.2rem;
       }
       .modal-panel{
         max-width:95vw;
