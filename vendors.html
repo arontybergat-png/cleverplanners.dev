@@ -70,7 +70,7 @@
       box-shadow:0 2px 8px rgba(0,0,0,.03);
       width:100%;
       box-sizing:border-box;
-      overflow-x:hidden;
+      overflow:visible;
     }
     .header-main{
       max-width:1400px;
@@ -81,6 +81,9 @@
       align-items:center;
       gap:48px;
       height:68px;
+      position:relative;
+      overflow:visible;
+      min-height:68px;
     }
     .logo{
       font-size:1.5rem;
@@ -125,6 +128,9 @@
       align-items:center;
       justify-content:flex-end;
       white-space:nowrap;
+      position:relative;
+      overflow:visible;
+      z-index:10001;
     }
     .btn-vendor-nav{
       padding:6px 14px;
@@ -1502,7 +1508,9 @@
         margin-top:8px;
         max-height:none;
         overflow-y:visible;
-        box-shadow:0 2px 8px rgba(0,0,0,0.1);
+        background:#fff !important;
+        opacity:1 !important;
+        box-shadow:0 4px 16px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
       }
       .vendor-dropdown .dropdown-content,
       .location-dropdown .dropdown-content{
@@ -2055,7 +2063,9 @@
         margin-top:8px;
         max-height:none;
         overflow-y:visible;
-        box-shadow:0 2px 8px rgba(0,0,0,0.1);
+        background:#fff !important;
+        opacity:1 !important;
+        box-shadow:0 4px 16px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
       }
       .vendor-dropdown .dropdown-content,
       .location-dropdown .dropdown-content{
@@ -2181,6 +2191,8 @@
     .profile-container{
       position:relative;
       display:none;
+      overflow:visible;
+      z-index:10001;
     }
     .header-actions.signed-in .profile-container{
       display:block;
@@ -2212,11 +2224,15 @@
       background:var(--card);
       border:1px solid var(--ring);
       border-radius:12px;
-      box-shadow:var(--shadow);
+      box-shadow:0 4px 16px rgba(0,0,0,0.15);
       min-width:160px;
       padding:8px;
       display:none;
-      z-index:1001;
+      z-index:10002;
+      overflow:visible;
+      max-height:none;
+      height:auto;
+      white-space:nowrap;
     }
     .profile-dropdown.open{
       display:block;
@@ -2256,6 +2272,9 @@
       .profile-dropdown{
         min-width:140px;
         right:-8px;
+        background:#fff !important;
+        opacity:1 !important;
+        box-shadow:0 4px 16px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
       }
     }
   </style>
@@ -5028,7 +5047,8 @@
       
       // Tab click handlers
       locationDropdown.querySelectorAll('.dropdown-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
+        tab.addEventListener('click', (e) => {
+          e.stopPropagation(); // Prevent event from bubbling to document click handler
           const tabName = tab.dataset.tab;
           renderLocationDropdown(tabName, locationSearchInput.value);
         });
@@ -5520,6 +5540,11 @@
     
     // Close dropdowns when clicking outside
     document.addEventListener('click', (e) => {
+      // Don't close dropdown if clicking on a tab (tabs handle their own clicks)
+      if (e.target.closest('.dropdown-tab')) {
+        return;
+      }
+      
       // Check if click is inside the entire search box area (including dropdowns)
       const searchBoxArea = e.target.closest('.search-box') || 
                            e.target.closest('.search-input-wrapper') ||

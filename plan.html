@@ -5218,13 +5218,22 @@ function attachAutocomplete(input) {
   input.addEventListener("input", () => { 
     // Don't show dropdown if we're programmatically selecting from autocomplete
     if (isSelectingFromAutocomplete) {
+      // Explicitly hide dropdown and clear it
+      list.innerHTML = "";
+      list.style.display = "none";
       isSelectingFromAutocomplete = false;
       return;
     }
     
     const query = input.value.trim().toLowerCase();
     list.innerHTML = "";
-    if (!query) return;
+    if (!query) {
+      list.style.display = "none";
+      return;
+    }
+
+    // Show the dropdown when there's a query
+    list.style.display = "";
 
     let totalMatches = 0;
     locationGroups.forEach(group => {
@@ -5246,11 +5255,12 @@ function attachAutocomplete(input) {
             // Set flag to prevent dropdown from reopening
             isSelectingFromAutocomplete = true;
             
+            // Clear and hide the dropdown IMMEDIATELY before any other operations
+            list.innerHTML = "";
+            list.style.display = "none";
+            
             // Set the input value
             input.value = sanitizeInput(match);
-            
-            // Clear and hide the dropdown
-            list.innerHTML = "";
             
             // If this is the first location input and "I Have a Specific Location" isn't selected, select it
             // Access elements directly to ensure they're available
@@ -5303,7 +5313,10 @@ function attachAutocomplete(input) {
 
   // Hide dropdown when clicking outside
   document.addEventListener("click", e => {
-    if (!wrapper.contains(e.target)) list.innerHTML = "";
+    if (!wrapper.contains(e.target)) {
+      list.innerHTML = "";
+      list.style.display = "none";
+    }
   });
 }
 
