@@ -1545,6 +1545,19 @@
       const detailsLink = document.createElement('a');
       detailsLink.href = `vendor-detail.html?id=${v.id}`;
       detailsLink.textContent = 'Full Details';
+      detailsLink.addEventListener('click', (e) => {
+        // Store vendor data before redirecting
+        const vendorData = {
+          id: v.id,
+          name: v.name,
+          category: cat,
+          location: v.tags && v.tags.length > 0 ? v.tags[0] : 'Location TBD',
+          image: null, // results.html doesn't have images, will use placeholder
+          price: v.price,
+          description: `${v.name} is a ${cat} service provider. ${v.services && v.services.length > 0 ? `Services include ${v.services[0].name}.` : 'Contact for more details.'}`
+        };
+        sessionStorage.setItem('selectedVendor', JSON.stringify(vendorData));
+      });
       linkRow.appendChild(detailsLink);
       
       card.appendChild(linkRow);
@@ -2264,7 +2277,22 @@
       if(servicesDetails){
         servicesDetails.addEventListener('click', ()=>{
           if(!activeServices) return;
-          openComingSoon(activeServices.id);
+          const found = findVendorById(activeServices.id);
+          if(found){
+            const {vendor:v, cat} = found;
+            // Store vendor data before redirecting
+            const vendorData = {
+              id: v.id,
+              name: v.name,
+              category: cat,
+              location: v.tags && v.tags.length > 0 ? v.tags[0] : 'Location TBD',
+              image: null,
+              price: v.price,
+              description: `${v.name} is a ${cat} service provider. ${v.services && v.services.length > 0 ? `Services include ${v.services[0].name}.` : 'Contact for more details.'}`
+            };
+            sessionStorage.setItem('selectedVendor', JSON.stringify(vendorData));
+            window.location.href = `vendor-detail.html?id=${v.id}`;
+          }
         });
       }
 

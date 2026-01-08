@@ -3294,7 +3294,7 @@
               <div class="link-row">
                 <a href="#" class="action-link" data-action="message" data-id="${vendor.id}">Message</a>
                 <a href="#" class="action-link" data-action="services" data-id="${vendor.id}">View Services</a>
-                <a href="vendor-detail.html?id=${vendor.id}" class="action-link" data-action="details" data-id="${vendor.id}">Full Details</a>
+                <a href="vendor-detail.html?id=${vendor.id}" class="action-link" data-action="details" data-id="${vendor.id}" data-vendor='${JSON.stringify(vendor).replace(/'/g, "&#39;")}'>Full Details</a>
               </div>
             </div>
           </div>
@@ -5900,7 +5900,21 @@
       servicesDetails.addEventListener('click', (e)=>{
         e.preventDefault();
         if(activeServices){
-          window.location.href = `vendor-detail.html?id=${activeServices.id}`;
+          const vendor = MOCK_VENDORS.find(v => v.id === activeServices.id);
+          if(vendor){
+            // Store vendor data before redirecting
+            const vendorData = {
+              id: vendor.id,
+              name: vendor.name,
+              category: vendor.category,
+              location: vendor.location || 'Location TBD',
+              image: vendor.image || null,
+              price: vendor.price,
+              description: `${vendor.name} is a ${vendor.category} service provider${vendor.features && vendor.features.length > 0 ? ` specializing in ${vendor.features.join(', ')}.` : '.'}`
+            };
+            sessionStorage.setItem('selectedVendor', JSON.stringify(vendorData));
+            window.location.href = `vendor-detail.html?id=${vendor.id}`;
+          }
         }
       });
     }
@@ -5929,8 +5943,19 @@
         e.preventDefault();
         openServices(vendor.id);
       } else if (action === 'details') {
-        // Allow the link to navigate naturally - don't preventDefault
-        // The href is already set in the HTML: vendor-detail.html?id=${vendor.id}
+        e.preventDefault();
+        // Store vendor data before redirecting
+        const vendorData = {
+          id: vendor.id,
+          name: vendor.name,
+          category: vendor.category,
+          location: vendor.location || 'Location TBD',
+          image: vendor.image || null,
+          price: vendor.price,
+          description: `${vendor.name} is a ${vendor.category} service provider${vendor.features && vendor.features.length > 0 ? ` specializing in ${vendor.features.join(', ')}.` : '.'}`
+        };
+        sessionStorage.setItem('selectedVendor', JSON.stringify(vendorData));
+        window.location.href = `vendor-detail.html?id=${vendor.id}`;
       }
     });
   </script>
