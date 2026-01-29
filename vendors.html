@@ -1290,6 +1290,32 @@
     .save-search-btn:active{
       background:#3a3a3a;
     }
+    .clear-filters-btn{
+      width:100%;
+      padding:12px 24px;
+      background:transparent;
+      color:var(--muted);
+      border:2px solid var(--ring);
+      border-radius:8px;
+      font-size:0.95rem;
+      font-weight:600;
+      cursor:pointer;
+      transition:all 0.3s;
+      font-family:inherit;
+    }
+    .clear-filters-btn:hover{
+      background:var(--soft);
+      border-color:var(--muted);
+      color:var(--ink);
+    }
+    .clear-filters-btn:active{
+      transform:translateY(1px);
+    }
+    .clear-filters-btn:disabled{
+      opacity:0.5;
+      cursor:not-allowed;
+      pointer-events:none;
+    }
 
     /* Vendor Grid */
     .vendors-section{
@@ -2487,6 +2513,9 @@
         <h3 class="filter-title">Date</h3>
         <input type="date" class="filter-input" id="sidebar-date">
       </div>
+      <div class="filter-section" id="clear-filters-section" style="display:none;padding-top:12px;margin-top:16px;border-top:1px solid var(--ring);">
+        <button class="clear-filters-btn" id="clear-filters-btn">Clear All Filters</button>
+      </div>
       <div class="filter-section" id="save-search-section" style="display:none;padding-top:12px;margin-top:16px;">
         <button class="save-search-btn" id="save-search-btn">Save & Search</button>
       </div>
@@ -2510,6 +2539,7 @@
 
   </div>
 
+  <script src="data.js"></script>
   <script>
     // Configuration constants
     const CONFIG = {
@@ -2532,7 +2562,7 @@
       'rentals': 'Rentals'
     };
 
-    // Mock vendor data
+    // Mock vendor data (fallback when no shared data is available)
     const MOCK_VENDORS = [
       {id:1, name:"Grand Ballroom Events", category:"venue", rating:4.8, reviewCount:127, location:"New York, NY", price:"$5,000", priceNote:"Starting price", image:"", badge:"Popular", features:["Outdoor Space", "Parking"]},
       {id:2, name:"Elegant Photography Co.", category:"photography", rating:4.9, reviewCount:89, location:"Los Angeles, CA", price:"$3,500", priceNote:"Starting price", image:"", badge:"Top Rated", features:["Drone", "Video"]},
@@ -3137,8 +3167,22 @@
       'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
     ];
 
+    function getVendorSource() {
+      if (window.CleverPlannersData && window.CleverPlannersData.getMarketplaceVendors) {
+        return window.CleverPlannersData.getMarketplaceVendors();
+      }
+      return MOCK_VENDORS;
+    }
+
+    function getCategoryOrder() {
+      if (window.CleverPlannersData && window.CleverPlannersData.getCategories) {
+        return window.CleverPlannersData.getCategories().map(cat => cat.id);
+      }
+      return Object.keys(CATEGORY_DISPLAY_NAMES);
+    }
+
     // Render category sections with vendors
-    function renderCategorySections(vendors = MOCK_VENDORS) {
+    function renderCategorySections(vendors = getVendorSource()) {
       try {
         const container = document.getElementById('categorySections');
         if (!container) {
@@ -3159,7 +3203,13 @@
         container.textContent = '';
 
         // Create category sections using DOM methods
-        Object.keys(categories).sort().forEach(category => {
+        const categoryOrder = getCategoryOrder();
+        const ordered = [
+          ...categoryOrder.filter(cat => categories[cat]),
+          ...Object.keys(categories).filter(cat => !categoryOrder.includes(cat)).sort()
+        ];
+
+        ordered.forEach(category => {
           const categoryVendors = categories[category];
           const displayName = CATEGORY_DISPLAY_NAMES[category] || category.charAt(0).toUpperCase() + category.slice(1);
           
@@ -3276,11 +3326,13 @@
                 <span class="price">From ${fmtShort(priceNum)}</span>
                 <span class="dot">•</span>
                 <span class="meta-location">${safeLocation}</span>
+                ${filterState.date ? `
                 <span class="dot">•</span>
                 <span class="meta-availability ${availClass}">
                   ${availabilityText}
                   <span class="avail-info-icon" data-avail-info="true" aria-label="Availability information" title="What does this mean?">i</span>
                 </span>
+                ` : ''}
               </div>
               
               <div class="card-divider" aria-hidden="true"></div>
@@ -3308,7 +3360,7 @@
     // Show category results (all vendors in a category)
     function showCategoryResults(category) {
       try {
-        const filtered = MOCK_VENDORS.filter(v => v.category === category);
+        const filtered = getVendorSource().filter(v => v.category === category);
         const displayName = CATEGORY_DISPLAY_NAMES[category] || category.charAt(0).toUpperCase() + category.slice(1);
         
         const container = document.getElementById('categorySections');
@@ -3428,13 +3480,14 @@
     }
 
     // Render vendors using results.html structure (for filtered views)
-    function renderVendors(vendors = MOCK_VENDORS) {
+    function renderVendors(vendors = getVendorSource()) {
       const container = document.getElementById('categorySections');
       if (!container) return;
 
       // If showing all vendors, render category sections
-      if (vendors.length === MOCK_VENDORS.length) {
-        renderCategorySections(vendors);
+      const allVendors = getVendorSource();
+      if (vendors.length === allVendors.length) {
+        renderCategorySections(allVendors);
         return;
       }
 
@@ -3511,7 +3564,7 @@
 
     // Apply filters to vendors
     function applyFilters() {
-      let filtered = [...MOCK_VENDORS];
+      let filtered = [...getVendorSource()];
 
       // Filter by location (if vendor location matches)
       if (filterState.location) {
@@ -3565,10 +3618,54 @@
       return '$' + parseInt(value).toLocaleString('en-US');
     }
     
+    // Clear all filters
+    function clearAllFilters() {
+      // Reset filter state
+      filterState.eventType = null;
+      filterState.date = null;
+      filterState.priceMin = null;
+      filterState.priceMax = null;
+      
+      // Clear input fields
+      if (sidebarEventTypeInput) sidebarEventTypeInput.value = '';
+      if (sidebarDateInput) sidebarDateInput.value = '';
+      if (sidebarPriceMin) sidebarPriceMin.value = '';
+      if (sidebarPriceMax) sidebarPriceMax.value = '';
+      
+      // Clear modal date input if it exists
+      const modalDateInput = document.getElementById('event-date-input');
+      if (modalDateInput) modalDateInput.value = '';
+      
+      // Close date picker if open (blur the input)
+      if (sidebarDateInput && document.activeElement === sidebarDateInput) {
+        sidebarDateInput.blur();
+      }
+      
+      // Close date modal if open
+      const dateModal = document.getElementById('modal-date');
+      if (dateModal && dateModal.classList.contains('show')) {
+        closeModal('modal-date');
+      }
+      
+      // Hide event type results dropdown if open
+      const eventTypeResults = document.getElementById('sidebar-event-type-results');
+      if (eventTypeResults) eventTypeResults.style.display = 'none';
+      
+      // Hide Save & Search button
+      hideSaveSearchButton();
+      
+      // Update filter count and Clear button visibility
+      updateFilterCount();
+      
+      // Re-render vendors to default state (no availability shown)
+      applyFilters();
+    }
+    
     // Update filter count indicator and summary
     function updateFilterCount() {
       const filtersSummaryEl = document.getElementById('filters-summary');
       const filtersSidebar = document.querySelector('.filters-sidebar');
+      const clearFiltersSection = document.getElementById('clear-filters-section');
       
       let count = 0;
       const summaryParts = [];
@@ -3610,6 +3707,15 @@
         } else {
           filtersSummaryEl.textContent = '';
           filtersSummaryEl.classList.remove('active');
+        }
+      }
+      
+      // Show/hide Clear button based on whether any filters are active
+      if (clearFiltersSection) {
+        if (count > 0) {
+          clearFiltersSection.style.display = 'block';
+        } else {
+          clearFiltersSection.style.display = 'none';
         }
       }
       
@@ -3668,6 +3774,14 @@
       saveSearchBtn.addEventListener('click', () => {
         applyFilters();
         hideSaveSearchButton();
+      });
+    }
+    
+    // Clear Filters button handler
+    const clearFiltersBtn = document.getElementById('clear-filters-btn');
+    if (clearFiltersBtn) {
+      clearFiltersBtn.addEventListener('click', () => {
+        clearAllFilters();
       });
     }
 
@@ -3832,6 +3946,8 @@
         } else {
           updateFilterCount();
         }
+        // Re-render vendors to show/hide availability based on date filter
+        applyFilters();
       });
     }
 
@@ -5655,6 +5771,9 @@
     // Initialize - render category sections
     renderCategorySections();
     
+    // Initialize filter count and Clear button visibility
+    updateFilterCount();
+    
     // Hero title is already set in HTML with gradient underline
     // Mobile menu toggle
     const mobileMenuToggle = document.getElementById('mobileMenuToggle');
@@ -5784,9 +5903,14 @@
       activeServices = {id: vendor.id, name: vendor.name, cat: vendor.category};
       servicesTitle.textContent = vendor.name;
       servicesSub.textContent = 'These are the typical services and starting prices. Your final quote will depend on your event details.';
-      servicesAvail.style.display = 'inline-block';
-      servicesAvail.textContent = vendor.avail==='ok' ? 'Available' : 'Possibly available';
-      servicesAvail.className = `badge ${vendor.avail==='ok'?'avail-ok':'avail-maybe'}`;
+      // Only show availability if a date filter is applied
+      if (filterState.date) {
+        servicesAvail.style.display = 'inline-block';
+        servicesAvail.textContent = vendor.avail==='ok' ? 'Available' : 'Possibly available';
+        servicesAvail.className = `badge ${vendor.avail==='ok'?'avail-ok':'avail-maybe'}`;
+      } else {
+        servicesAvail.style.display = 'none';
+      }
 
       const list = vendor.services || [];
       servicesList.textContent = '';

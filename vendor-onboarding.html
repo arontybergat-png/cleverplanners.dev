@@ -1096,7 +1096,8 @@
       </form>
   </main>
 
-s  <script>
+  <script src="data.js"></script>
+  <script>
     let step = 1;
     let serviceCount = 1;
     let addonCounts = {0: 0};
@@ -1987,9 +1988,15 @@ s  <script>
           vendorData.services.push(service);
         }
       });
+
+      vendorData.primaryCategory = vendorData.services?.[0]?.category || '';
       
       // Store vendor data in localStorage
       localStorage.setItem('vendorPreviewData', JSON.stringify(vendorData));
+
+      if (window.CleverPlannersData) {
+        window.CleverPlannersData.addOnboardingSubmission(vendorData);
+      }
       
       // Navigate to vendor detail page with preview flag
       window.location.href = 'vendor-detail.html?preview=true';

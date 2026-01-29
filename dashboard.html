@@ -55,12 +55,25 @@
     }
     .logo:hover{opacity:0.9}
     .dashboard-title{
-      font-size:clamp(1.5rem,4vw,2rem);
+      font-size:clamp(1.7rem,3.6vw,2.35rem);
       font-weight:800;
       color:var(--ink);
       margin:0;
-      letter-spacing:-0.02em;
+      letter-spacing:-0.03em;
       text-align:center;
+      line-height:1.1;
+      position:relative;
+      padding-bottom:8px;
+    }
+    .dashboard-title::after{
+      content:'';
+      display:block;
+      width:72px;
+      height:4px;
+      margin:10px auto 0;
+      border-radius:999px;
+      background:linear-gradient(90deg, var(--accent2), var(--grad-2), var(--accent1));
+      opacity:0.9;
     }
     
     /* Profile Icon */
@@ -1031,7 +1044,12 @@
         padding:16px 20px;
       }
       .dashboard-title{
-        font-size:clamp(1.3rem,4vw,1.8rem);
+        font-size:clamp(1.4rem,4vw,1.95rem);
+      }
+      .dashboard-title::after{
+        width:64px;
+        height:3px;
+        margin-top:8px;
       }
       .profile-container{
         top:16px;
@@ -1099,6 +1117,11 @@
         padding:14px 18px;
       }
       .dashboard-title{font-size:1.3rem}
+      .dashboard-title::after{
+        width:54px;
+        height:3px;
+        margin-top:6px;
+      }
       .profile-container{
         top:14px;
         right:12px;
@@ -1230,6 +1253,7 @@
     </div>
   </div>
 
+  <script src="data.js"></script>
   <script>
     const $ = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
@@ -1251,6 +1275,47 @@
       // Midnight gradient
       'linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#334155 100%)'
     ];
+
+    function getMessageThreads() {
+      if (window.CleverPlannersData) {
+        return window.CleverPlannersData.getMessages();
+      }
+      const messages = JSON.parse(localStorage.getItem('vendor-messages') || '[]');
+      const grouped = {};
+      messages.forEach(msg => {
+        if (!grouped[msg.vendorId]) {
+          grouped[msg.vendorId] = {
+            id: `legacy-${msg.vendorId}`,
+            vendorId: msg.vendorId,
+            vendorName: msg.vendorName,
+            category: msg.category,
+            resolved: false,
+            messages: []
+          };
+        }
+        grouped[msg.vendorId].messages.push(msg);
+      });
+      return Object.values(grouped);
+    }
+
+    function addMessageToThread({ vendorId, vendorName, category, message, from }) {
+      if (window.CleverPlannersData) {
+        window.CleverPlannersData.addMessage({ vendorId, vendorName, category, message, from });
+        return;
+      }
+      const messages = JSON.parse(localStorage.getItem('vendor-messages') || '[]');
+      messages.push({
+        id: Date.now().toString(),
+        vendorId,
+        vendorName,
+        category,
+        message,
+        timestamp: Date.now(),
+        from,
+        read: from !== 'vendor'
+      });
+      localStorage.setItem('vendor-messages', JSON.stringify(messages));
+    }
 
     // Load event data
     let eventType = 'Event';
@@ -1569,16 +1634,9 @@
         return;
       }
 
-      // Load messages from localStorage
-      const messages = JSON.parse(localStorage.getItem('vendor-messages') || '[]');
-      
-      // Group messages by vendor
       const threadsByVendor = {};
-      messages.forEach(msg => {
-        if (!threadsByVendor[msg.vendorId]) {
-          threadsByVendor[msg.vendorId] = [];
-        }
-        threadsByVendor[msg.vendorId].push(msg);
+      getMessageThreads().forEach(thread => {
+        threadsByVendor[thread.vendorId] = thread.messages || [];
       });
 
       // Count unread messages
@@ -1840,12 +1898,11 @@
       const container = $('#messagingThread');
       if (!container) return;
 
-      const messages = JSON.parse(localStorage.getItem('vendor-messages') || '[]');
-      const thread = messages
-        .filter(m => m.vendorId === vendorId)
-        .sort((a, b) => a.timestamp - b.timestamp);
+      const threads = getMessageThreads();
+      const thread = threads.find(t => t.vendorId === vendorId)?.messages || [];
+      const sortedThread = thread.slice().sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
-      if (thread.length === 0) {
+      if (sortedThread.length === 0) {
         container.innerHTML = `
           <div style="text-align:center;padding:40px 20px;color:var(--muted);">
             <div style="font-size:2rem;margin-bottom:12px;">💬</div>
@@ -1855,7 +1912,7 @@
         return;
       }
 
-      container.innerHTML = thread.map(msg => {
+      container.innerHTML = sortedThread.map(msg => {
         const date = new Date(msg.timestamp);
         const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
         const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -1875,12 +1932,16 @@
       }, 100);
 
       // Mark messages as read
-      thread.forEach(msg => {
-        if (msg.from === 'vendor' && !msg.read) {
-          msg.read = true;
-        }
-      });
-      localStorage.setItem('vendor-messages', JSON.stringify(messages));
+      if (window.CleverPlannersData) {
+        const threadId = threads.find(t => t.vendorId === vendorId)?.id;
+        if (threadId) window.CleverPlannersData.markThreadRead(threadId);
+      } else {
+        const messages = JSON.parse(localStorage.getItem('vendor-messages') || '[]');
+        messages.forEach(msg => {
+          if (msg.vendorId === vendorId && msg.from === 'vendor') msg.read = true;
+        });
+        localStorage.setItem('vendor-messages', JSON.stringify(messages));
+      }
     }
 
     // Generate prefilled messages based on event data
@@ -1972,17 +2033,13 @@
       
       if (!vendor) return;
 
-      const messages = JSON.parse(localStorage.getItem('vendor-messages') || '[]');
-      messages.push({
-        id: Date.now().toString(),
+      addMessageToThread({
         vendorId,
         vendorName: vendor.name,
+        category: vendor.cat,
         message,
-        timestamp: Date.now(),
-        from: 'user',
-        read: true
+        from: 'user'
       });
-      localStorage.setItem('vendor-messages', JSON.stringify(messages));
 
       // Clear input
       input.value = '';

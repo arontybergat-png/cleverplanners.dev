@@ -1,0 +1,3330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CleverPlanners – Admin Dashboard</title>
+  <style>
+    :root{
+      --ink:#1f2937;
+      --muted:#6b7280;
+      --cream:#fbf6ed;
+      --panel:#f4ecdc;
+      --brand:#111827;
+      --accent1:#ff7ab6;
+      --accent2:#89f7d3;
+      --ring:#e7dcc7;
+      --radius:20px;
+      --shadow:0 12px 32px rgba(16,24,40,.08);
+      --ok:#16a34a; --warn:#f59e0b; --soft:#faf7f1;
+      --bg:#fbf6ed;--text:#1f2937;--card:#fff;
+      --ok-bg:#d1fae5;--ok-text:#065f46;--maybe-bg:#fef3c7;--maybe-text:#92400e;
+      --glass:rgba(255,255,255,0.72);
+      --border-soft:rgba(229,220,199,0.6);
+    }
+    *{box-sizing:border-box}
+    body{
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      margin:0;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(255,255,255,0.8), transparent 35%),
+        radial-gradient(circle at 90% 0%, rgba(255,255,255,0.6), transparent 40%),
+        linear-gradient(180deg,#fbf6ed 0%, #f7f1e6 100%);
+      color:var(--ink);
+    }
+    a{color:inherit;text-decoration:none}
+    :focus-visible{outline:2px solid var(--ring); outline-offset:2px; border-radius:10px}
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:120;
+      background:var(--glass);
+      border-bottom:1px solid var(--border-soft);
+      box-shadow:0 12px 28px rgba(17,24,39,.08);
+      backdrop-filter:blur(10px);
+    }
+    .topbar-inner{
+      max-width:1200px;
+      margin:0 auto;
+      padding:16px 28px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+    }
+    .logo{
+      font-weight:700;
+      font-size:1.1rem;
+      letter-spacing:-0.02em;
+      color:var(--ink);
+      text-decoration:none;
+    }
+    .topbar-title{
+      font-weight:600;
+      font-size:1rem;
+      color:var(--ink);
+      opacity:0.7;
+    }
+    .topbar-actions{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      color:var(--muted);
+      font-size:0.85rem;
+    }
+    .topbar-actions .btn{
+      padding:6px 12px;
+      border-radius:999px;
+      font-size:0.85rem;
+      box-shadow:none;
+    }
+
+    .admin-layout{
+      display:grid;
+      grid-template-columns:260px 1fr;
+      min-height:100vh;
+      padding:20px 28px 40px;
+      gap:18px;
+      max-width:1280px;
+      margin:0 auto;
+    }
+    .admin-sidebar{
+      position:sticky;
+      top:96px;
+      align-self:start;
+      height:calc(100vh - 120px);
+      padding:22px 18px;
+      border:1px solid var(--border-soft);
+      border-radius:18px;
+      background:var(--glass);
+      box-shadow:0 16px 38px rgba(16,24,40,.08);
+      backdrop-filter:blur(12px);
+    }
+    .admin-sidebar h2{
+      margin:0 0 18px 0;
+      font-size:1.05rem;
+      font-weight:700;
+      color:var(--ink);
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+    }
+    .admin-nav{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .admin-nav button{
+      width:100%;
+      border:1px solid var(--border-soft);
+      background:#fff;
+      color:var(--ink);
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:600;
+      text-align:left;
+      cursor:pointer;
+      transition:all 0.2s ease;
+    }
+    .admin-nav button::before{
+      content:'';
+      display:inline-block;
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      margin-right:10px;
+      background:#e5dcc7;
+    }
+    .admin-nav button:hover{
+      background:var(--soft);
+      border-color:#d4cbb2;
+      transform:translateX(2px);
+    }
+    .admin-nav button.active{
+      background:linear-gradient(135deg,#111827 0%, #1f2937 100%);
+      color:#fff;
+      border-color:transparent;
+      box-shadow:0 8px 18px rgba(17,24,39,0.2);
+    }
+    .admin-nav button.active::before{background:var(--accent2)}
+
+    .admin-main{
+      padding:0;
+      width:100%;
+    }
+
+    .admin-section{
+      display:none;
+    }
+    .admin-section.active{
+      display:block;
+    }
+    .section-header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:18px;
+      padding-bottom:12px;
+      border-bottom:1px solid var(--border-soft);
+    }
+    .section-header h1{
+      margin:0 0 6px 0;
+      font-size:1.75rem;
+      font-weight:700;
+      letter-spacing:-0.01em;
+    }
+    .section-header p{margin:0;color:var(--muted);max-width:520px}
+
+    .admin-card{
+      background:#fff;
+      border:1px solid var(--border-soft);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      padding:22px;
+      margin-bottom:22px;
+    }
+    .admin-card:hover{
+      box-shadow:0 14px 32px rgba(17,24,39,.12);
+      border-color:#d8ccb2;
+    }
+    .admin-card h3{
+      margin:0 0 12px 0;
+      font-size:1.1rem;
+      padding-bottom:8px;
+      border-bottom:1px solid #f0eadb;
+    }
+    .editor-grid{
+      display:grid;
+      grid-template-columns:1.05fr 0.95fr;
+      gap:18px;
+      align-items:start;
+    }
+    .editor-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+    .editor-header h3{
+      margin:0;
+      font-size:1.1rem;
+      font-weight:700;
+    }
+    .editor-note{
+      color:var(--muted);
+      font-size:0.9rem;
+    }
+    .form-section{
+      border:1px solid var(--border-soft);
+      border-radius:16px;
+      padding:16px;
+      margin-bottom:14px;
+      background:linear-gradient(180deg,#fff 0%, #fbf8f2 100%);
+    }
+    .completeness{
+      border:1px solid var(--border-soft);
+      border-radius:14px;
+      padding:12px 14px;
+      margin-bottom:14px;
+      background:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .completeness-bar{
+      flex:1;
+      height:10px;
+      border-radius:999px;
+      background:#f4ecdc;
+      overflow:hidden;
+    }
+    .completeness-bar span{
+      display:block;
+      height:100%;
+      width:0%;
+      background:linear-gradient(135deg,var(--accent2),var(--accent1));
+      transition:width 0.2s ease;
+    }
+    .form-section h4{
+      margin:0 0 12px 0;
+      font-size:1rem;
+      font-weight:700;
+      color:var(--ink);
+    }
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:12px;
+    }
+    .form-grid .full{
+      grid-column:1 / -1;
+    }
+    .preview-shell{
+      border:1px solid var(--border-soft);
+      border-radius:18px;
+      overflow:hidden;
+      background:#fff;
+      box-shadow:var(--shadow);
+      position:sticky;
+      top:120px;
+      max-height:calc(100vh - 160px);
+      overflow:auto;
+    }
+    .preview-shell.compact{
+      max-width:420px;
+    }
+    .preview-shell.public{
+      box-shadow:0 18px 40px rgba(17,24,39,.16);
+      border-color:#d9cbb4;
+    }
+    .preview-controls{
+      display:flex;
+      gap:8px;
+      padding:12px 18px;
+      border-bottom:1px solid var(--border-soft);
+      background:#fff;
+    }
+    .preview-controls button{
+      border:1px solid var(--border-soft);
+      background:#fff;
+      border-radius:999px;
+      padding:6px 12px;
+      cursor:pointer;
+      font-weight:600;
+      font-size:0.85rem;
+    }
+    .preview-controls button.active{
+      background:var(--brand);
+      color:#fff;
+      border-color:transparent;
+    }
+    .preview-hero{
+      padding:18px;
+      border-bottom:1px solid var(--border-soft);
+      background:linear-gradient(180deg,#fff 0%, #faf7f1 100%);
+    }
+    .preview-title{
+      font-size:1.25rem;
+      font-weight:800;
+      margin:0 0 6px 0;
+    }
+    .preview-sub{
+      color:var(--muted);
+      font-size:0.9rem;
+    }
+    .preview-badges{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .preview-badge{
+      padding:4px 10px;
+      border-radius:999px;
+      background:var(--brand);
+      color:#fff;
+      font-size:0.75rem;
+      font-weight:600;
+    }
+    .preview-badge.verified{background:var(--ok)}
+    .preview-badge.popular{background:var(--accent1)}
+    .preview-gallery{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      padding:12px 18px;
+    }
+    .preview-gallery .main{
+      grid-column:1 / -1;
+      height:160px;
+      border-radius:12px;
+      background:linear-gradient(135deg,#f7f1e6,#fff);
+      border:1px solid var(--border-soft);
+    }
+    .preview-thumb{
+      height:90px;
+      border-radius:10px;
+      background:linear-gradient(135deg,#f7f1e6,#fff);
+      border:1px solid var(--border-soft);
+    }
+    .preview-section{
+      padding:16px 18px;
+      border-top:1px solid var(--border-soft);
+    }
+    .preview-section h5{
+      margin:0 0 10px 0;
+      font-size:1rem;
+      font-weight:700;
+    }
+    .preview-feature-list,
+    .preview-pricing-list,
+    .preview-ref-list{
+      display:grid;
+      gap:10px;
+    }
+    .preview-feature{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding:8px 10px;
+      border:1px solid var(--border-soft);
+      border-radius:12px;
+      background:#fff;
+    }
+    .preview-feature .icon{
+      font-size:1.2rem;
+    }
+    .preview-pricing-item,
+    .preview-ref-item{
+      padding:10px 12px;
+      border:1px solid var(--border-soft);
+      border-radius:12px;
+      background:#fff;
+    }
+    .preview-side{
+      padding:16px 18px;
+      border-top:1px solid var(--border-soft);
+      display:grid;
+      gap:10px;
+    }
+    .preview-side .card{
+      border:1px solid var(--border-soft);
+      border-radius:12px;
+      padding:12px;
+      background:#fff;
+    }
+
+    .row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:center;
+    }
+    .row > *{flex:1;min-width:160px}
+    .row .fit{flex:0 0 auto}
+    .input, select, textarea{
+      width:100%;
+      padding:10px 12px;
+      border:1px solid var(--border-soft);
+      border-radius:12px;
+      font-family:inherit;
+      background:#fff;
+    }
+    .input:focus, select:focus, textarea:focus{
+      outline:none;
+      border-color:#cbbf9f;
+      box-shadow:0 0 0 3px rgba(229,220,199,0.5);
+    }
+    .input::placeholder, textarea::placeholder{
+      color:var(--muted);
+      opacity:0.75;
+    }
+    textarea{min-height:90px}
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      border-radius:12px;
+      padding:10px 12px;
+      border:1px solid var(--border-soft);
+      background:#fff;
+      cursor:pointer;
+      font-weight:600;
+      transition:all 0.2s ease;
+    }
+    .btn.primary{
+      background:linear-gradient(135deg,#111827 0%, #1f2937 100%);
+      color:#fff;
+      border-color:transparent;
+      box-shadow:0 10px 20px rgba(17,24,39,.2);
+    }
+    .btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(17,24,39,.12)}
+    .btn:disabled,
+    .btn-link:disabled,
+    .admin-nav button:disabled{
+      cursor:not-allowed;
+      opacity:0.55;
+      box-shadow:none;
+      transform:none;
+    }
+    .btn-link{border:none;background:transparent;color:var(--brand);padding:0;font-weight:600;cursor:pointer}
+    .btn-link:hover{opacity:0.85;text-decoration:underline}
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:0.75rem;
+      font-weight:700;
+    }
+    .badge.ok{background:var(--ok-bg);color:var(--ok-text)}
+    .badge.warn{background:var(--maybe-bg);color:var(--maybe-text)}
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:0.92rem;
+      background:#fff;
+      border-radius:14px;
+      overflow:hidden;
+    }
+    th, td{
+      text-align:left;
+      padding:12px 10px;
+      border-bottom:1px solid #f0eadb;
+      vertical-align:top;
+    }
+    thead th{
+      position:sticky;
+      top:0;
+      background:#fff;
+      z-index:1;
+    }
+    th{color:var(--muted);font-weight:600;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.04em}
+    tbody tr:hover{background:#faf7f1}
+    tbody tr:nth-child(even){background:rgba(250,247,241,0.6)}
+    .table-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+    }
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+      gap:12px;
+      margin-bottom:20px;
+    }
+    .stat-card{
+      background:#fff;
+      border:1px solid var(--border-soft);
+      border-radius:18px;
+      padding:16px;
+      box-shadow:var(--shadow);
+    }
+    .stat-label{
+      color:var(--muted);
+      font-size:0.85rem;
+      text-transform:uppercase;
+      letter-spacing:0.05em;
+    }
+    .stat-value{
+      font-size:1.6rem;
+      font-weight:800;
+      margin-top:6px;
+    }
+    .editable-text{
+      cursor:context-menu;
+    }
+    .editable-text:hover{
+      background:#f7f1e6;
+      border-radius:8px;
+      padding:2px 4px;
+    }
+    .inline-input{
+      width:100%;
+      border:1px solid var(--border-soft);
+      border-radius:8px;
+      padding:6px 8px;
+      font-family:inherit;
+    }
+    .toast button{
+      margin-left:10px;
+      border:1px solid var(--border-soft);
+      background:var(--soft);
+      border-radius:8px;
+      padding:4px 8px;
+      cursor:pointer;
+      font-weight:600;
+    }
+
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .list-item{
+      padding:12px;
+      border:1px solid var(--border-soft);
+      border-radius:14px;
+      background:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .list-item:hover{border-color:#d4cbb2;box-shadow:0 6px 18px rgba(17,24,39,.08)}
+    .list-item .meta{opacity:0.8}
+
+    .admin-section .row > .btn.fit{
+      border-radius:999px;
+    }
+    .list-item-title{font-weight:600}
+    .meta{color:var(--muted);font-size:0.9rem}
+
+    .two-col{
+      display:grid;
+      grid-template-columns:1.4fr 1fr;
+      gap:18px;
+    }
+    .admin-gate{
+      position:fixed;
+      inset:0;
+      background:rgba(251,246,237,0.94);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:200;
+    }
+    .admin-gate.hidden{display:none}
+    .admin-gate-card{
+      background:#fff;
+      border:1px solid var(--border-soft);
+      border-radius:18px;
+      padding:24px;
+      min-width:320px;
+      box-shadow:0 18px 40px rgba(17,24,39,.15);
+    }
+    .admin-gate-card h3{margin:0 0 10px 0}
+    .toast{
+      position:fixed;
+      bottom:18px;
+      right:18px;
+      background:#fff;
+      border:1px solid var(--border-soft);
+      border-radius:14px;
+      padding:10px 14px;
+      box-shadow:0 12px 28px rgba(17,24,39,.12);
+      z-index:150;
+    }
+    .log-list{
+      max-height:280px;
+      overflow:auto;
+      padding-right:4px;
+    }
+    .is-hidden{display:none !important}
+    @media (max-width: 980px){
+      .topbar-inner{padding:14px 18px}
+      .admin-layout{grid-template-columns:1fr;padding:16px 16px 28px}
+      .admin-sidebar{position:relative;height:auto;top:auto;border:none}
+      .admin-main{padding-top:0}
+      .two-col{grid-template-columns:1fr}
+      .preview-shell{position:relative;max-height:none}
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="logo" href="index.html">CleverPlanners</a>
+      <div class="topbar-title">Admin Dashboard</div>
+      <div class="topbar-actions">
+        <button class="btn" id="topbarExportBtn" type="button">Export</button>
+        <button class="btn" id="topbarResetBtn" type="button">Reset</button>
+      </div>
+    </div>
+  </header>
+  <div class="admin-gate" id="adminGate">
+    <div class="admin-gate-card">
+      <h3>Admin Access (Demo Only)</h3>
+      <p class="meta">Enter the demo passcode to continue.</p>
+      <input class="input" id="adminGateInput" type="password" placeholder="Passcode" />
+      <div style="margin-top:12px;display:flex;gap:10px;justify-content:flex-end;">
+        <button class="btn primary" id="adminGateBtn" type="button">Unlock</button>
+      </div>
+      <div class="meta" id="adminGateError" style="color:#dc2626;margin-top:8px;display:none;">Incorrect passcode.</div>
+    </div>
+  </div>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <h2>Admin Dashboard</h2>
+      <nav class="admin-nav">
+        <button class="active" data-section="overview">Overview</button>
+        <button data-section="vendors">Vendors</button>
+        <button data-section="onboarding">Vendor Onboarding</button>
+        <button data-section="cases">Complaints &amp; Refunds</button>
+        <button data-section="media-queue">Media Queue</button>
+        <button data-section="reviews">Reviews</button>
+        <button data-section="settings">Tools</button>
+      </nav>
+    </aside>
+    <main class="admin-main">
+      <section class="admin-section active" id="section-overview">
+        <div class="section-header">
+          <div>
+            <h1>Overview</h1>
+            <p>Snapshot of pipeline health, inbox, and moderation queues.</p>
+          </div>
+        </div>
+        <div class="stats-grid" id="overviewKpis"></div>
+      </section>
+
+      <section class="admin-section" id="section-reviews">
+        <div class="section-header">
+          <div>
+            <h1>Reviews</h1>
+            <p>Moderate new reviews and add admin replies.</p>
+          </div>
+        </div>
+        <div class="admin-card">
+          <div class="row" style="gap:10px;">
+            <select id="reviewStatusFilter" class="fit">
+              <option value="all">All statuses</option>
+              <option value="published">Published</option>
+              <option value="flagged">Flagged</option>
+              <option value="hidden">Hidden</option>
+            </select>
+            <input class="input" id="reviewSearch" type="search" placeholder="Search reviews..." />
+          </div>
+        </div>
+        <div class="admin-card">
+          <div id="reviewList" class="list"></div>
+        </div>
+      </section>
+
+      <section class="admin-section" id="section-vendors">
+        <div class="section-header">
+          <div>
+            <h1>Vendors</h1>
+            <p>Manage active marketplace vendors and featured status.</p>
+          </div>
+          <button class="btn primary" id="addVendorBtn" type="button">Add Vendor</button>
+        </div>
+        <div class="stats-grid" id="vendorStats"></div>
+
+        <div class="admin-card">
+          <div class="row">
+            <input class="input" id="vendorSearch" type="search" placeholder="Search vendors..." />
+            <select id="vendorCategoryFilter"></select>
+            <select id="vendorStatusFilter">
+              <option value="all">All status</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="row" style="margin-top:12px;">
+            <div class="fit">
+              <label class="fit"><input type="checkbox" id="vendorRecommendedFilter" /> Recommended</label>
+            </div>
+            <div class="fit">
+              <label class="fit"><input type="checkbox" id="vendorVerifiedFilter" /> Verified</label>
+            </div>
+            <input class="input" id="vendorLocationFilter" placeholder="Location filter" />
+            <input class="input" id="vendorPriceMin" type="number" min="0" placeholder="Min price" />
+            <input class="input" id="vendorPriceMax" type="number" min="0" placeholder="Max price" />
+          </div>
+          <div class="row" style="margin-top:12px;">
+            <div class="meta fit">Quick categories:</div>
+            <div id="vendorCategoryChips" class="row" style="gap:8px;"></div>
+          </div>
+          <div class="row" style="margin-top:12px;">
+            <div class="meta fit">Saved views:</div>
+            <div class="row" style="gap:8px;">
+              <button class="btn fit" data-view="all" type="button">All</button>
+              <button class="btn fit" data-view="inactive" type="button">Inactive</button>
+              <button class="btn fit" data-view="unverified" type="button">Unverified</button>
+              <button class="btn fit" data-view="recommended" type="button">Recommended</button>
+              <button class="btn fit" data-view="high-price" type="button">High Price</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-card" id="vendorEditor" style="display:none;">
+          <div class="editor-grid">
+            <form id="vendorEditorForm">
+              <div class="editor-header">
+                <h3>Vendor Editor</h3>
+                <div class="editor-note">Live preview updates as you type.</div>
+              </div>
+              <div class="completeness">
+                <div style="min-width:140px;font-weight:700;">Profile completeness</div>
+                <div class="completeness-bar"><span id="completenessFill"></span></div>
+                <div id="completenessLabel" style="min-width:48px;text-align:right;">0%</div>
+              </div>
+              <div class="form-section">
+                <h4>Basic Info</h4>
+                <div class="form-grid">
+                  <input class="input full" id="editName" placeholder="Vendor name" required />
+                  <select id="editCategory" required></select>
+                  <input class="input" id="editCategoryType" placeholder="Category type (display)" />
+                  <input class="input full" id="editLocation" placeholder="Primary location (e.g., New York, NY)" />
+                  <input class="input full" id="editLocations" placeholder="Locations (comma separated)" />
+                  <input class="input" id="editPriceFrom" type="number" min="0" placeholder="Price from" />
+                  <input class="input" id="editPriceTo" type="number" min="0" placeholder="Price to" />
+                  <input class="input full" id="editPriceNote" placeholder="Pricing note (e.g., Starting price)" />
+                  <input class="input full" id="editBadges" placeholder="Badges/tags (comma separated)" />
+                  <label class="fit"><input type="checkbox" id="editRecommended" /> Recommended</label>
+                  <label class="fit"><input type="checkbox" id="editVerified" /> Verified</label>
+                  <select id="editStatus">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h4>Description / About</h4>
+                <textarea class="input" id="editDescription" placeholder="Vendor description..."></textarea>
+              </div>
+
+              <div class="form-section">
+                <h4>Services / Features</h4>
+                <textarea class="input" id="editFeatures" placeholder="One per line: icon | title | subtitle"></textarea>
+              </div>
+
+              <div class="form-section">
+                <h4>Media Gallery</h4>
+                <div class="form-grid">
+                  <input class="input full" id="editMainImage" placeholder="Main image URL" />
+                  <textarea class="input full" id="editGalleryImages" placeholder="Gallery image URLs (one per line)"></textarea>
+                  <input class="input full" id="editVideoUrl" placeholder="Video URL (optional)" />
+                  <label class="fit"><input type="checkbox" id="queueMediaToggle" /> Queue media for review</label>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h4>Contact + Social</h4>
+                <div class="form-grid">
+                  <input class="input" id="editEmail" placeholder="Email" />
+                  <input class="input" id="editPhone" placeholder="Phone" />
+                  <input class="input full" id="editWebsite" placeholder="Website" />
+                  <input class="input" id="editInstagram" placeholder="Instagram URL" />
+                  <input class="input" id="editFacebook" placeholder="Facebook URL" />
+                  <input class="input" id="editTiktok" placeholder="TikTok URL" />
+                  <input class="input" id="editYoutube" placeholder="YouTube URL" />
+                  <input class="input full" id="editGoogleBusiness" placeholder="Google Business URL" />
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h4>Pricing Items</h4>
+                <textarea class="input" id="editPricingItems" placeholder="One per line: name | amount | note"></textarea>
+              </div>
+
+              <div class="form-section">
+                <h4>Availability</h4>
+                <div class="form-grid">
+                  <input class="input" id="editDaysAvailable" placeholder="Days available (comma separated)" />
+                  <input class="input" id="editAvailabilityWindow" placeholder="Booking window (e.g., 3-12 months)" />
+                  <input class="input full" id="editLeadTime" placeholder="Lead time (e.g., 4 weeks)" />
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h4>Booking & Payment</h4>
+                <div class="form-grid">
+                  <input class="input" id="editBookingType" placeholder="Booking type (e.g., contract required)" />
+                  <input class="input" id="editDepositRequired" placeholder="Deposit required (yes/no)" />
+                  <input class="input" id="editDepositAmount" placeholder="Deposit amount" />
+                  <input class="input full" id="editPaymentMethods" placeholder="Payment methods (comma separated)" />
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h4>References / Testimonials</h4>
+                <textarea class="input" id="editTestimonials" placeholder="One per line: name | testimonial text"></textarea>
+              </div>
+
+              <div class="form-section">
+                <h4>Quick Info</h4>
+                <div class="form-grid">
+                  <input class="input" id="editCapacity" placeholder="Capacity (e.g., 50-500 guests)" />
+                  <input class="input" id="editSetupTime" placeholder="Setup time" />
+                  <input class="input" id="editResponseTime" placeholder="Response time" />
+                </div>
+              </div>
+
+              <div class="row">
+                <button class="btn primary fit" type="submit">Save Vendor</button>
+                <button class="btn fit" type="button" id="vendorEditorClose">Close</button>
+              </div>
+            </form>
+
+            <div class="preview-shell">
+              <div class="preview-controls">
+                <button type="button" data-preview="desktop" class="active">Desktop</button>
+                <button type="button" data-preview="mobile">Mobile</button>
+                <button type="button" data-preview="public">Public</button>
+              </div>
+              <div class="preview-hero">
+                <div class="preview-title" id="previewName">Vendor Name</div>
+                <div class="preview-sub" id="previewMeta">Category • Location</div>
+                <div class="preview-badges" id="previewBadges"></div>
+              </div>
+              <div class="preview-gallery">
+                <div class="main" id="previewMainImage"></div>
+                <div class="preview-thumb" id="previewThumb1"></div>
+                <div class="preview-thumb" id="previewThumb2"></div>
+              </div>
+              <div class="preview-section">
+                <h5>About</h5>
+                <div id="previewDescription" class="preview-sub">Description...</div>
+              </div>
+              <div class="preview-section">
+                <h5>Services & Features</h5>
+                <div class="preview-feature-list" id="previewFeatures"></div>
+              </div>
+              <div class="preview-section">
+                <h5>Pricing</h5>
+                <div class="preview-pricing-list" id="previewPricing"></div>
+              </div>
+              <div class="preview-section">
+                <h5>References</h5>
+                <div class="preview-ref-list" id="previewReferences"></div>
+              </div>
+              <div class="preview-side">
+                <div class="card">
+                  <div style="font-weight:700;margin-bottom:6px;">Contact</div>
+                  <div class="preview-sub" id="previewContact"></div>
+                </div>
+                <div class="card">
+                  <div style="font-weight:700;margin-bottom:6px;">Social</div>
+                  <div class="preview-sub" id="previewSocial"></div>
+                </div>
+                <div class="card">
+                  <div style="font-weight:700;margin-bottom:6px;">Availability</div>
+                  <div class="preview-sub" id="previewAvailability"></div>
+                </div>
+                <div class="card">
+                  <div style="font-weight:700;margin-bottom:6px;">Booking</div>
+                  <div class="preview-sub" id="previewBooking"></div>
+                </div>
+                <div class="card">
+                  <div style="font-weight:700;margin-bottom:6px;">Quick Info</div>
+                  <div class="preview-sub" id="previewQuickInfo"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-card" id="vendorDetailCard" style="display:none;"></div>
+
+        <div class="admin-card">
+          <div class="row" style="margin-bottom:12px;">
+            <label class="fit"><input type="checkbox" id="vendorSelectAll" /> Select all</label>
+            <button class="btn fit" id="bulkActivateBtn" type="button">Activate</button>
+            <button class="btn fit" id="bulkDeactivateBtn" type="button">Deactivate</button>
+            <button class="btn fit" id="bulkDeleteBtn" type="button">Delete</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th style="width:36px;"></th>
+                <th><button class="btn-link" data-sort="name">Vendor</button></th>
+                <th><button class="btn-link" data-sort="category">Category</button></th>
+                <th>Location(s)</th>
+                <th><button class="btn-link" data-sort="priceFrom">Price / From</button></th>
+                <th>Recommended</th>
+                <th>Verified</th>
+                <th><button class="btn-link" data-sort="status">Status</button></th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="vendorsTableBody"></tbody>
+          </table>
+          <div class="row" style="margin-top:12px;justify-content:flex-end;">
+            <div class="fit meta" id="vendorPaginationInfo"></div>
+            <select class="fit" id="vendorPageSize">
+              <option value="10">10 / page</option>
+              <option value="20">20 / page</option>
+              <option value="50">50 / page</option>
+            </select>
+            <button class="btn fit" id="vendorPrevPage" type="button">Prev</button>
+            <button class="btn fit" id="vendorNextPage" type="button">Next</button>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="admin-section" id="section-cases">
+        <div class="section-header">
+          <div>
+            <h1>Complaints &amp; Refunds</h1>
+            <p>Track customer complaints and refund requests by vendor.</p>
+          </div>
+        </div>
+        <div class="admin-card">
+          <div class="row" style="gap:8px;align-items:center;">
+            <button class="btn fit" data-case-filter="all">All</button>
+            <button class="btn fit" data-case-filter="open">Open</button>
+            <button class="btn fit" data-case-filter="in_progress">In Progress</button>
+            <button class="btn fit" data-case-filter="resolved">Resolved</button>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="admin-card">
+            <div id="caseList" class="list"></div>
+          </div>
+          <div class="admin-card" id="caseDetail">
+            <h3>Case</h3>
+            <div class="meta">Select a case to view details.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="admin-section" id="section-onboarding">
+        <div class="section-header">
+          <div>
+            <h1>Vendor Onboarding</h1>
+            <p>Approve or reject new submissions. Approved vendors appear in the marketplace.</p>
+          </div>
+        </div>
+        <div class="admin-card">
+          <div id="onboardingList" class="list"></div>
+        </div>
+      </section>
+      <section class="admin-section" id="section-media-queue">
+        <div class="section-header">
+          <div>
+            <h1>Media Queue</h1>
+            <p>Approve or reject vendor media before publishing.</p>
+          </div>
+        </div>
+        <div class="admin-card">
+          <div class="row" style="gap:10px;">
+            <select id="mediaStatusFilter" class="fit">
+              <option value="all">All statuses</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+            <input class="input" id="mediaSearch" type="search" placeholder="Search media queue..." />
+          </div>
+        </div>
+        <div class="admin-card">
+          <div id="mediaQueueList" class="list"></div>
+        </div>
+      </section>
+      <section class="admin-section" id="section-settings">
+        <div class="section-header">
+          <div>
+            <h1>Tools</h1>
+            <p>Manage demo data and bulk updates.</p>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="admin-card">
+            <h3>Data Management</h3>
+            <div class="row" style="margin-bottom:12px;">
+              <button class="btn" id="exportDataBtn" type="button">Export JSON</button>
+              <button class="btn" id="importDataBtn" type="button">Import JSON</button>
+              <button class="btn" id="resetDataBtn" type="button">Reset Demo Data</button>
+            </div>
+            <textarea id="dataTextarea" placeholder="Paste JSON here to import or view export..."></textarea>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    /* =========================
+       DATA STORE BLOCK
+       ========================= */
+    (function () {
+      const STORAGE_KEY = 'cleverplanners-data-v1';
+
+      function safeParseJSON(str, fallback) {
+        if (str === null || str === undefined) return fallback;
+        try {
+          return JSON.parse(str);
+        } catch (_) {
+          if (str === 'true') return true;
+          if (str === 'false') return false;
+          return fallback;
+        }
+      }
+
+      function loadJSON(key, fallback) {
+        return safeParseJSON(localStorage.getItem(key), fallback);
+      }
+
+      function saveJSON(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+
+      const DEFAULT_DATA = {
+        vendors: [
+          {
+            id: 'v-venue-1',
+            name: 'Grand Ballroom Events',
+            category: 'venue',
+            locations: ['New York, NY'],
+            priceFrom: 5000,
+            priceNote: 'Starting price',
+            recommended: true,
+            verified: true,
+            status: 'active',
+            rating: 4.8,
+            reviewCount: 127,
+            badge: 'Popular',
+            features: ['Outdoor Space', 'Parking']
+          },
+          {
+            id: 'v-photo-1',
+            name: 'Elegant Photography Co.',
+            category: 'photography',
+            locations: ['Los Angeles, CA'],
+            priceFrom: 3500,
+            priceNote: 'Starting price',
+            recommended: true,
+            verified: false,
+            status: 'active',
+            rating: 4.9,
+            reviewCount: 89,
+            badge: 'Top Rated',
+            features: ['Drone', 'Video']
+          },
+          {
+            id: 'v-catering-1',
+            name: 'Gourmet Catering Services',
+            category: 'catering',
+            locations: ['Chicago, IL'],
+            priceFrom: 45,
+            priceNote: 'Per person',
+            recommended: false,
+            verified: true,
+            status: 'active',
+            rating: 4.7,
+            reviewCount: 203,
+            badge: 'Verified',
+            features: ['Kosher', 'Vegetarian']
+          },
+          {
+            id: 'v-music-1',
+            name: 'DJ Sound Masters',
+            category: 'music',
+            locations: ['Miami, FL'],
+            priceFrom: 1200,
+            priceNote: 'Starting price',
+            recommended: false,
+            verified: false,
+            status: 'active',
+            rating: 4.6,
+            reviewCount: 156,
+            badge: '',
+            features: ['MC Services', 'Lighting']
+          },
+          {
+            id: 'v-florist-1',
+            name: 'Blossom Floral Design',
+            category: 'florist',
+            locations: ['Boston, MA'],
+            priceFrom: 800,
+            priceNote: 'Starting price',
+            recommended: true,
+            verified: false,
+            status: 'active',
+            rating: 4.9,
+            reviewCount: 94,
+            badge: 'Award Winner',
+            features: ['Custom Design', 'Delivery']
+          },
+          {
+            id: 'v-beauty-1',
+            name: 'Bridal Beauty Studio',
+            category: 'beauty',
+            locations: ['San Francisco, CA'],
+            priceFrom: 350,
+            priceNote: 'Starting price',
+            recommended: false,
+            verified: false,
+            status: 'active',
+            rating: 4.8,
+            reviewCount: 67,
+            badge: '',
+            features: ['Hair & Makeup', 'On-Site']
+          },
+          {
+            id: 'v-plan-1',
+            name: 'Perfect Day Planners',
+            category: 'planning',
+            locations: ['Seattle, WA'],
+            priceFrom: 2500,
+            priceNote: 'Starting price',
+            recommended: true,
+            verified: true,
+            status: 'active',
+            rating: 5.0,
+            reviewCount: 45,
+            badge: 'Top Rated',
+            features: ['Full Service', 'Day-Of']
+          },
+          {
+            id: 'v-transport-1',
+            name: 'Luxury Limousine Service',
+            category: 'transportation',
+            locations: ['New York, NY'],
+            priceFrom: 600,
+            priceNote: 'Starting price',
+            recommended: false,
+            verified: false,
+            status: 'active',
+            rating: 4.5,
+            reviewCount: 112,
+            badge: '',
+            features: ['Fleet', 'Professional']
+          },
+          {
+            id: 'v-rentals-1',
+            name: 'Elegant Event Rentals',
+            category: 'rentals',
+            locations: ['Dallas, TX'],
+            priceFrom: 1500,
+            priceNote: 'Starting price',
+            recommended: true,
+            verified: true,
+            status: 'active',
+            rating: 4.7,
+            reviewCount: 178,
+            badge: 'Verified',
+            features: ['Tables & Chairs', 'Linens']
+          }
+        ],
+        categories: [
+          { id: 'venue', name: 'Venue & Halls', active: true, order: 1 },
+          { id: 'photography', name: 'Photography & Video', active: true, order: 2 },
+          { id: 'catering', name: 'Catering & Food', active: true, order: 3 },
+          { id: 'music', name: 'Music & Performers', active: true, order: 4 },
+          { id: 'florist', name: 'Decor & Flowers', active: true, order: 5 },
+          { id: 'beauty', name: 'Beauty & Styling', active: true, order: 6 },
+          { id: 'planning', name: 'Planning & Coordination', active: true, order: 7 },
+          { id: 'transportation', name: 'Transportation', active: true, order: 8 },
+          { id: 'rentals', name: 'Rentals & Supplies', active: true, order: 9 }
+        ],
+        cases: [
+          {
+            id: 'case-1',
+            vendorId: 'v-venue-1',
+            vendorName: 'Grand Ballroom Events',
+            customerName: 'Maya Hernandez',
+            customerEmail: 'maya@example.com',
+            message: 'The venue canceled last minute. Requesting a refund.',
+            caseType: 'Refund',
+            status: 'open',
+            priority: 'high',
+            notes: [],
+            adminReply: '',
+            createdAt: '2025-12-05T14:12:00.000Z',
+            updatedAt: '2025-12-05T14:12:00.000Z'
+          }
+        ],
+        onboarding: [],
+        reviews: [
+          {
+            id: 'rev-1',
+            vendorId: 'v-venue-1',
+            rating: 5,
+            text: 'The staff was incredible and the space looked stunning.',
+            createdAt: '2025-12-01T10:30:00.000Z',
+            status: 'published',
+            adminReply: ''
+          },
+          {
+            id: 'rev-2',
+            vendorId: 'v-music-1',
+            rating: 3,
+            text: 'Great music selection but setup ran late.',
+            createdAt: '2025-12-03T18:10:00.000Z',
+            status: 'flagged',
+            adminReply: ''
+          }
+        ],
+        mediaQueue: [
+          {
+            id: 'media-1',
+            vendorId: 'v-photo-1',
+            type: 'gallery',
+            url: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
+            status: 'pending',
+            reason: ''
+          }
+        ],
+        settings: {
+          mediaReviewEnabled: false
+        }
+      };
+
+      const CATEGORY_SLUG_BY_NAME = {
+        'venue & halls': 'venue',
+        'venue': 'venue',
+        'hall': 'venue',
+        'photography & video': 'photography',
+        'photography': 'photography',
+        'catering & food': 'catering',
+        'catering': 'catering',
+        'music & performers': 'music',
+        'music': 'music',
+        'decor & flowers': 'florist',
+        'flowers': 'florist',
+        'beauty & styling': 'beauty',
+        'beauty': 'beauty',
+        'planning & coordination': 'planning',
+        'planning': 'planning',
+        'transportation': 'transportation',
+        'rentals & supplies': 'rentals',
+        'rentals': 'rentals',
+        'religious services': 'other',
+        'invitations & stationery': 'other',
+        'gifts & favors': 'other'
+      };
+
+      function normalizeText(value) {
+        return String(value || '')
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .trim();
+      }
+
+      function deepClone(obj) {
+        return JSON.parse(JSON.stringify(obj));
+      }
+
+      function loadData() {
+        const stored = loadJSON(STORAGE_KEY, null);
+        if (!stored) return deepClone(DEFAULT_DATA);
+        const data = { ...deepClone(DEFAULT_DATA), ...stored };
+        data.vendors = Array.isArray(stored?.vendors) ? stored.vendors : deepClone(DEFAULT_DATA.vendors);
+        data.categories = Array.isArray(stored?.categories) ? stored.categories : deepClone(DEFAULT_DATA.categories);
+        data.cases = Array.isArray(stored?.cases) ? stored.cases : [];
+        data.onboarding = Array.isArray(stored?.onboarding) ? stored.onboarding : [];
+        data.reviews = Array.isArray(stored?.reviews) ? stored.reviews : [];
+        data.mediaQueue = Array.isArray(stored?.mediaQueue) ? stored.mediaQueue : [];
+        data.settings = stored?.settings ? { ...deepClone(DEFAULT_DATA.settings), ...stored.settings } : deepClone(DEFAULT_DATA.settings);
+        return data;
+      }
+
+      function saveData(data) {
+        saveJSON(STORAGE_KEY, data);
+      }
+
+      function withData(updater) {
+        const data = loadData();
+        updater(data);
+        saveData(data);
+        return data;
+      }
+
+      function formatCurrency(value) {
+        const num = typeof value === 'number' ? value : Number(value || 0);
+        if (Number.isNaN(num)) return '$0';
+        return num >= 1000
+          ? '$' + num.toLocaleString('en-US', { maximumFractionDigits: 0 })
+          : '$' + num.toFixed(0);
+      }
+
+      function getCategorySlug(name) {
+        const normalized = normalizeText(name);
+        return CATEGORY_SLUG_BY_NAME[normalized] || normalized.replace(/[^a-z0-9]+/g, '-');
+      }
+
+      function getCategories() {
+        const data = loadData();
+        return data.categories
+          .slice()
+          .sort((a, b) => (a.order || 0) - (b.order || 0));
+      }
+
+      function getActiveCategoryIds() {
+        return getCategories()
+          .filter(category => category.active)
+          .map(category => category.id);
+      }
+
+      function getVendors() {
+        return loadData().vendors.slice();
+      }
+
+      // Public marketplace helper (used by marketplace display, not admin UI).
+      function getMarketplaceVendors() {
+        const data = loadData();
+        const activeCategories = new Set(getActiveCategoryIds());
+        return data.vendors
+          .filter(vendor => vendor.status !== 'inactive' && activeCategories.has(vendor.category))
+          .map(vendor => {
+            const location = Array.isArray(vendor.locations) && vendor.locations.length > 0
+              ? vendor.locations[0]
+              : vendor.location || 'Multiple locations';
+            const badge = vendor.badge || (vendor.verified ? 'Verified' : vendor.recommended ? 'Popular' : '');
+            return {
+              id: vendor.id,
+              name: vendor.name,
+              category: vendor.category,
+              rating: vendor.rating || 4.7,
+              reviewCount: vendor.reviewCount || 60,
+              location,
+              price: formatCurrency(vendor.priceFrom),
+              priceNote: vendor.priceNote || 'Starting price',
+              image: vendor.image || '',
+              badge,
+              features: vendor.features || []
+            };
+          });
+      }
+
+      function addVendor(vendor) {
+        return withData(data => {
+          const id = vendor.id || `v-${Date.now().toString(36)}`;
+          data.vendors.push({ ...vendor, id });
+        });
+      }
+
+      function updateVendor(vendorId, updates) {
+        return withData(data => {
+          const index = data.vendors.findIndex(v => v.id === vendorId);
+          if (index === -1) return;
+          data.vendors[index] = { ...data.vendors[index], ...updates };
+        });
+      }
+
+      function deleteVendor(vendorId) {
+        return withData(data => {
+          data.vendors = data.vendors.filter(v => v.id !== vendorId);
+        });
+      }
+
+      function toggleVendorStatus(vendorId, status) {
+        return updateVendor(vendorId, { status });
+      }
+
+      function getCases() {
+        return loadData().cases.slice();
+      }
+
+      function addCase(caseItem) {
+        return withData(data => {
+          data.cases = Array.isArray(data.cases) ? data.cases : [];
+          data.cases.push({
+            id: `case-${Date.now().toString(36)}`,
+            vendorId: '',
+            vendorName: '',
+            customerName: '',
+            customerEmail: '',
+            message: '',
+            caseType: 'Complaint',
+            status: 'open',
+            priority: 'medium',
+            notes: [],
+            adminReply: '',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            ...caseItem
+          });
+        });
+      }
+
+      function updateCase(caseId, updates) {
+        return withData(data => {
+          const caseItem = data.cases.find(c => c.id === caseId);
+          if (!caseItem) return;
+          Object.assign(caseItem, updates, { updatedAt: new Date().toISOString() });
+        });
+      }
+
+      function addCaseNote(caseId, note) {
+        return withData(data => {
+          const caseItem = data.cases.find(c => c.id === caseId);
+          if (!caseItem) return;
+          caseItem.notes = caseItem.notes || [];
+          caseItem.notes.push({
+            id: `note-${Date.now().toString(36)}`,
+            note,
+            timestamp: Date.now()
+          });
+          caseItem.updatedAt = new Date().toISOString();
+        });
+      }
+
+      function getReviews() {
+        return loadData().reviews.slice();
+      }
+
+      function addReview(review) {
+        return withData(data => {
+          data.reviews = Array.isArray(data.reviews) ? data.reviews : [];
+          data.reviews.push({
+            id: `rev-${Date.now().toString(36)}`,
+            vendorId: '',
+            rating: 0,
+            text: '',
+            createdAt: new Date().toISOString(),
+            status: 'hidden',
+            adminReply: '',
+            ...review
+          });
+        });
+      }
+
+      function updateReview(reviewId, updates) {
+        return withData(data => {
+          const review = data.reviews.find(r => r.id === reviewId);
+          if (!review) return;
+          Object.assign(review, updates);
+        });
+      }
+
+      function getMediaQueue() {
+        return loadData().mediaQueue.slice();
+      }
+
+      function addMediaQueueItem(item) {
+        return withData(data => {
+          data.mediaQueue = Array.isArray(data.mediaQueue) ? data.mediaQueue : [];
+          data.mediaQueue.push({
+            id: `media-${Date.now().toString(36)}`,
+            vendorId: '',
+            type: 'gallery',
+            url: '',
+            status: 'pending',
+            reason: '',
+            ...item
+          });
+        });
+      }
+
+      function updateMediaQueueItem(itemId, updates) {
+        return withData(data => {
+          const item = data.mediaQueue.find(m => m.id === itemId);
+          if (!item) return;
+          Object.assign(item, updates);
+        });
+      }
+
+      function getSettings() {
+        return loadData().settings || {};
+      }
+
+      function updateSettings(updates) {
+        return withData(data => {
+          data.settings = { ...(data.settings || {}), ...updates };
+        });
+      }
+
+      function addOnboardingSubmission(submission) {
+        return withData(data => {
+          const id = `onb-${Date.now().toString(36)}`;
+          data.onboarding.push({
+            id,
+            status: 'pending',
+            submittedAt: submission.submittedAt || new Date().toISOString(),
+            ...submission
+          });
+        });
+      }
+
+      function approveOnboarding(submissionId) {
+        return withData(data => {
+          const submission = data.onboarding.find(s => s.id === submissionId);
+          if (!submission) return;
+          submission.status = 'approved';
+          const serviceCategory = submission.services?.[0]?.category || submission.primaryCategory || '';
+          const vendorCategory = getCategorySlug(serviceCategory);
+          const priceFrom = Number(submission.services?.[0]?.basePrice || 0) || 0;
+          const location = submission.primaryLocation || [submission.city, submission.state].filter(Boolean).join(', ');
+          data.vendors.push({
+            id: `v-${submissionId}`,
+            name: submission.businessName || 'New Vendor',
+            category: vendorCategory,
+            locations: location ? [location] : [],
+            priceFrom,
+            priceNote: submission.services?.[0]?.priceStructure === 'per-guest' ? 'Per person' : 'Starting price',
+            recommended: false,
+            verified: false,
+            status: 'active',
+            rating: 4.7,
+            reviewCount: 0,
+            badge: '',
+            features: submission.services?.[0]?.name ? [submission.services[0].name] : []
+          });
+        });
+      }
+
+      function rejectOnboarding(submissionId) {
+        return withData(data => {
+          const submission = data.onboarding.find(s => s.id === submissionId);
+          if (submission) submission.status = 'rejected';
+        });
+      }
+
+      function getOnboardingSubmissions() {
+        return loadData().onboarding.slice();
+      }
+
+      function updateOnboarding(submissionId, updates) {
+        return withData(data => {
+          const submission = data.onboarding.find(s => s.id === submissionId);
+          if (!submission) return;
+          Object.assign(submission, updates);
+        });
+      }
+
+      window.CleverPlannersStorage = {
+        loadJSON,
+        saveJSON,
+        safeParseJSON
+      };
+
+      window.CleverPlannersData = {
+        getData: () => deepClone(loadData()),
+        getCategories,
+        getActiveCategoryIds,
+        getVendors,
+        getMarketplaceVendors,
+        addVendor,
+        updateVendor,
+        deleteVendor,
+        toggleVendorStatus,
+        getCases,
+        addCase,
+        updateCase,
+        addCaseNote,
+        getReviews,
+        addReview,
+        updateReview,
+        getMediaQueue,
+        addMediaQueueItem,
+        updateMediaQueueItem,
+        addOnboardingSubmission,
+        approveOnboarding,
+        rejectOnboarding,
+        getOnboardingSubmissions,
+        updateOnboarding,
+        getSettings,
+        updateSettings
+      };
+    })();
+  </script>
+  <script>
+    /* =========================
+       ADMIN UI BLOCK
+       ========================= */
+    (function () {
+      const data = window.CleverPlannersData;
+      const storage = window.CleverPlannersStorage;
+      if (!data) {
+        console.error('CleverPlannersData is missing.');
+        return;
+      }
+
+      const $ = (s, root = document) => root.querySelector(s);
+      const $$ = (s, root = document) => Array.from(root.querySelectorAll(s));
+
+      const state = {
+        editingVendorId: null,
+        activeCaseId: null,
+        activeSection: 'overview',
+        sortKey: 'name',
+        sortDir: 'asc',
+        activeCategoryFilters: new Set(),
+        page: 1,
+        pageSize: 10,
+        draftVendor: null,
+        caseFilter: 'all',
+        reviewFilter: 'all',
+        reviewSearch: '',
+        mediaFilter: 'all',
+        mediaSearch: ''
+      };
+
+      const ENABLE_ADMIN_GATE = true;
+      const ADMIN_PASSCODE = 'admin123';
+      const ADMIN_AUTH_KEY = 'cleverplanners-admin-auth';
+
+      function showToast(message, { actionLabel, onAction } = {}) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+        if (actionLabel) {
+          const actionBtn = document.createElement('button');
+          actionBtn.type = 'button';
+          actionBtn.textContent = actionLabel;
+          actionBtn.addEventListener('click', () => {
+            onAction && onAction();
+            toast.remove();
+          });
+          toast.appendChild(actionBtn);
+        }
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2600);
+      }
+
+      function initGate() {
+        const gate = $('#adminGate');
+        const input = $('#adminGateInput');
+        const btn = $('#adminGateBtn');
+        const error = $('#adminGateError');
+        if (!gate || !input || !btn || !error) return;
+        if (!ENABLE_ADMIN_GATE) {
+          gate.classList.add('hidden');
+          return;
+        }
+        const isAuthed = storage?.loadJSON ? storage.loadJSON(ADMIN_AUTH_KEY, false) : localStorage.getItem(ADMIN_AUTH_KEY) === 'true';
+        if (isAuthed) {
+          gate.classList.add('hidden');
+          return;
+        }
+        btn.addEventListener('click', () => {
+          if (input.value === ADMIN_PASSCODE) {
+            if (storage?.saveJSON) {
+              storage.saveJSON(ADMIN_AUTH_KEY, true);
+            } else {
+              localStorage.setItem(ADMIN_AUTH_KEY, 'true');
+            }
+            gate.classList.add('hidden');
+          } else {
+            error.style.display = 'block';
+          }
+        });
+      }
+
+      function formatCurrency(value) {
+        const num = typeof value === 'number' ? value : Number(value || 0);
+        if (Number.isNaN(num)) return '$0';
+        return '$' + num.toLocaleString('en-US', { maximumFractionDigits: 0 });
+      }
+
+      function formatDuration(ms) {
+        if (!ms || Number.isNaN(ms) || ms <= 0) return '—';
+        const totalMinutes = Math.round(ms / 60000);
+        if (totalMinutes < 60) return `${totalMinutes}m`;
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        return minutes ? `${hours}h ${minutes}m` : `${hours}h`;
+      }
+
+      function formatDateTime(value) {
+        if (!value) return '—';
+        return new Date(value).toLocaleString('en-US');
+      }
+
+      function normalizeText(value) {
+        return String(value || '')
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .trim();
+      }
+
+      function getCategoryMap() {
+        return data.getCategories().reduce((acc, category) => {
+          acc[category.id] = category;
+          return acc;
+        }, {});
+      }
+
+      function setActiveSection(sectionId) {
+        const navButtons = $$('.admin-nav button');
+        if (!navButtons.length) return;
+        const available = navButtons
+          .filter(btn => !btn.classList.contains('is-hidden') && !btn.disabled)
+          .map(btn => btn.dataset.section);
+        const nextSection = available.includes(sectionId) ? sectionId : (available[0] || sectionId);
+        state.activeSection = nextSection;
+        navButtons.forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.section === nextSection);
+        });
+        $$('.admin-section').forEach(section => {
+          section.classList.toggle('active', section.id === `section-${nextSection}`);
+        });
+      }
+
+      function initNav() {
+        const buttons = $$('.admin-nav button');
+        if (!buttons.length) return;
+        buttons.forEach(btn => {
+          btn.addEventListener('click', () => setActiveSection(btn.dataset.section));
+        });
+      }
+
+      function renderVendorFilters() {
+        const categoryFilter = $('#vendorCategoryFilter');
+        const categorySelect = $('#editCategory');
+        if (!categoryFilter || !categorySelect) return;
+        const categories = data.getCategories();
+        const options = [
+          `<option value="all">All categories</option>`,
+          ...categories.map(cat => `<option value="${cat.id}">${cat.name}</option>`)
+        ].join('');
+        categoryFilter.innerHTML = options;
+        categorySelect.innerHTML = categories.map(cat => `<option value="${cat.id}">${cat.name}</option>`).join('');
+        const chips = $('#vendorCategoryChips');
+        if (chips) {
+          chips.innerHTML = categories.map(cat => {
+            const active = state.activeCategoryFilters.has(cat.id);
+            return `<button class="btn ${active ? 'primary' : ''} fit" data-chip="${cat.id}" type="button">${cat.name}</button>`;
+          }).join('');
+        }
+      }
+
+      function renderVendors() {
+        const tbody = $('#vendorsTableBody');
+        if (!tbody) return;
+        const canEdit = getPermissions().vendors !== false;
+        const vendors = data.getVendors();
+        const categoryMap = getCategoryMap();
+        const selectAll = $('#vendorSelectAll');
+        if (selectAll) {
+          selectAll.checked = false;
+          selectAll.disabled = !canEdit;
+        }
+        const searchValue = ($('#vendorSearch').value || '').toLowerCase();
+        const categoryFilter = $('#vendorCategoryFilter').value || 'all';
+        const statusFilter = $('#vendorStatusFilter').value || 'all';
+        const recommendedOnly = $('#vendorRecommendedFilter').checked;
+        const verifiedOnly = $('#vendorVerifiedFilter').checked;
+        const locationFilter = ($('#vendorLocationFilter').value || '').toLowerCase();
+        const minPrice = Number($('#vendorPriceMin').value || 0);
+        const maxPrice = Number($('#vendorPriceMax').value || 0);
+        const filtered = vendors.filter(vendor => {
+          const matchesSearch = vendor.name.toLowerCase().includes(searchValue);
+          const matchesCategory = categoryFilter === 'all' || vendor.category === categoryFilter;
+          const matchesStatus = statusFilter === 'all' || vendor.status === statusFilter;
+          const matchesRecommended = !recommendedOnly || vendor.recommended;
+          const matchesVerified = !verifiedOnly || vendor.verified;
+          const locationText = (vendor.locations || []).join(', ').toLowerCase();
+          const matchesLocation = !locationFilter || locationText.includes(locationFilter);
+          const matchesMin = !minPrice || (vendor.priceFrom || 0) >= minPrice;
+          const matchesMax = !maxPrice || (vendor.priceFrom || 0) <= maxPrice;
+          const matchesChip = state.activeCategoryFilters.size === 0 || state.activeCategoryFilters.has(vendor.category);
+          return matchesSearch && matchesCategory && matchesStatus && matchesRecommended && matchesVerified && matchesLocation && matchesMin && matchesMax && matchesChip;
+        });
+
+        const sorted = filtered.slice().sort((a, b) => {
+          const key = state.sortKey;
+          const dir = state.sortDir === 'asc' ? 1 : -1;
+          const valA = key === 'name' ? a.name : key === 'category' ? a.category : key === 'status' ? a.status : a.priceFrom || 0;
+          const valB = key === 'name' ? b.name : key === 'category' ? b.category : key === 'status' ? b.status : b.priceFrom || 0;
+          if (typeof valA === 'number' && typeof valB === 'number') return (valA - valB) * dir;
+          return String(valA).localeCompare(String(valB)) * dir;
+        });
+
+        const totalPages = Math.max(1, Math.ceil(sorted.length / state.pageSize));
+        if (state.page > totalPages) state.page = totalPages;
+        const start = (state.page - 1) * state.pageSize;
+        const pageItems = sorted.slice(start, start + state.pageSize);
+
+        const fragment = document.createDocumentFragment();
+        if (pageItems.length === 0) {
+          const row = document.createElement('tr');
+          row.innerHTML = `<td colspan="9">No vendors match the current filters.</td>`;
+          fragment.appendChild(row);
+        } else {
+          pageItems.forEach(vendor => {
+            const categoryName = categoryMap[vendor.category]?.name || vendor.category;
+            const locations = Array.isArray(vendor.locations) && vendor.locations.length
+              ? vendor.locations.join(', ')
+              : vendor.location || '—';
+            const statusBadge = vendor.status === 'active'
+              ? '<span class="badge ok">Active</span>'
+              : '<span class="badge warn">Inactive</span>';
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td><input type="checkbox" class="vendor-select" data-id="${vendor.id}" ${canEdit ? '' : 'disabled'} /></td>
+              <td>
+                <div><strong class="editable-text" data-edit="name" data-id="${vendor.id}" title="${canEdit ? 'Double-click to edit' : 'Editing disabled'}">${vendor.name}</strong></div>
+                <div class="meta">${vendor.id}</div>
+              </td>
+              <td>${categoryName}</td>
+              <td class="editable-text" data-edit="locations" data-id="${vendor.id}" title="${canEdit ? 'Double-click to edit' : 'Editing disabled'}">${locations}</td>
+              <td class="editable-text" data-edit="priceFrom" data-id="${vendor.id}" data-type="number" title="${canEdit ? 'Double-click to edit' : 'Editing disabled'}">${formatCurrency(vendor.priceFrom || 0)}</td>
+              <td>
+                <label><input type="checkbox" class="vendor-toggle" data-field="recommended" data-id="${vendor.id}" ${vendor.recommended ? 'checked' : ''} ${canEdit ? '' : 'disabled'} /></label>
+              </td>
+              <td>
+                <label><input type="checkbox" class="vendor-toggle" data-field="verified" data-id="${vendor.id}" ${vendor.verified ? 'checked' : ''} ${canEdit ? '' : 'disabled'} /></label>
+              </td>
+              <td>${statusBadge}</td>
+              <td>
+                <div class="table-actions">
+                  <button class="btn-link" data-action="view" data-id="${vendor.id}" ${canEdit ? '' : 'disabled'}>View</button>
+                  <button class="btn-link" data-action="edit" data-id="${vendor.id}" ${canEdit ? '' : 'disabled'}>Edit</button>
+                  <button class="btn-link" data-action="toggle" data-id="${vendor.id}" ${canEdit ? '' : 'disabled'}>
+                    ${vendor.status === 'active' ? 'Disable' : 'Enable'}
+                  </button>
+                  <button class="btn-link" data-action="delete" data-id="${vendor.id}" ${canEdit ? '' : 'disabled'}>Delete</button>
+                </div>
+              </td>
+            `;
+            fragment.appendChild(row);
+          });
+        }
+
+        tbody.replaceChildren(fragment);
+        const info = $('#vendorPaginationInfo');
+        if (info) {
+          info.textContent = `Page ${state.page} of ${totalPages}`;
+        }
+        $('#vendorPrevPage').disabled = state.page <= 1;
+        $('#vendorNextPage').disabled = state.page >= totalPages;
+      }
+
+      function renderVendorStats() {
+        const vendors = data.getVendors();
+        const onboarding = data.getOnboardingSubmissions();
+        const total = vendors.length;
+        const active = vendors.filter(v => v.status === 'active').length;
+        const pending = onboarding.filter(s => s.status === 'pending').length;
+        const avgPrice = vendors.length
+          ? Math.round(vendors.reduce((sum, v) => sum + (v.priceFrom || 0), 0) / vendors.length)
+          : 0;
+        const stats = [
+          { label: 'Total Vendors', value: total },
+          { label: 'Active Vendors', value: active },
+          { label: 'Pending Onboarding', value: pending },
+          { label: 'Avg Price', value: formatCurrency(avgPrice) }
+        ];
+        const container = $('#vendorStats');
+        if (!container) return;
+        container.innerHTML = stats.map(stat => `
+          <div class="stat-card">
+            <div class="stat-label">${stat.label}</div>
+            <div class="stat-value">${stat.value}</div>
+          </div>
+        `).join('');
+      }
+
+      function renderOverview() {
+        const container = $('#overviewKpis');
+        if (!container) return;
+        const leads = data.getLeads();
+        const messages = data.getMessages();
+        const onboarding = data.getOnboardingSubmissions();
+        const mediaQueue = data.getMediaQueue();
+        const vendors = data.getVendors();
+        const totalLeads = leads.length;
+        const unreadMessages = messages.reduce((sum, thread) => {
+          const unread = (thread.messages || []).filter(m => m.from === 'vendor' && !m.read).length;
+          return sum + unread;
+        }, 0);
+        const leadResponseTimes = leads
+          .filter(lead => lead.lastReplyAt)
+          .map(lead => new Date(lead.lastReplyAt).getTime() - new Date(lead.createdAt).getTime())
+          .filter(ms => ms > 0);
+        const avgResponseMs = leadResponseTimes.length
+          ? Math.round(leadResponseTimes.reduce((sum, ms) => sum + ms, 0) / leadResponseTimes.length)
+          : 0;
+        const pendingOnboarding = onboarding.filter(s => s.status === 'pending').length;
+        const pendingMedia = mediaQueue.filter(item => item.status === 'pending').length;
+        const activeVendors = vendors.filter(v => v.status === 'active').length;
+        const stats = [
+          { label: 'Total Leads', value: totalLeads },
+          { label: 'Unread Messages', value: unreadMessages },
+          { label: 'Avg Response Time', value: formatDuration(avgResponseMs) },
+          { label: 'Pending Onboarding', value: pendingOnboarding },
+          { label: 'Pending Media', value: pendingMedia },
+          { label: 'Active Vendors', value: activeVendors }
+        ];
+        container.innerHTML = stats.map(stat => `
+          <div class="stat-card">
+            <div class="stat-label">${stat.label}</div>
+            <div class="stat-value">${stat.value}</div>
+          </div>
+        `).join('');
+      }
+
+      function getVendorNameMap() {
+        return data.getVendors().reduce((acc, vendor) => {
+          acc[vendor.id] = vendor.name || vendor.id;
+          return acc;
+        }, {});
+      }
+
+      function renderLeads() {
+        const list = $('#leadList');
+        const detail = $('#leadDetail');
+        if (!list || !detail) return;
+        const vendorMap = getVendorNameMap();
+        const searchValue = normalizeText($('#leadSearch')?.value || state.leadSearch || '');
+        const statusFilter = $('#leadStatusFilter')?.value || state.leadFilter || 'all';
+        const leads = data.getLeads().slice().sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
+        const filtered = leads.filter(lead => {
+          const matchesStatus = statusFilter === 'all' || lead.status === statusFilter;
+          const text = `${lead.userName || ''} ${lead.message || ''} ${vendorMap[lead.vendorId] || ''}`;
+          const matchesSearch = !searchValue || normalizeText(text).includes(searchValue);
+          return matchesStatus && matchesSearch;
+        });
+        if (!filtered.length) {
+          list.innerHTML = '<div class="meta">No leads match this filter.</div>';
+          detail.innerHTML = '<h3>Lead</h3><div class="meta">Select a lead to view details.</div>';
+          return;
+        }
+        list.innerHTML = filtered.map(lead => {
+          const vendorName = vendorMap[lead.vendorId] || 'Vendor';
+          const responseTime = lead.lastReplyAt
+            ? formatDuration(new Date(lead.lastReplyAt).getTime() - new Date(lead.createdAt).getTime())
+            : '—';
+          const tagList = (lead.tags || []).map(tag => `<span class="badge">${tag.replace('_', ' ')}</span>`).join(' ');
+          return `
+            <div class="list-item">
+              <div>
+                <div class="list-item-title">${lead.userName || 'Lead'} · ${vendorName}</div>
+                <div class="meta">${lead.message || 'No message provided.'}</div>
+                <div class="meta">Status: ${lead.status.replace(/_/g, ' ')} · Response time: ${responseTime}</div>
+                ${tagList ? `<div class="row" style="margin-top:6px;gap:6px;">${tagList}</div>` : ''}
+              </div>
+              <div class="table-actions">
+                <button class="btn-link" data-lead="${lead.id}">View</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+        if (state.activeLeadId && !filtered.find(l => l.id === state.activeLeadId)) {
+          state.activeLeadId = null;
+        }
+        if (state.activeLeadId) renderLeadDetail(state.activeLeadId);
+      }
+
+      function renderLeadDetail(leadId) {
+        const detail = $('#leadDetail');
+        if (!detail) return;
+        const lead = data.getLeads().find(l => l.id === leadId);
+        if (!lead) return;
+        const vendorMap = getVendorNameMap();
+        const responseTime = lead.lastReplyAt
+          ? formatDuration(new Date(lead.lastReplyAt).getTime() - new Date(lead.createdAt).getTime())
+          : '—';
+        const tagOptions = ['viewed_profile', 'clicked_website', 'messaged_first'];
+        detail.innerHTML = `
+          <h3>${lead.userName || 'Lead'}</h3>
+          <div class="meta">${vendorMap[lead.vendorId] || 'Vendor'} · Created ${formatDateTime(lead.createdAt)}</div>
+          <div style="margin-top:12px;">${lead.message || 'No message provided.'}</div>
+          <div class="form-section" style="margin-top:16px;">
+            <h4>Lead Status</h4>
+            <select id="leadStatusSelect" class="full">
+              ${['new','in_progress','quote_sent','booked','lost'].map(status => `
+                <option value="${status}" ${lead.status === status ? 'selected' : ''}>${status.replace(/_/g, ' ')}</option>
+              `).join('')}
+            </select>
+          </div>
+          <div class="form-section">
+            <h4>Intent Tags</h4>
+            <div class="row" style="gap:8px;">
+              ${tagOptions.map(tag => {
+                const active = (lead.tags || []).includes(tag);
+                return `<button class="btn fit ${active ? 'primary' : ''}" type="button" data-lead-tag="${tag}">${tag.replace('_', ' ')}</button>`;
+              }).join('')}
+            </div>
+          </div>
+          <div class="form-section">
+            <h4>Response Tracking</h4>
+            <div class="meta">Last reply: ${lead.lastReplyAt ? formatDateTime(lead.lastReplyAt) : 'Not replied yet'}</div>
+            <div class="meta">Response time: ${responseTime}</div>
+            <div class="row" style="margin-top:8px;">
+              <button class="btn fit" id="leadMarkReplied" type="button">Mark Replied</button>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderReviews() {
+        const list = $('#reviewList');
+        if (!list) return;
+        const vendorMap = getVendorNameMap();
+        const statusFilter = $('#reviewStatusFilter')?.value || state.reviewFilter || 'all';
+        const searchValue = normalizeText($('#reviewSearch')?.value || state.reviewSearch || '');
+        const reviews = data.getReviews().slice().sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        const filtered = reviews.filter(review => {
+          const matchesStatus = statusFilter === 'all' || review.status === statusFilter;
+          const text = `${review.text || ''} ${vendorMap[review.vendorId] || ''}`;
+          const matchesSearch = !searchValue || normalizeText(text).includes(searchValue);
+          return matchesStatus && matchesSearch;
+        });
+        if (!filtered.length) {
+          list.innerHTML = '<div class="meta">No reviews match this filter.</div>';
+          return;
+        }
+        list.innerHTML = filtered.map(review => {
+          const vendorName = vendorMap[review.vendorId] || 'Vendor';
+          const statusBadge = review.status === 'published'
+            ? '<span class="badge ok">Published</span>'
+            : review.status === 'flagged'
+              ? '<span class="badge warn">Flagged</span>'
+              : '<span class="badge warn">Hidden</span>';
+          return `
+            <div class="list-item" data-review-item="${review.id}">
+              <div>
+                <div class="list-item-title">${vendorName} · ${'★'.repeat(Math.max(1, review.rating || 0))}</div>
+                <div class="meta">${review.text || 'No review text.'}</div>
+                <div class="meta">Submitted ${formatDateTime(review.createdAt)}</div>
+                <div class="row" style="margin-top:6px;gap:8px;align-items:center;">
+                  ${statusBadge}
+                  <button class="btn-link" data-review-action="published" data-review="${review.id}">Publish</button>
+                  <button class="btn-link" data-review-action="hidden" data-review="${review.id}">Hide</button>
+                  <button class="btn-link" data-review-action="flagged" data-review="${review.id}">Flag</button>
+                </div>
+                <div class="form-section" style="margin-top:10px;">
+                  <div class="meta">Admin reply note</div>
+                  <textarea class="input" data-review-reply="${review.id}" placeholder="Add a reply note...">${review.adminReply || ''}</textarea>
+                  <div class="row" style="margin-top:6px;">
+                    <button class="btn fit" type="button" data-review-save="${review.id}">Save Reply</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function renderMediaQueue() {
+        const list = $('#mediaQueueList');
+        if (!list) return;
+        const vendorMap = getVendorNameMap();
+        const statusFilter = $('#mediaStatusFilter')?.value || state.mediaFilter || 'all';
+        const searchValue = normalizeText($('#mediaSearch')?.value || state.mediaSearch || '');
+        const queue = data.getMediaQueue().slice().sort((a, b) => a.status.localeCompare(b.status));
+        const filtered = queue.filter(item => {
+          const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+          const text = `${item.url || ''} ${vendorMap[item.vendorId] || ''} ${item.type || ''}`;
+          const matchesSearch = !searchValue || normalizeText(text).includes(searchValue);
+          return matchesStatus && matchesSearch;
+        });
+        if (!filtered.length) {
+          list.innerHTML = '<div class="meta">No media items match this filter.</div>';
+          return;
+        }
+        list.innerHTML = filtered.map(item => {
+          const vendorName = vendorMap[item.vendorId] || 'Vendor';
+          const statusBadge = item.status === 'approved'
+            ? '<span class="badge ok">Approved</span>'
+            : item.status === 'rejected'
+              ? '<span class="badge warn">Rejected</span>'
+              : '<span class="badge warn">Pending</span>';
+          return `
+            <div class="list-item">
+              <div>
+                <div class="list-item-title">${vendorName} · ${item.type || 'media'}</div>
+                <div class="meta"><a href="${item.url}" target="_blank" rel="noreferrer">${item.url}</a></div>
+                ${item.reason ? `<div class="meta">Reason: ${item.reason}</div>` : ''}
+                <div class="row" style="margin-top:6px;gap:8px;align-items:center;">
+                  ${statusBadge}
+                  <button class="btn-link" data-media-action="approved" data-media="${item.id}">Approve</button>
+                  <button class="btn-link" data-media-action="rejected" data-media="${item.id}">Reject</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function startInlineEdit(cell) {
+        if (getPermissions().vendors === false) return;
+        if (cell.dataset.editing === 'true') return;
+        const field = cell.dataset.edit;
+        const vendorId = cell.dataset.id;
+        const vendor = data.getVendors().find(v => v.id === vendorId);
+        if (!vendor) return;
+        const type = cell.dataset.type || 'text';
+        const originalValue = field === 'locations'
+          ? (vendor.locations || []).join(', ')
+          : field === 'priceFrom'
+            ? String(vendor.priceFrom || '')
+            : vendor.name || '';
+        cell.dataset.editing = 'true';
+        cell.innerHTML = `<input class="inline-input" type="text" value="${originalValue.replace(/"/g, '&quot;')}" />`;
+        const input = cell.querySelector('input');
+        input.focus();
+        input.select();
+        const finish = (commit) => {
+          cell.dataset.editing = 'false';
+          if (!commit) {
+            renderVendors();
+            return;
+          }
+          const value = input.value.trim();
+          if (field === 'name') {
+            if (value) data.updateVendor(vendorId, { name: value });
+          } else if (field === 'locations') {
+            const locations = value ? value.split(',').map(s => s.trim()).filter(Boolean) : [];
+            data.updateVendor(vendorId, { locations });
+          } else if (field === 'priceFrom') {
+            const num = Number(value);
+            if (!Number.isNaN(num)) data.updateVendor(vendorId, { priceFrom: num });
+          }
+          renderVendors();
+          renderVendorStats();
+          showToast('Vendor updated');
+          logActivity('Vendor updated', vendorId);
+        };
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') finish(true);
+          if (e.key === 'Escape') finish(false);
+        });
+        input.addEventListener('blur', () => finish(true));
+      }
+
+      function createDefaultVendor(categoryId = data.getCategories()[0]?.id || 'venue', includeId = true) {
+        return {
+          id: includeId ? `v-${Date.now().toString(36)}` : '',
+          name: 'New Vendor',
+          category: categoryId,
+          categoryType: 'Vendor',
+          location: 'Location TBD',
+          locations: [],
+          priceFrom: 0,
+          priceTo: 0,
+          priceNote: 'Starting price',
+          badges: [],
+          recommended: false,
+          verified: false,
+          status: 'active',
+          rating: 4.7,
+          reviewCount: 0,
+          badge: '',
+          description: 'Add a short description about this vendor.',
+          features: [],
+          gallery: {
+            main: '',
+            images: [],
+            videoUrl: ''
+          },
+          contact: {
+            email: '',
+            phone: '',
+            website: ''
+          },
+          social: {
+            instagram: '',
+            facebook: '',
+            tiktok: '',
+            youtube: '',
+            googleBusiness: ''
+          },
+          pricingItems: [],
+          testimonials: [],
+          availability: {
+            days: [],
+            window: '',
+            leadTime: ''
+          },
+          booking: {
+            type: '',
+            deposit: '',
+            depositAmount: '',
+            paymentMethods: []
+          },
+          quickInfo: {
+            capacity: '',
+            setupTime: '',
+            responseTime: ''
+          }
+        };
+      }
+
+      const DEFAULT_VENDOR = createDefaultVendor(undefined, false);
+
+      function normalizeVendor(vendor) {
+        const base = { ...DEFAULT_VENDOR, ...vendor };
+        return {
+          ...base,
+          badges: vendor?.badges ?? base.badges,
+          locations: vendor?.locations ?? base.locations,
+          features: vendor?.features ?? base.features,
+          gallery: { ...DEFAULT_VENDOR.gallery, ...(vendor?.gallery || {}) },
+          contact: { ...DEFAULT_VENDOR.contact, ...(vendor?.contact || {}) },
+          social: { ...DEFAULT_VENDOR.social, ...(vendor?.social || {}) },
+          pricingItems: vendor?.pricingItems ?? base.pricingItems,
+          testimonials: vendor?.testimonials ?? base.testimonials,
+          availability: { ...DEFAULT_VENDOR.availability, ...(vendor?.availability || {}) },
+          booking: { ...DEFAULT_VENDOR.booking, ...(vendor?.booking || {}) },
+          quickInfo: { ...DEFAULT_VENDOR.quickInfo, ...(vendor?.quickInfo || {}) }
+        };
+      }
+
+      function parseLines(text, mapper) {
+        return (text || '')
+          .split('\n')
+          .map(line => line.trim())
+          .filter(Boolean)
+          .map(mapper);
+      }
+
+      function formatLineItems(items, formatter) {
+        return (items || []).map(formatter).join('\n');
+      }
+
+      function showVendorEditor(show) {
+        $('#vendorEditor').style.display = show ? 'block' : 'none';
+        if (!show) {
+          state.editingVendorId = null;
+          state.draftVendor = null;
+          $('#vendorEditorForm').reset();
+        }
+      }
+
+      function fillVendorEditor(vendor) {
+        const v = normalizeVendor(vendor);
+        $('#editName').value = v.name || '';
+        $('#editCategory').value = v.category || '';
+        $('#editCategoryType').value = v.categoryType || '';
+        $('#editLocation').value = v.location || '';
+        $('#editLocations').value = (v.locations || []).join(', ');
+        $('#editPriceFrom').value = v.priceFrom || '';
+        $('#editPriceTo').value = v.priceTo || '';
+        $('#editPriceNote').value = v.priceNote || '';
+        $('#editBadges').value = (v.badges || []).join(', ');
+        $('#editRecommended').checked = !!v.recommended;
+        $('#editVerified').checked = !!v.verified;
+        $('#editStatus').value = v.status || 'active';
+        $('#editDescription').value = v.description || '';
+        $('#editFeatures').value = formatLineItems(v.features, f => `${f.icon || ''} | ${f.title || ''} | ${f.subtitle || ''}`.trim());
+        $('#editMainImage').value = v.gallery?.main || '';
+        $('#editGalleryImages').value = (v.gallery?.images || []).join('\n');
+        $('#editVideoUrl').value = v.gallery?.videoUrl || '';
+        $('#editEmail').value = v.contact?.email || '';
+        $('#editPhone').value = v.contact?.phone || '';
+        $('#editWebsite').value = v.contact?.website || '';
+        $('#editInstagram').value = v.social?.instagram || '';
+        $('#editFacebook').value = v.social?.facebook || '';
+        $('#editTiktok').value = v.social?.tiktok || '';
+        $('#editYoutube').value = v.social?.youtube || '';
+        $('#editGoogleBusiness').value = v.social?.googleBusiness || '';
+        $('#editPricingItems').value = formatLineItems(v.pricingItems, p => `${p.name || ''} | ${p.amount || ''} | ${p.note || ''}`.trim());
+        $('#editDaysAvailable').value = (v.availability?.days || []).join(', ');
+        $('#editAvailabilityWindow').value = v.availability?.window || '';
+        $('#editLeadTime').value = v.availability?.leadTime || '';
+        $('#editBookingType').value = v.booking?.type || '';
+        $('#editDepositRequired').value = v.booking?.deposit || '';
+        $('#editDepositAmount').value = v.booking?.depositAmount || '';
+        $('#editPaymentMethods').value = (v.booking?.paymentMethods || []).join(', ');
+        $('#editTestimonials').value = formatLineItems(v.testimonials, t => `${t.name || ''} | ${t.text || ''}`.trim());
+        $('#editCapacity').value = v.quickInfo?.capacity || '';
+        $('#editSetupTime').value = v.quickInfo?.setupTime || '';
+        $('#editResponseTime').value = v.quickInfo?.responseTime || '';
+      }
+
+      function getVendorFromEditor() {
+        return normalizeVendor({
+          id: state.editingVendorId,
+          name: $('#editName').value.trim(),
+          category: $('#editCategory').value,
+          categoryType: $('#editCategoryType').value.trim(),
+          location: $('#editLocation').value.trim(),
+          locations: $('#editLocations').value.split(',').map(s => s.trim()).filter(Boolean),
+          priceFrom: Number($('#editPriceFrom').value || 0),
+          priceTo: Number($('#editPriceTo').value || 0),
+          priceNote: $('#editPriceNote').value.trim(),
+          badges: $('#editBadges').value.split(',').map(s => s.trim()).filter(Boolean),
+          recommended: $('#editRecommended').checked,
+          verified: $('#editVerified').checked,
+          status: $('#editStatus').value,
+          description: $('#editDescription').value.trim(),
+          features: parseLines($('#editFeatures').value, line => {
+            const [icon, title, subtitle] = line.split('|').map(s => s.trim());
+            return { icon: icon || '✨', title: title || '', subtitle: subtitle || '' };
+          }),
+          gallery: {
+            main: $('#editMainImage').value.trim(),
+            images: $('#editGalleryImages').value.split('\n').map(s => s.trim()).filter(Boolean),
+            videoUrl: $('#editVideoUrl').value.trim()
+          },
+          contact: {
+            email: $('#editEmail').value.trim(),
+            phone: $('#editPhone').value.trim(),
+            website: $('#editWebsite').value.trim()
+          },
+          social: {
+            instagram: $('#editInstagram').value.trim(),
+            facebook: $('#editFacebook').value.trim(),
+            tiktok: $('#editTiktok').value.trim(),
+            youtube: $('#editYoutube').value.trim(),
+            googleBusiness: $('#editGoogleBusiness').value.trim()
+          },
+          pricingItems: parseLines($('#editPricingItems').value, line => {
+            const [name, amount, note] = line.split('|').map(s => s.trim());
+            return { name, amount, note };
+          }),
+          availability: {
+            days: $('#editDaysAvailable').value.split(',').map(s => s.trim()).filter(Boolean),
+            window: $('#editAvailabilityWindow').value.trim(),
+            leadTime: $('#editLeadTime').value.trim()
+          },
+          booking: {
+            type: $('#editBookingType').value.trim(),
+            deposit: $('#editDepositRequired').value.trim(),
+            depositAmount: $('#editDepositAmount').value.trim(),
+            paymentMethods: $('#editPaymentMethods').value.split(',').map(s => s.trim()).filter(Boolean)
+          },
+          testimonials: parseLines($('#editTestimonials').value, line => {
+            const [name, text] = line.split('|').map(s => s.trim());
+            return { name, text };
+          }),
+          quickInfo: {
+            capacity: $('#editCapacity').value.trim(),
+            setupTime: $('#editSetupTime').value.trim(),
+            responseTime: $('#editResponseTime').value.trim()
+          }
+        });
+      }
+
+      function renderVendorPreview(vendor) {
+        const v = normalizeVendor(vendor);
+        $('#previewName').textContent = v.name || 'Vendor';
+        const meta = [v.categoryType || v.category, v.location].filter(Boolean).join(' • ');
+        const priceParts = [];
+        if (v.priceFrom) priceParts.push(formatCurrency(v.priceFrom));
+        if (v.priceTo) priceParts.push(formatCurrency(v.priceTo));
+        const priceLine = priceParts.length ? `From ${priceParts.join(' - ')}` : '';
+        $('#previewMeta').textContent = [meta, priceLine].filter(Boolean).join(' • ') || 'Category • Location';
+        const badges = [];
+        if (v.recommended) badges.push('<div class="preview-badge popular">Recommended</div>');
+        if (v.verified) badges.push('<div class="preview-badge verified">Verified</div>');
+        (v.badges || []).forEach(b => badges.push(`<div class="preview-badge">${b}</div>`));
+        $('#previewBadges').innerHTML = badges.join('');
+        const mainImage = $('#previewMainImage');
+        const thumb1 = $('#previewThumb1');
+        const thumb2 = $('#previewThumb2');
+        const gallery = v.gallery?.images || [];
+        const mainUrl = v.gallery?.main || gallery[0] || '';
+        const thumbUrl1 = gallery[1] || '';
+        const thumbUrl2 = gallery[2] || '';
+        [ [mainImage, mainUrl], [thumb1, thumbUrl1], [thumb2, thumbUrl2] ].forEach(([el, url]) => {
+          if (!el) return;
+          el.style.backgroundImage = url ? `url('${url}')` : 'linear-gradient(135deg,#f7f1e6,#fff)';
+          el.style.backgroundSize = 'cover';
+          el.style.backgroundPosition = 'center';
+        });
+        $('#previewDescription').textContent = v.description || 'Add a short description...';
+        $('#previewFeatures').innerHTML = (v.features || []).slice(0, 6).map(f => `
+          <div class="preview-feature">
+            <div class="icon">${f.icon || '✨'}</div>
+            <div>
+              <div style="font-weight:600">${f.title || 'Feature'}</div>
+              <div class="preview-sub">${f.subtitle || ''}</div>
+            </div>
+          </div>
+        `).join('');
+        $('#previewPricing').innerHTML = (v.pricingItems || []).slice(0, 3).map(p => `
+          <div class="preview-pricing-item">
+            <div style="font-weight:600">${p.name || 'Item'}</div>
+            <div class="preview-sub">${p.amount || ''}</div>
+            <div class="preview-sub">${p.note || ''}</div>
+          </div>
+        `).join('');
+        $('#previewReferences').innerHTML = (v.testimonials || []).slice(0, 3).map(t => `
+          <div class="preview-ref-item">
+            <div style="font-weight:600">${t.name || 'Client'}</div>
+            <div class="preview-sub">${t.text || ''}</div>
+          </div>
+        `).join('');
+        $('#previewContact').textContent = [v.contact?.email, v.contact?.phone, v.contact?.website].filter(Boolean).join(' • ');
+        const socials = Object.entries(v.social || {}).filter(([, value]) => value).map(([key]) => key);
+        $('#previewSocial').textContent = socials.length ? `Social: ${socials.join(', ')}` : 'Social: —';
+        const availabilityLine = [v.availability?.days?.join(', '), v.availability?.window, v.availability?.leadTime].filter(Boolean).join(' • ');
+        $('#previewAvailability').textContent = availabilityLine || 'Availability: —';
+        const bookingLine = [v.booking?.type, v.booking?.deposit, v.booking?.depositAmount, (v.booking?.paymentMethods || []).join(', ')].filter(Boolean).join(' • ');
+        $('#previewBooking').textContent = bookingLine || 'Booking: —';
+        const quickInfo = [v.quickInfo?.capacity, v.quickInfo?.setupTime, v.quickInfo?.responseTime].filter(Boolean);
+        $('#previewQuickInfo').textContent = quickInfo.length ? `Quick info: ${quickInfo.join(' • ')}` : 'Quick info: —';
+        updateCompleteness(v);
+      }
+
+      function updateCompleteness(vendor) {
+        const checks = [
+          vendor.name,
+          vendor.category,
+          vendor.location,
+          vendor.description,
+          vendor.priceFrom,
+          vendor.contact?.email || vendor.contact?.phone,
+          vendor.gallery?.main || (vendor.gallery?.images || [])[0],
+          (vendor.features || []).length > 0,
+          (vendor.pricingItems || []).length > 0,
+          (vendor.testimonials || []).length > 0
+        ];
+        const filled = checks.filter(Boolean).length;
+        const pct = Math.round((filled / checks.length) * 100);
+        const fill = $('#completenessFill');
+        const label = $('#completenessLabel');
+        if (fill) fill.style.width = `${pct}%`;
+        if (label) label.textContent = `${pct}%`;
+      }
+
+      function openVendorEditor(vendorId) {
+        const vendor = data.getVendors().find(v => v.id === vendorId);
+        if (!vendor) return;
+        state.editingVendorId = vendorId;
+        state.draftVendor = normalizeVendor(vendor);
+        fillVendorEditor(vendor);
+        renderVendorPreview(vendor);
+        showVendorEditor(true);
+        const queueToggle = $('#queueMediaToggle');
+        if (queueToggle) {
+          const profile = data.getAdminProfile ? data.getAdminProfile() : {};
+          queueToggle.checked = !!profile?.mediaReviewEnabled;
+        }
+        $('#vendorEditor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      function isMediaReviewEnabled() {
+        const toggle = $('#queueMediaToggle');
+        if (toggle) return toggle.checked;
+        const profile = data.getAdminProfile ? data.getAdminProfile() : {};
+        return !!profile?.mediaReviewEnabled;
+      }
+
+      function queueMediaChanges(existingVendor, draftVendor) {
+        if (!existingVendor || !draftVendor) return 0;
+        const queued = [];
+        const existingMain = existingVendor.gallery?.main || '';
+        const draftMain = draftVendor.gallery?.main || '';
+        if (draftMain && draftMain !== existingMain) {
+          queued.push({ vendorId: existingVendor.id, type: 'main', url: draftMain });
+        }
+        const existingGallery = existingVendor.gallery?.images || [];
+        const draftGallery = draftVendor.gallery?.images || [];
+        draftGallery
+          .filter(url => url && !existingGallery.includes(url))
+          .forEach(url => queued.push({ vendorId: existingVendor.id, type: 'gallery', url }));
+        const existingVideo = existingVendor.gallery?.videoUrl || '';
+        const draftVideo = draftVendor.gallery?.videoUrl || '';
+        if (draftVideo && draftVideo !== existingVideo) {
+          queued.push({ vendorId: existingVendor.id, type: 'video', url: draftVideo });
+        }
+        queued.forEach(item => data.addMediaQueueItem(item));
+        return queued.length;
+      }
+
+      function initPreviewControls() {
+        const shell = document.querySelector('.preview-shell');
+        if (!shell) return;
+        document.querySelectorAll('[data-preview]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-preview]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const mode = btn.dataset.preview;
+            shell.classList.toggle('compact', mode === 'mobile');
+            shell.classList.toggle('public', mode === 'public');
+          });
+        });
+      }
+
+      function initVendorHandlers() {
+        if (!$('#addVendorBtn')) return;
+        const queueToggle = $('#queueMediaToggle');
+        if (queueToggle) {
+          queueToggle.addEventListener('change', () => {
+            data.updateAdminProfile({ mediaReviewEnabled: queueToggle.checked });
+          });
+        }
+        $('#addVendorBtn').addEventListener('click', () => {
+          if (getPermissions().vendors === false) return;
+          const newVendor = createDefaultVendor();
+          data.addVendor(newVendor);
+          renderVendors();
+          renderVendorStats();
+          openVendorEditor(newVendor.id);
+          logActivity('Vendor added', newVendor.name);
+        });
+        $('#vendorEditorClose').addEventListener('click', () => showVendorEditor(false));
+        let searchTimer;
+        $('#vendorSearch').addEventListener('input', () => {
+          clearTimeout(searchTimer);
+          state.page = 1;
+          searchTimer = setTimeout(renderVendors, 250);
+        });
+        $('#vendorCategoryFilter').addEventListener('change', renderVendors);
+        $('#vendorStatusFilter').addEventListener('change', renderVendors);
+        $('#vendorRecommendedFilter').addEventListener('change', renderVendors);
+        $('#vendorVerifiedFilter').addEventListener('change', renderVendors);
+        $('#vendorLocationFilter').addEventListener('input', () => {
+          clearTimeout(searchTimer);
+          state.page = 1;
+          searchTimer = setTimeout(renderVendors, 250);
+        });
+        $('#vendorPriceMin').addEventListener('input', () => {
+          clearTimeout(searchTimer);
+          state.page = 1;
+          searchTimer = setTimeout(renderVendors, 250);
+        });
+        $('#vendorPriceMax').addEventListener('input', () => {
+          clearTimeout(searchTimer);
+          state.page = 1;
+          searchTimer = setTimeout(renderVendors, 250);
+        });
+        $('#vendorCategoryChips').addEventListener('click', (e) => {
+          const chip = e.target.closest('[data-chip]');
+          if (!chip) return;
+          const id = chip.dataset.chip;
+          if (state.activeCategoryFilters.has(id)) {
+            state.activeCategoryFilters.delete(id);
+          } else {
+            state.activeCategoryFilters.add(id);
+          }
+          state.page = 1;
+          renderVendorFilters();
+          renderVendors();
+        });
+        document.querySelectorAll('[data-view]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const view = btn.dataset.view;
+            $('#vendorStatusFilter').value = 'all';
+            $('#vendorRecommendedFilter').checked = false;
+            $('#vendorVerifiedFilter').checked = false;
+            $('#vendorPriceMin').value = '';
+            $('#vendorPriceMax').value = '';
+            if (view === 'inactive') $('#vendorStatusFilter').value = 'inactive';
+            if (view === 'unverified') $('#vendorVerifiedFilter').checked = true;
+            if (view === 'recommended') $('#vendorRecommendedFilter').checked = true;
+            if (view === 'high-price') $('#vendorPriceMin').value = '5000';
+            state.page = 1;
+            renderVendors();
+          });
+        });
+        $('#vendorSelectAll').addEventListener('change', (e) => {
+          $$('.vendor-select').forEach(cb => {
+            cb.checked = e.target.checked;
+          });
+        });
+        $('#bulkActivateBtn').addEventListener('click', () => {
+          if (getPermissions().vendors === false) return;
+          const ids = $$('.vendor-select:checked').map(cb => cb.dataset.id);
+          ids.forEach(id => data.toggleVendorStatus(id, 'active'));
+          renderVendors();
+          logActivity('Bulk activate', `${ids.length} vendors`);
+          showToast('Vendors activated');
+        });
+        $('#bulkDeactivateBtn').addEventListener('click', () => {
+          if (getPermissions().vendors === false) return;
+          const ids = $$('.vendor-select:checked').map(cb => cb.dataset.id);
+          ids.forEach(id => data.toggleVendorStatus(id, 'inactive'));
+          renderVendors();
+          logActivity('Bulk deactivate', `${ids.length} vendors`);
+          showToast('Vendors deactivated');
+        });
+        $('#bulkDeleteBtn').addEventListener('click', () => {
+          if (getPermissions().vendors === false) return;
+          const ids = $$('.vendor-select:checked').map(cb => cb.dataset.id);
+          if (ids.length === 0) return;
+          if (!confirm('Delete selected vendors?')) return;
+          ids.forEach(id => data.deleteVendor(id));
+          renderVendors();
+          logActivity('Bulk delete', `${ids.length} vendors`);
+          showToast('Vendors deleted');
+        });
+
+        $('#vendorEditorForm').addEventListener('input', () => {
+          if (getPermissions().vendors === false) return;
+          const vendorDraft = getVendorFromEditor();
+          state.draftVendor = vendorDraft;
+          renderVendorPreview(vendorDraft);
+        });
+        $('#vendorEditorForm').addEventListener('submit', (e) => {
+          e.preventDefault();
+          if (getPermissions().vendors === false) return;
+          const vendorDraft = state.draftVendor || getVendorFromEditor();
+          const existingVendor = data.getVendors().find(v => v.id === vendorDraft.id);
+          if (isMediaReviewEnabled() && existingVendor) {
+            const queuedCount = queueMediaChanges(existingVendor, vendorDraft);
+            if (queuedCount > 0) {
+              vendorDraft.gallery = { ...(existingVendor.gallery || {}) };
+              showToast('Media queued for review');
+              logActivity('Media queued', `${queuedCount} item(s)`);
+              renderMediaQueue();
+              renderOverview();
+            }
+          }
+          data.updateVendor(vendorDraft.id, vendorDraft);
+          renderVendors();
+          renderVendorStats();
+          showVendorEditor(false);
+          logActivity('Vendor updated', vendorDraft.name);
+          showToast('Vendor saved');
+        });
+
+        $('#vendorsTableBody').addEventListener('click', (e) => {
+          if (getPermissions().vendors === false) return;
+          const toggle = e.target.closest('.vendor-toggle');
+          if (toggle) {
+            const id = toggle.dataset.id;
+            const field = toggle.dataset.field;
+            data.updateVendor(id, { [field]: toggle.checked });
+            logActivity('Vendor flag updated', `${field} ${id}`);
+            showToast('Vendor updated');
+            return;
+          }
+          const actionBtn = e.target.closest('[data-action]');
+          if (!actionBtn) return;
+          const vendorId = actionBtn.dataset.id;
+          const action = actionBtn.dataset.action;
+          if (action === 'view') openVendorEditor(vendorId);
+          if (action === 'edit') openVendorEditor(vendorId);
+          if (action === 'toggle') {
+            const vendor = data.getVendors().find(v => v.id === vendorId);
+            if (!vendor) return;
+            data.toggleVendorStatus(vendorId, vendor.status === 'active' ? 'inactive' : 'active');
+            renderVendors();
+            logActivity('Vendor status changed', vendor.name);
+            showToast('Status updated');
+          }
+          if (action === 'delete') {
+            if (confirm('Delete this vendor? This cannot be undone.')) {
+              const deletedVendor = data.getVendors().find(v => v.id === vendorId);
+              data.deleteVendor(vendorId);
+              renderVendors();
+              renderVendorStats();
+              if (state.editingVendorId === vendorId) {
+                showVendorEditor(false);
+              }
+              logActivity('Vendor deleted', vendorId);
+              showToast('Vendor deleted', {
+                actionLabel: 'Undo',
+                onAction: () => {
+                  if (deletedVendor) data.addVendor(deletedVendor);
+                  renderVendors();
+                  renderVendorStats();
+                }
+              });
+            }
+          }
+        });
+        $('#vendorsTableBody').addEventListener('dblclick', (e) => {
+          if (getPermissions().vendors === false) return;
+          const cell = e.target.closest('[data-edit]');
+          if (cell) startInlineEdit(cell);
+        });
+
+        const vendorsTable = $('#vendorsTableBody').closest('table');
+        vendorsTable.querySelector('thead').addEventListener('click', (e) => {
+          const btn = e.target.closest('[data-sort]');
+          if (!btn) return;
+          const key = btn.dataset.sort;
+          if (state.sortKey === key) {
+            state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+          } else {
+            state.sortKey = key;
+            state.sortDir = 'asc';
+          }
+          state.page = 1;
+          renderVendors();
+        });
+
+        $('#vendorPageSize').addEventListener('change', (e) => {
+          state.pageSize = Number(e.target.value || 10);
+          state.page = 1;
+          renderVendors();
+        });
+        $('#vendorPrevPage').addEventListener('click', () => {
+          if (state.page > 1) {
+            state.page -= 1;
+            renderVendors();
+          }
+        });
+        $('#vendorNextPage').addEventListener('click', () => {
+          state.page += 1;
+          renderVendors();
+        });
+      }
+
+      function renderMessages() {
+        const list = $('#messageThreads');
+        const detail = $('#messageThreadDetail');
+        if (!list || !detail) return;
+        if (getPermissions().messages === false) {
+          list.innerHTML = '<div class="meta">Messages are hidden for this profile.</div>';
+          detail.innerHTML = '<h3>Thread</h3><div class="meta">Messages are disabled.</div>';
+          return;
+        }
+        const threads = data.getMessages().sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+        if (!threads.length) {
+          list.innerHTML = '<div class="meta">No inquiries yet.</div>';
+          detail.innerHTML = '<h3>Thread</h3><div class="meta">Select a thread to view details.</div>';
+          return;
+        }
+        const filtered = threads.filter(thread => {
+          const unreadCount = (thread.messages || []).filter(m => m.from === 'vendor' && !m.read).length;
+          if (state.messageFilter === 'unread') return unreadCount > 0;
+          if (state.messageFilter === 'needs_reply') return !!thread.needsReply;
+          if (state.messageFilter === 'resolved') return !!thread.resolved;
+          return true;
+        });
+        if (!filtered.length) {
+          list.innerHTML = '<div class="meta">No threads match this filter.</div>';
+          return;
+        }
+        list.innerHTML = filtered.map(thread => {
+          const lastMessage = thread.messages?.[thread.messages.length - 1];
+          const unreadCount = (thread.messages || []).filter(m => m.from === 'vendor' && !m.read).length;
+          const updatedAt = thread.updatedAt || lastMessage?.timestamp;
+          const updatedLabel = updatedAt ? new Date(updatedAt).toLocaleString('en-US') : 'Recently';
+          const badges = [
+            thread.needsReply ? '<span class="badge warn">Needs reply</span>' : '',
+            thread.resolved ? '<span class="badge ok">Resolved</span>' : ''
+          ].filter(Boolean).join(' ');
+          return `
+            <div class="list-item">
+              <div>
+                <div class="list-item-title">${thread.vendorName || 'Vendor'}</div>
+                <div class="meta">${thread.category || 'Category'} · Updated ${updatedLabel}</div>
+                <div class="meta">${thread.assignedTo ? `Assigned: ${thread.assignedTo}` : 'Unassigned'}${badges ? ` · ${badges}` : ''}</div>
+              </div>
+              <div class="table-actions">
+                ${unreadCount ? `<span class="badge warn">${unreadCount} unread</span>` : ''}
+                <button class="btn-link" data-thread="${thread.id}">View</button>
+                <button class="btn-link" data-resolve="${thread.id}">${thread.resolved ? 'Reopen' : 'Resolve'}</button>
+                <button class="btn-link" data-needs="${thread.id}">${thread.needsReply ? 'Clear Needs Reply' : 'Needs Reply'}</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function renderMessageDetail(threadId) {
+        if (getPermissions().messages === false) return;
+        const thread = data.getMessages().find(t => t.id === threadId);
+        const detail = $('#messageThreadDetail');
+        if (!detail || !thread) return;
+        state.activeThreadId = threadId;
+        const messagesHtml = (thread.messages || []).map(msg => {
+          const time = new Date(msg.timestamp || Date.now()).toLocaleString('en-US');
+          return `
+            <div style="margin-bottom:12px;">
+              <div><strong>${msg.from === 'user' ? 'User' : msg.from === 'admin' ? 'Admin' : 'Vendor'}:</strong> ${msg.message}</div>
+              <div class="meta">${time}</div>
+            </div>
+          `;
+        }).join('');
+        const notesHtml = (thread.notes || []).map(note => {
+          const time = new Date(note.timestamp || Date.now()).toLocaleString('en-US');
+          return `
+            <div class="preview-pricing-item">
+              <div style="font-weight:600">${note.note}</div>
+              <div class="meta">${time}</div>
+            </div>
+          `;
+        }).join('');
+        const updatedAt = thread.updatedAt || thread.messages?.[thread.messages.length - 1]?.timestamp;
+        const updatedLabel = updatedAt ? new Date(updatedAt).toLocaleString('en-US') : 'Recently';
+        detail.innerHTML = `
+          <h3>${thread.vendorName || 'Vendor'}</h3>
+          <div class="meta">${thread.category || 'Category'} · Updated ${updatedLabel}</div>
+          <div style="margin-top:16px;">${messagesHtml || '<div class="meta">No messages yet.</div>'}</div>
+          <div class="form-section" style="margin-top:16px;">
+            <h4>Assignment</h4>
+            <input class="input full" id="threadAssignee" placeholder="Assign to admin" value="${thread.assignedTo || ''}" />
+          </div>
+          <div class="form-section">
+            <h4>Internal Notes</h4>
+            <textarea class="input full" id="threadNote" placeholder="Add internal note..."></textarea>
+            <div class="row" style="margin-top:8px;">
+              <button class="btn fit" type="button" id="addThreadNote">Add Note</button>
+              <button class="btn fit" type="button" id="toggleResolved">${thread.resolved ? 'Mark Open' : 'Mark Resolved'}</button>
+              <button class="btn fit" type="button" id="toggleNeedsReply">${thread.needsReply ? 'Clear Needs Reply' : 'Needs Reply'}</button>
+            </div>
+            <div style="margin-top:10px;">${notesHtml || '<div class="meta">No internal notes yet.</div>'}</div>
+          </div>
+          <div class="form-section">
+            <h4>Reply</h4>
+            <div class="row" id="cannedReplies">
+              ${CANNED_REPLIES.map((r, i) => `<button class="btn fit" type="button" data-reply="${i}">Canned ${i + 1}</button>`).join('')}
+            </div>
+            <textarea class="input" id="adminReply" placeholder="Type a reply..."></textarea>
+            <div class="row">
+              <button class="btn primary fit" type="button" id="sendReply">Send Reply</button>
+            </div>
+          </div>
+        `;
+        data.markThreadRead(threadId);
+        renderMessages();
+      }
+
+      function initMessageHandlers() {
+        if (!$('#messageThreads')) return;
+        document.querySelectorAll('[data-msg-filter]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (getPermissions().messages === false) return;
+            state.messageFilter = btn.dataset.msgFilter;
+            renderMessages();
+          });
+        });
+        $('#messageThreads').addEventListener('click', (e) => {
+          if (getPermissions().messages === false) return;
+          const viewBtn = e.target.closest('[data-thread]');
+          if (viewBtn) {
+            renderMessageDetail(viewBtn.dataset.thread);
+            return;
+          }
+          const resolveBtn = e.target.closest('[data-resolve]');
+          if (resolveBtn) {
+            const threadId = resolveBtn.dataset.resolve;
+            const thread = data.getMessages().find(t => t.id === threadId);
+            data.markThreadResolved(threadId, !thread?.resolved);
+            renderMessages();
+            if (state.activeThreadId === threadId) {
+              renderMessageDetail(threadId);
+            }
+            logActivity('Thread status changed', threadId);
+          }
+          const needsBtn = e.target.closest('[data-needs]');
+          if (needsBtn) {
+            const threadId = needsBtn.dataset.needs;
+            const thread = data.getMessages().find(t => t.id === threadId);
+            data.updateMessageThread(threadId, { needsReply: !thread?.needsReply });
+            renderMessages();
+            if (state.activeThreadId === threadId) {
+              renderMessageDetail(threadId);
+            }
+            logActivity('Thread needs-reply toggled', threadId);
+          }
+        });
+        const detail = $('#messageThreadDetail');
+        if (!detail) return;
+        detail.addEventListener('click', (e) => {
+          if (getPermissions().messages === false) return;
+          const addNote = e.target.closest('#addThreadNote');
+          const toggleResolved = e.target.closest('#toggleResolved');
+          const toggleNeeds = e.target.closest('#toggleNeedsReply');
+          const sendReply = e.target.closest('#sendReply');
+          const canned = e.target.closest('[data-reply]');
+          if (!state.activeThreadId) return;
+          const threadId = state.activeThreadId;
+          if (addNote) {
+            const note = $('#threadNote').value.trim();
+            if (!note) return;
+            data.addThreadNote(threadId, note);
+            $('#threadNote').value = '';
+            renderMessageDetail(threadId);
+            logActivity('Added thread note', threadId);
+          }
+          if (toggleResolved) {
+            const thread = data.getMessages().find(t => t.id === threadId);
+            data.markThreadResolved(threadId, !thread?.resolved);
+            renderMessageDetail(threadId);
+            renderMessages();
+          }
+          if (toggleNeeds) {
+            const thread = data.getMessages().find(t => t.id === threadId);
+            data.updateMessageThread(threadId, { needsReply: !thread?.needsReply });
+            renderMessageDetail(threadId);
+            renderMessages();
+          }
+          if (canned) {
+            const idx = Number(canned.dataset.reply);
+            const reply = CANNED_REPLIES[idx];
+            if (reply) $('#adminReply').value = reply;
+          }
+          if (sendReply) {
+            const message = $('#adminReply').value.trim();
+            if (!message) return;
+            const thread = data.getMessages().find(t => t.id === threadId);
+            data.addMessage({
+              vendorId: thread.vendorId,
+              vendorName: thread.vendorName,
+              category: thread.category,
+              message,
+              from: 'admin'
+            });
+            data.updateMessageThread(threadId, { needsReply: false });
+            $('#adminReply').value = '';
+            renderMessageDetail(threadId);
+            renderMessages();
+          }
+          const assigneeInput = e.target.closest('#threadAssignee');
+          if (assigneeInput) return;
+        });
+        detail.addEventListener('change', (e) => {
+          if (getPermissions().messages === false) return;
+          if (!state.activeThreadId) return;
+          const assignee = e.target.closest('#threadAssignee');
+          if (assignee) {
+            data.updateMessageThread(state.activeThreadId, { assignedTo: assignee.value.trim() });
+            renderMessages();
+            renderMessageDetail(state.activeThreadId);
+          }
+        });
+      }
+
+      function initLeadHandlers() {
+        if (!$('#leadList')) return;
+        const statusFilter = $('#leadStatusFilter');
+        const searchInput = $('#leadSearch');
+        if (statusFilter) {
+          statusFilter.addEventListener('change', () => {
+            state.leadFilter = statusFilter.value;
+            renderLeads();
+          });
+        }
+        if (searchInput) {
+          searchInput.addEventListener('input', () => {
+            state.leadSearch = searchInput.value;
+            renderLeads();
+          });
+        }
+        $('#leadList').addEventListener('click', (e) => {
+          const viewBtn = e.target.closest('[data-lead]');
+          if (viewBtn) {
+            state.activeLeadId = viewBtn.dataset.lead;
+            renderLeadDetail(state.activeLeadId);
+          }
+        });
+        const detail = $('#leadDetail');
+        if (!detail) return;
+        detail.addEventListener('change', (e) => {
+          const statusSelect = e.target.closest('#leadStatusSelect');
+          if (!statusSelect || !state.activeLeadId) return;
+          data.updateLead(state.activeLeadId, { status: statusSelect.value });
+          renderLeads();
+          renderOverview();
+        });
+        detail.addEventListener('click', (e) => {
+          if (!state.activeLeadId) return;
+          const tagBtn = e.target.closest('[data-lead-tag]');
+          const replyBtn = e.target.closest('#leadMarkReplied');
+          if (tagBtn) {
+            const tag = tagBtn.dataset.leadTag;
+            const lead = data.getLeads().find(l => l.id === state.activeLeadId);
+            if (!lead) return;
+            const tags = new Set(lead.tags || []);
+            if (tags.has(tag)) {
+              tags.delete(tag);
+            } else {
+              tags.add(tag);
+            }
+            data.updateLead(state.activeLeadId, { tags: Array.from(tags) });
+            renderLeadDetail(state.activeLeadId);
+            renderLeads();
+            renderOverview();
+          }
+          if (replyBtn) {
+            data.updateLead(state.activeLeadId, { lastReplyAt: new Date().toISOString() });
+            renderLeadDetail(state.activeLeadId);
+            renderLeads();
+            renderOverview();
+            showToast('Lead marked as replied');
+          }
+        });
+      }
+
+      function initReviewHandlers() {
+        if (!$('#reviewList')) return;
+        const statusFilter = $('#reviewStatusFilter');
+        const searchInput = $('#reviewSearch');
+        if (statusFilter) {
+          statusFilter.addEventListener('change', () => {
+            state.reviewFilter = statusFilter.value;
+            renderReviews();
+          });
+        }
+        if (searchInput) {
+          searchInput.addEventListener('input', () => {
+            state.reviewSearch = searchInput.value;
+            renderReviews();
+          });
+        }
+        $('#reviewList').addEventListener('click', (e) => {
+          const actionBtn = e.target.closest('[data-review-action]');
+          const saveBtn = e.target.closest('[data-review-save]');
+          if (actionBtn) {
+            const reviewId = actionBtn.dataset.review;
+            const status = actionBtn.dataset.reviewAction;
+            data.updateReview(reviewId, { status });
+            renderReviews();
+            renderOverview();
+            showToast('Review updated');
+          }
+          if (saveBtn) {
+            const reviewId = saveBtn.dataset.reviewSave;
+            const textarea = $(`[data-review-reply="${reviewId}"]`);
+            if (!textarea) return;
+            data.updateReview(reviewId, { adminReply: textarea.value.trim() });
+            showToast('Reply saved');
+          }
+        });
+      }
+
+      function initMediaHandlers() {
+        if (!$('#mediaQueueList')) return;
+        const statusFilter = $('#mediaStatusFilter');
+        const searchInput = $('#mediaSearch');
+        if (statusFilter) {
+          statusFilter.addEventListener('change', () => {
+            state.mediaFilter = statusFilter.value;
+            renderMediaQueue();
+          });
+        }
+        if (searchInput) {
+          searchInput.addEventListener('input', () => {
+            state.mediaSearch = searchInput.value;
+            renderMediaQueue();
+          });
+        }
+        $('#mediaQueueList').addEventListener('click', (e) => {
+          const actionBtn = e.target.closest('[data-media-action]');
+          if (!actionBtn) return;
+          const itemId = actionBtn.dataset.media;
+          const status = actionBtn.dataset.mediaAction;
+          if (status === 'rejected') {
+            const reason = prompt('Reason for rejection (optional):', '');
+            if (reason === null) return;
+            data.updateMediaQueueItem(itemId, { status: 'rejected', reason: reason.trim() });
+            showToast('Media rejected');
+          } else {
+            data.updateMediaQueueItem(itemId, { status: 'approved', reason: '' });
+            showToast('Media approved');
+          }
+          renderMediaQueue();
+          renderOverview();
+        });
+      }
+
+      function renderOnboarding() {
+        const list = $('#onboardingList');
+        if (!list) return;
+        if (getPermissions().onboarding === false) {
+          list.innerHTML = '<div class="meta">Onboarding approvals are disabled.</div>';
+          return;
+        }
+        const submissions = data.getOnboardingSubmissions().slice().sort((a, b) => {
+          return new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0);
+        });
+        if (!submissions.length) {
+          list.innerHTML = '<div class="meta">No submissions yet.</div>';
+          return;
+        }
+        list.innerHTML = submissions.map(submission => {
+          const category = submission.services?.[0]?.category || submission.primaryCategory || 'Unspecified';
+          const checklist = submission.checklist || {};
+          const checklistItems = ['Business info','Pricing','Media','Availability','Policies'].map(label => ({
+            label,
+            key: label.toLowerCase().replace(/[^a-z]/g, '')
+          }));
+          const allChecked = checklistItems.every(item => checklist[item.key]);
+          const statusBadge = submission.status === 'approved'
+            ? '<span class="badge ok">Approved</span>'
+            : submission.status === 'needs_changes'
+              ? '<span class="badge warn">Needs Changes</span>'
+              : submission.status === 'rejected'
+              ? '<span class="badge warn">Rejected</span>'
+              : '<span class="badge warn">Pending</span>';
+          return `
+            <div class="list-item">
+              <div>
+                <div class="list-item-title">${submission.businessName || 'New Vendor'}</div>
+                <div class="meta">${category} · Submitted ${new Date(submission.submittedAt).toLocaleDateString('en-US')}</div>
+                <div class="meta" style="margin-top:8px;">Approval checklist:</div>
+                <div class="row" style="margin-top:6px;">
+                  ${checklistItems.map(item => {
+                    return `<label class="fit"><input type="checkbox" data-checklist="${submission.id}" data-item="${item.key}" ${checklist[item.key] ? 'checked' : ''} /> ${item.label}</label>`;
+                  }).join('')}
+                </div>
+              </div>
+              <div class="table-actions">
+                ${statusBadge}
+                ${submission.status !== 'approved' ? `
+                  <button class="btn-link" data-approve="${submission.id}" ${!allChecked ? 'disabled title="Complete the checklist to approve"' : ''}>Approve</button>
+                ` : ''}
+                ${submission.status !== 'rejected' ? `
+                  <button class="btn-link" data-reject="${submission.id}">Reject</button>
+                ` : ''}
+                <button class="btn-link" data-request="${submission.id}">Request Changes</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function initOnboardingHandlers() {
+        if (!$('#onboardingList')) return;
+        $('#onboardingList').addEventListener('click', (e) => {
+          if (getPermissions().onboarding === false) return;
+          const approveBtn = e.target.closest('[data-approve]');
+          const rejectBtn = e.target.closest('[data-reject]');
+          const requestBtn = e.target.closest('[data-request]');
+          if (approveBtn) {
+            if (approveBtn.disabled) return;
+            data.approveOnboarding(approveBtn.dataset.approve);
+            renderOnboarding();
+            renderVendors();
+            logActivity('Onboarding approved', approveBtn.dataset.approve);
+            showToast('Submission approved');
+          }
+          if (rejectBtn) {
+            data.rejectOnboarding(rejectBtn.dataset.reject);
+            renderOnboarding();
+            logActivity('Onboarding rejected', rejectBtn.dataset.reject);
+            showToast('Submission rejected');
+          }
+          if (requestBtn) {
+            const id = requestBtn.dataset.request;
+            const submission = data.getOnboardingSubmissions().find(s => s.id === id);
+            if (!submission) return;
+            data.updateOnboarding(id, { status: 'needs_changes' });
+            data.addMessage({
+              vendorId: id,
+              vendorName: submission.businessName || 'Vendor',
+              category: submission.services?.[0]?.category || submission.primaryCategory || 'Vendor',
+              message: 'Please review your submission and update the missing details.',
+              from: 'admin'
+            });
+            data.updateMessageThread(`thread-${id}`, { needsReply: false });
+            renderOnboarding();
+            renderMessages();
+            logActivity('Onboarding requested changes', id);
+            showToast('Request sent');
+          }
+        });
+        $('#onboardingList').addEventListener('change', (e) => {
+          if (getPermissions().onboarding === false) return;
+          const checkbox = e.target.closest('[data-checklist]');
+          if (!checkbox) return;
+          const submissionId = checkbox.dataset.checklist;
+          const item = checkbox.dataset.item;
+          const submission = data.getOnboardingSubmissions().find(s => s.id === submissionId);
+          if (!submission) return;
+          const checklist = { ...(submission.checklist || {}) };
+          checklist[item] = checkbox.checked;
+          data.updateOnboarding(submissionId, { checklist });
+        });
+      }
+
+      function initAdminTools() {
+        const exportBtn = $('#exportDataBtn');
+        const importBtn = $('#importDataBtn');
+        const resetBtn = $('#resetDataBtn');
+        const dataTextarea = $('#dataTextarea');
+        if (exportBtn) {
+          exportBtn.addEventListener('click', () => {
+            if (getPermissions().export === false) return;
+            const json = JSON.stringify(data.getData(), null, 2);
+            if (dataTextarea) dataTextarea.value = json;
+            showToast('Data exported');
+            logActivity('Exported data');
+          });
+        }
+        if (importBtn) {
+          importBtn.addEventListener('click', () => {
+            if (getPermissions().export === false) return;
+            if (!dataTextarea) return;
+            const input = dataTextarea.value.trim();
+            if (!input) return;
+            try {
+              const parsed = JSON.parse(input);
+              if (storage?.saveJSON) {
+                storage.saveJSON('cleverplanners-data-v1', parsed);
+              } else {
+                localStorage.setItem('cleverplanners-data-v1', JSON.stringify(parsed));
+              }
+              renderAll();
+              showToast('Data imported');
+              logActivity('Imported data');
+            } catch (err) {
+              showToast('Invalid JSON');
+            }
+          });
+        }
+        if (resetBtn) {
+          resetBtn.addEventListener('click', () => {
+            if (getPermissions().export === false) return;
+            if (!confirm('Reset all admin data to defaults?')) return;
+            localStorage.removeItem('cleverplanners-data-v1');
+            renderAll();
+            showToast('Data reset');
+            logActivity('Reset demo data');
+          });
+        }
+        const topbarExport = $('#topbarExportBtn');
+        const topbarReset = $('#topbarResetBtn');
+        if (topbarExport && exportBtn) {
+          topbarExport.addEventListener('click', () => exportBtn.click());
+        }
+        if (topbarReset && resetBtn) {
+          topbarReset.addEventListener('click', () => resetBtn.click());
+        }
+        const activityTypeFilter = $('#activityTypeFilter');
+        const activitySearch = $('#activitySearch');
+        if (activityTypeFilter) activityTypeFilter.addEventListener('change', renderActivityLog);
+        if (activitySearch) activitySearch.addEventListener('input', renderActivityLog);
+      }
+
+      function renderAdminProfile() {
+        const profile = data.getAdminProfile();
+        if (!$('#adminProfileForm')) return;
+        $('#adminName').value = profile.name || '';
+        $('#adminEmail').value = profile.email || '';
+        $('#adminRole').value = profile.role || 'Admin';
+        $('#permVendors').checked = !!profile.permissions?.vendors;
+        $('#permOnboarding').checked = !!profile.permissions?.onboarding;
+        $('#permMessages').checked = !!profile.permissions?.messages;
+        $('#permExport').checked = !!profile.permissions?.export;
+        $('#showFutureModules').checked = !!profile.showFutureModules;
+        const banner = $('#demoBanner');
+        if (banner) {
+          banner.style.display = profile.demoMode ? 'flex' : 'none';
+        }
+        applyFutureVisibility();
+        applyPermissions();
+      }
+
+      function initAdminProfile() {
+        if (!$('#adminProfileForm')) return;
+        $('#adminProfileForm').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const profile = {
+            name: $('#adminName').value.trim(),
+            email: $('#adminEmail').value.trim(),
+            role: $('#adminRole').value,
+            showFutureModules: $('#showFutureModules').checked,
+            permissions: {
+              vendors: $('#permVendors').checked,
+              onboarding: $('#permOnboarding').checked,
+              messages: $('#permMessages').checked,
+              export: $('#permExport').checked
+            }
+          };
+          data.updateAdminProfile(profile);
+          renderAdminProfile();
+          showToast('Profile saved');
+        });
+        const logoutBtn = $('#adminLogout');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', () => {
+            if (storage?.saveJSON) {
+              storage.saveJSON('cleverplanners-admin-auth', false);
+            } else {
+              localStorage.setItem('cleverplanners-admin-auth', 'false');
+            }
+            location.reload();
+          });
+        }
+      }
+
+      function renderAll() {
+        if ($('#overviewKpis')) renderOverview();
+        if ($('#leadList')) renderLeads();
+        if ($('#reviewList')) renderReviews();
+        if ($('#mediaQueueList')) renderMediaQueue();
+        if ($('#vendorCategoryFilter')) renderVendorFilters();
+        if ($('#vendorsTableBody')) renderVendors();
+        if ($('#vendorStats')) renderVendorStats();
+        if ($('#messageThreads')) renderMessages();
+        if ($('#onboardingList')) renderOnboarding();
+        if ($('#activityLog')) renderActivityLog();
+        if ($('#adminProfileForm')) renderAdminProfile();
+      }
+
+      function init() {
+        initGate();
+        initNav();
+        initLeadHandlers();
+        initVendorHandlers();
+        initMessageHandlers();
+        initReviewHandlers();
+        initOnboardingHandlers();
+        initMediaHandlers();
+        initAdminTools();
+        initAdminProfile();
+        initPreviewControls();
+        renderAll();
+        applyFutureVisibility();
+        applyPermissions();
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
